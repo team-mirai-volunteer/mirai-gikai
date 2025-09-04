@@ -1,0 +1,7 @@
+{
+  "name": "@mirai-gikai/types",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./supabase.types.ts",
+  "types": "./supabase.types.ts"
+}

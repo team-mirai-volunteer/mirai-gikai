@@ -1,0 +1,8 @@
+{
+  "name": "@mirai-gikai/root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "supabase:types:gen": "npx supabase gen types typescript --local > packages/types/supabase.types.ts"
+  }
+}

@@ -6,6 +6,8 @@ settings:
 
 importers:
 
+  .: {}
+
   admin:
     dependencies:
       next:
@@ -36,6 +38,8 @@ importers:
       typescript:
         specifier: ^5
         version: 5.9.2
+
+  packages/types: {}
 
   web:
     dependencies:
