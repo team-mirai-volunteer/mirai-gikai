@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "../types/supabase.types";
+import type { Database } from "@mirai-gikai/supabase";
 import { bills, createMiraiStances } from "./data";
 
 // Supabase client with service role key (for bypassing RLS)

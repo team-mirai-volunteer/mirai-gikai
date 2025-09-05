@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "supabase:types:gen": "npx supabase gen types typescript --local > packages/types/supabase.types.ts",
+    "supabase:types:gen": "npx supabase gen types typescript --local > packages/supabase/types/supabase.types.ts",
+    "dev": "dotenv -e .env -- pnpm -r --stream --parallel run dev",
     "seed": "dotenv -e .env -- pnpm --filter @mirai-gikai/seed seed"
   },
   "devDependencies": {
