@@ -16,7 +16,7 @@ export default async function Home() {
             国会で審議される議案をわかりやすくお伝えします
           </p>
         </header>
-        
+
         <main>
           <div className="mb-6">
             <h2 className="text-xl font-semibold mb-4">議案一覧</h2>
@@ -24,7 +24,7 @@ export default async function Home() {
               {bills.length}件の議案が公開されています
             </p>
           </div>
-          
+
           <BillList bills={bills} />
         </main>
       </div>

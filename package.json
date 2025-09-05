@@ -5,9 +5,13 @@
   "scripts": {
     "supabase:types:gen": "npx supabase gen types typescript --local > packages/supabase/types/supabase.types.ts",
     "dev": "dotenv -e .env -- pnpm -r --stream --parallel run dev",
-    "seed": "dotenv -e .env -- pnpm --filter @mirai-gikai/seed seed"
+    "seed": "dotenv -e .env -- pnpm --filter @mirai-gikai/seed seed",
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "biome format . && biome lint .",
+    "lint:fix": "biome format --write . && biome lint --write ."
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.2.2",
     "dotenv-cli": "^7.4.2"
   }
 }

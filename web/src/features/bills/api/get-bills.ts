@@ -13,8 +13,5 @@ export async function getBills(): Promise<Bill[]> {
     throw new Error(`Failed to fetch bills: ${error.message}`);
   }
 
-  // Transform the data to match our type
-  return data.map((bill) => ({
-    ...bill,
-  }));
+  return data;
 }

@@ -21,7 +21,7 @@ export type BillWithStance = Bill & {
 export const BILL_STATUS_LABELS: Record<BillStatusEnum, string> = {
   introduced: "提出済み",
   in_originating_house: "発議院審議中",
-  in_receiving_house: "受議院審議中", 
+  in_receiving_house: "受議院審議中",
   enacted: "成立",
   rejected: "否決",
 };
