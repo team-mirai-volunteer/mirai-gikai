@@ -33,6 +33,9 @@
       "quoteStyle": "double"
     }
   },
+  "css": {
+    "linter": {}
+  },
   "json": {
     "formatter": {
       "enabled": true
