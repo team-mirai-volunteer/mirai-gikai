@@ -1,4 +1,4 @@
-import type { Database } from "../types/supabase.types";
+import type { Database } from "@mirai-gikai/supabase";
 
 type BillInsert = Database["public"]["Tables"]["bills"]["Insert"];
 type MiraiStanceInsert =
