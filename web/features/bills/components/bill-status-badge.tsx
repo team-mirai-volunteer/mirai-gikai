@@ -11,14 +11,12 @@ export function BillStatusBadge({ status, className }: BillStatusBadgeProps) {
   const getStatusVariant = (status: BillStatusEnum) => {
     switch (status) {
       case "introduced":
-        return "secondary";
       case "in_originating_house":
       case "in_receiving_house":
-        return "default";
+        return "outline";
       case "enacted":
-        return "success";
       case "rejected":
-        return "destructive";
+        return "default";
       default:
         return "secondary";
     }
