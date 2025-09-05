@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
-import type { BillStatusEnum } from "../types";
-import { BILL_STATUS_LABELS } from "../types";
+import type { BillStatusEnum } from "../../types";
+import { BILL_STATUS_LABELS } from "../../types";
 
 interface BillStatusBadgeProps {
   status: BillStatusEnum;

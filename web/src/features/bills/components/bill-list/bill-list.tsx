@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Bill } from "../types";
+import type { Bill } from "../../types";
 import { BillCard } from "./bill-card";
 
 interface BillListProps {

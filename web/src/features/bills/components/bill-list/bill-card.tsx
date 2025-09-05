@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils/date";
-import type { Bill } from "../types";
+import type { Bill } from "../../types";
 import { BillStatusBadge } from "./bill-status-badge";
-import { HOUSE_LABELS } from "../types";
+import { HOUSE_LABELS } from "../../types";
 
 interface BillCardProps {
   bill: Bill;

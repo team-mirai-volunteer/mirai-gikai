@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
-import type { StanceTypeEnum } from "../types";
-import { STANCE_LABELS } from "../types";
+import type { StanceTypeEnum } from "../../types";
+import { STANCE_LABELS } from "../../types";
 
 interface StanceBadgeProps {
   stance: StanceTypeEnum;
