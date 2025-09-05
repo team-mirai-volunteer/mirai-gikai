@@ -11,11 +11,9 @@ export function StanceBadge({ stance, className }: StanceBadgeProps) {
   const getStanceVariant = (stance: StanceTypeEnum) => {
     switch (stance) {
       case "for":
-        return "success";
       case "against":
-        return "destructive";
       case "neutral":
-        return "secondary";
+        return "default";
       default:
         return "secondary";
     }

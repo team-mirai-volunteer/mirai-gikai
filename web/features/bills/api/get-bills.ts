@@ -1,15 +1,12 @@
 import { createAdminClient } from "@mirai-gikai/supabase/server";
-import type { BillWithStance } from "../types";
+import type { Bill } from "../types";
 
-export async function getBills(): Promise<BillWithStance[]> {
+export async function getBills(): Promise<Bill[]> {
   const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("bills")
-    .select(`
-      *,
-      mirai_stance:mirai_stances(*)
-    `)
+    .select(`*`)
     .order("published_at", { ascending: false });
 
   if (error) {
@@ -19,6 +16,5 @@ export async function getBills(): Promise<BillWithStance[]> {
   // Transform the data to match our type
   return data.map((bill) => ({
     ...bill,
-    mirai_stance: bill.mirai_stance?.[0] || undefined,
   }));
 }

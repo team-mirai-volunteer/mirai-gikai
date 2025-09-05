@@ -1,12 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils/date";
-import type { BillWithStance } from "../types";
+import type { Bill } from "../types";
 import { BillStatusBadge } from "./bill-status-badge";
-import { StanceBadge } from "./stance-badge";
 import { HOUSE_LABELS } from "../types";
 
 interface BillCardProps {
-  bill: BillWithStance;
+  bill: Bill;
 }
 
 export function BillCard({ bill }: BillCardProps) {
@@ -19,9 +18,7 @@ export function BillCard({ bill }: BillCardProps) {
             <span>•</span>
             <time>{formatDate(bill.published_at)}</time>
           </div>
-          <CardTitle className="text-lg leading-tight">
-            {bill.name}
-          </CardTitle>
+          <CardTitle className="text-lg leading-tight">{bill.name}</CardTitle>
           {bill.headline && (
             <p className="text-sm text-muted-foreground line-clamp-2">
               {bill.headline}
@@ -32,12 +29,6 @@ export function BillCard({ bill }: BillCardProps) {
       <CardContent>
         <div className="flex items-center justify-between">
           <BillStatusBadge status={bill.status} />
-          {bill.mirai_stance && (
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">みらい:</span>
-              <StanceBadge stance={bill.mirai_stance.type} />
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>
