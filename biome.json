@@ -3,7 +3,10 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "recommended": true,
+      "suspicious": {
+        "noUnknownAtRules": "off"
+      }
     }
   },
   "formatter": {
@@ -26,6 +29,9 @@
       "bracketSpacing": true,
       "quoteStyle": "double"
     }
+  },
+  "css": {
+    "linter": {}
   },
   "json": {
     "formatter": {
