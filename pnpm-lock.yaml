@@ -45,6 +45,9 @@ importers:
 
   packages/seed:
     dependencies:
+      '@mirai-gikai/supabase':
+        specifier: workspace:*
+        version: link:../supabase
       '@supabase/supabase-js':
         specifier: ^2.45.4
         version: 2.57.0
