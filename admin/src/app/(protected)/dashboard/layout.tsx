@@ -1,23 +1,13 @@
-import { redirect } from "next/navigation";
-import { createClient as createServerClient } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/logout-button";
 import { Home, FileText, BarChart3, Settings, User } from "lucide-react";
+import { getCurrentSession } from "@/features/auth/lib/auth-server";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createServerClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  // middlewareで既にチェック済みだが、念のため
-  if (!session) {
-    redirect("/login");
-  }
-
+  const session = await getCurrentSession();
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -38,7 +28,7 @@ export default async function DashboardLayout({
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 text-sm text-gray-700">
                 <User className="h-4 w-4" />
-                <span>{session.user.email}</span>
+                <span>{session?.user.email}</span>
               </div>
               <LogoutButton />
             </div>
