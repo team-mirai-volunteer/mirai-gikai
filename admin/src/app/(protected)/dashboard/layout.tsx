@@ -1,6 +1,6 @@
-import { LogoutButton } from "@/components/logout-button";
 import { Home, FileText, BarChart3, Settings, User } from "lucide-react";
 import { getCurrentSession } from "@/features/auth/lib/auth-server";
+import { LogoutButton } from "@/features/auth/components/logout-button";
 
 export default async function DashboardLayout({
   children,

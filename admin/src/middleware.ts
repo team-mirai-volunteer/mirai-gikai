@@ -1,19 +1,17 @@
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { NextResponse } from "next/server";
+import { checkAdminPermission } from "@/lib/auth/permissions";
 
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
 
   // ログインページへのアクセスで、既にログイン済みの場合
   if (request.nextUrl.pathname === "/login") {
-    if (user) {
-      const roles = user.app_metadata?.roles || [];
-      if (roles.includes("admin")) {
-        const url = request.nextUrl.clone();
-        url.pathname = "/dashboard";
-        return NextResponse.redirect(url);
-      }
+    if (user && checkAdminPermission(user)) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
     }
     // ログインページは常にアクセス可能
     return supabaseResponse;
@@ -28,8 +26,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // admin権限チェック
-  const roles = user.app_metadata?.roles || [];
-  if (!roles.includes("admin")) {
+  if (!checkAdminPermission(user)) {
     // 権限がない場合もログイン画面へ
     const url = request.nextUrl.clone();
     url.pathname = "/login";
