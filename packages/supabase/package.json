@@ -8,15 +8,11 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
-    },
-    "./server": {
-      "types": "./src/server.ts",
-      "default": "./src/server.ts"
     }
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.45.4",
-    "@supabase/ssr": "^0.5.1"
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.45.4"
   },
   "devDependencies": {
     "@types/node": "^22.5.5",
