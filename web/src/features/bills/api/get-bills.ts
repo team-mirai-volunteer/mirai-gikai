@@ -1,4 +1,4 @@
-import { createAdminClient } from "@mirai-gikai/supabase/server";
+import { createAdminClient } from "@mirai-gikai/supabase";
 import type { Bill } from "../types";
 
 export async function getBills(): Promise<Bill[]> {
