@@ -1,1 +1,0 @@
-export { LogoutButton } from "@/features/auth/components/logout-button";
