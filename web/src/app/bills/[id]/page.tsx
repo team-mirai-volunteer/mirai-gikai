@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
 import { BillDetailLayout } from "@/features/bills/components/bill-detail/bill-detail-layout";
+import { ChatButton } from "@/features/chat/components/chat-button";
 
 interface BillDetailPageProps {
   params: Promise<{
@@ -42,5 +43,10 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
     notFound();
   }
 
-  return <BillDetailLayout bill={billWithStance} />;
+  return (
+    <>
+      <BillDetailLayout bill={billWithStance} />
+      <ChatButton billContext={billWithStance} />
+    </>
+  );
 }
