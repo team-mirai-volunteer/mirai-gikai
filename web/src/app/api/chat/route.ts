@@ -56,10 +56,10 @@ export async function POST(req: Request) {
   const systemPrompt = `
     あなたは日本の議案について説明する専門的なアシスタントです。
 
-    // 議案情報：
-    // - 名称: ${billContext?.name}
-    // - 説明: ${billContext?.description || ""}
-    // - 詳細: ${billContext?.body_markdown || ""}
+    議案情報：
+    - 名称: ${billContext?.name}
+    - 説明: ${billContext?.description || ""}
+    - 詳細: ${billContext?.body_markdown || ""}
 
     ルール：
     1. この議案に関する質問にのみ回答する
