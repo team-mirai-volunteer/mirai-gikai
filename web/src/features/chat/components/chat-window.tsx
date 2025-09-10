@@ -12,12 +12,12 @@ import { Response } from "@/components/ai-elements/response";
 import {
   PromptInput,
   PromptInputBody,
-  PromptInputMessage,
+  type PromptInputMessage,
   PromptInputSubmit,
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
 import { useState } from "react";
-import { Bill } from "@/features/bills/types";
+import type { Bill } from "@/features/bills/types";
 
 interface ChatWindowProps {
   billContext: Bill;

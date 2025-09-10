@@ -1,8 +1,8 @@
-import { Bill } from "@/features/bills/types";
+import type { Bill } from "@/features/bills/types";
 import {
   streamText,
   convertToModelMessages,
-  UIMessage,
+  type UIMessage,
   simulateReadableStream,
 } from "ai";
 

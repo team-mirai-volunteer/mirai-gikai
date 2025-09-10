@@ -84,17 +84,15 @@ export function LoginForm() {
           <div className="flex items-center space-x-2 p-3 text-sm text-red-800 bg-red-50 border border-red-200 rounded-md">
             <AlertCircle className="h-4 w-4" />
             <span>
-              {error || 
-               (urlError === "unauthorized" ? "管理者権限がありません" : "認証エラーが発生しました")}
+              {error ||
+                (urlError === "unauthorized"
+                  ? "管理者権限がありません"
+                  : "認証エラーが発生しました")}
             </span>
           </div>
         )}
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={isLoading}
-        >
+        <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "ログイン中..." : "ログイン"}
         </Button>
       </form>

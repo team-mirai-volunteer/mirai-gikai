@@ -12,6 +12,7 @@ export const Image = ({
   mediaType,
   ...props
 }: ImageProps) => (
+  // biome-ignore lint/performance/noImgElement: "パッケージのままにしておく"
   <img
     {...props}
     alt={props.alt}
