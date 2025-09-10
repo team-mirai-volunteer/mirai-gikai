@@ -72,6 +72,7 @@ const LoaderIcon = ({ size = 16 }: LoaderIconProps) => (
       />
     </g>
     <defs>
+      {/* biome-ignore lint: lint/correctness/useUniqueElementIds */}
       <clipPath id="clip0_2393_1490">
         <rect fill="white" height="16" width="16" />
       </clipPath>

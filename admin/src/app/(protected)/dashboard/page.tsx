@@ -7,62 +7,46 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">ダッシュボード</h1>
-        <p className="text-muted-foreground">
-          みらい議会の管理画面へようこそ
-        </p>
+        <p className="text-muted-foreground">みらい議会の管理画面へようこそ</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              議案数
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">議案数</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">5</div>
-            <p className="text-xs text-muted-foreground">
-              総議案数
-            </p>
+            <p className="text-xs text-muted-foreground">総議案数</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              政党スタンス
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">政党スタンス</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">5</div>
-            <p className="text-xs text-muted-foreground">
-              表明済み
-            </p>
+            <p className="text-xs text-muted-foreground">表明済み</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              管理者
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">管理者</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">1</div>
-            <p className="text-xs text-muted-foreground">
-              アクティブユーザー
-            </p>
+            <p className="text-xs text-muted-foreground">アクティブユーザー</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              システム状態
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">システム状態</CardTitle>
             <Settings className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -94,7 +78,9 @@ export default function DashboardPage() {
                 <div className="flex items-center space-x-4">
                   <div className="w-2 h-2 bg-green-500 rounded-full" />
                   <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium">学校給食無償化促進法案</p>
+                    <p className="text-sm font-medium">
+                      学校給食無償化促進法案
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       両院で可決、4月から実施
                     </p>
@@ -103,7 +89,9 @@ export default function DashboardPage() {
                 <div className="flex items-center space-x-4">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full" />
                   <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium">こども家庭庁予算増額法案</p>
+                    <p className="text-sm font-medium">
+                      こども家庭庁予算増額法案
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       参議院で可決、衆議院へ送付
                     </p>

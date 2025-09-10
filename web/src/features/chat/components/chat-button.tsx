@@ -3,7 +3,7 @@
 import { MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { ChatWindow } from "./chat-window";
-import { Bill } from "@/features/bills/types";
+import type { Bill } from "@/features/bills/types";
 
 interface ChatButtonProps {
   billContext: Bill;

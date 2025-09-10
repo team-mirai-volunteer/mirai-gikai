@@ -11,7 +11,9 @@ export async function signIn(email: string, password: string) {
   });
 
   if (error) {
-    throw new Error("ログインに失敗しました。メールアドレスとパスワードを確認してください。");
+    throw new Error(
+      "ログインに失敗しました。メールアドレスとパスワードを確認してください。"
+    );
   }
 
   if (!checkAdminPermission(data.user)) {
@@ -30,7 +32,10 @@ export async function signOut() {
 }
 
 export async function getCurrentUser() {
-  const { data: { user }, error } = await authClient.getUser();
+  const {
+    data: { user },
+    error,
+  } = await authClient.getUser();
   if (error) {
     throw new Error("ユーザー情報の取得に失敗しました。");
   }
