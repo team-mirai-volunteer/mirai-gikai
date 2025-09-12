@@ -70,6 +70,9 @@ export async function POST(req: Request) {
   // Vercel AI Gatewayを通じて直接モデルを指定
   const result = streamText({
     model: "openai/gpt-5-mini",
+    // "openai/gpt-5-mini" Context 400K Input Tokens $0.25/M Output Tokens $2.00/M Cache Read Tokens $0.03/M
+    // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M Cache Read Tokens $0.07/M
+    // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
     system: systemPrompt,
     messages: convertToModelMessages(messages),
   });
