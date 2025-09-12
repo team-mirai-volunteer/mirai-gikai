@@ -18,6 +18,11 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { useState } from "react";
 import type { Bill } from "@/features/bills/types";
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from "@/components/ai-elements/reasoning";
 
 interface ChatWindowProps {
   billContext: Bill;
@@ -88,16 +93,33 @@ export function ChatWindow({ billContext, onClose }: ChatWindowProps) {
           {messages.map((message) => (
             <Message key={message.id} from={message.role}>
               <MessageContent>
-                {message.parts.map((part, index) => {
-                  if (part.type === "text") {
-                    return (
-                      <Response
-                        key={`${message.id}-${index}`}
-                        className="break-words"
-                      >
-                        {part.text}
-                      </Response>
-                    );
+                {message.parts.map((part, i) => {
+                  switch (part.type) {
+                    case "text":
+                      return (
+                        <Response
+                          key={`${message.id}-${i}`}
+                          className="break-words"
+                        >
+                          {part.text}
+                        </Response>
+                      );
+                    case "reasoning":
+                      return (
+                        <Reasoning
+                          key={`${message.id}-${i}`}
+                          className="w-full"
+                          // 最後のメッセージかつ最後のパートがストリーミング中
+                          isStreaming={
+                            status === "streaming" &&
+                            i === message.parts.length - 1 &&
+                            message.id === messages.at(-1)?.id
+                          }
+                        >
+                          <ReasoningTrigger />
+                          <ReasoningContent>{part.text}</ReasoningContent>
+                        </Reasoning>
+                      );
                   }
                   return null;
                 })}

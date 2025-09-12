@@ -45,7 +45,7 @@ export const Reasoning = memo(
     className,
     isStreaming = false,
     open,
-    defaultOpen = true,
+    defaultOpen = false,
     onOpenChange,
     duration: durationProp,
     children,
@@ -114,12 +114,12 @@ export type ReasoningTriggerProps = ComponentProps<typeof CollapsibleTrigger>;
 
 const getThinkingMessage = (isStreaming: boolean, duration?: number) => {
   if (isStreaming || duration === 0) {
-    return <p>Thinking...</p>;
+    return <p>考え中...</p>;
   }
   if (duration === undefined) {
-    return <p>Thought for a few seconds</p>;
+    return <p>数秒考えました</p>;
   }
-  return <p>Thought for {duration} seconds</p>;
+  return <p>{duration}秒考えました</p>;
 };
 
 export const ReasoningTrigger = memo(
@@ -127,26 +127,33 @@ export const ReasoningTrigger = memo(
     const { isStreaming, isOpen, duration } = useReasoning();
 
     return (
-      <CollapsibleTrigger
-        className={cn(
-          "flex w-full items-center gap-2 text-muted-foreground text-sm transition-colors hover:text-foreground",
-          className
-        )}
-        {...props}
-      >
+      // <CollapsibleTrigger
+      //   className={cn(
+      //     "flex w-full items-center gap-2 text-muted-foreground text-sm transition-colors hover:text-foreground",
+      //     className
+      //   )}
+      //   {...props}
+      // >
+      <>
         {children ?? (
-          <>
+          <div
+            className={cn(
+              "flex w-full items-center gap-2 text-muted-foreground text-sm transition-colors hover:text-foreground",
+              className
+            )}
+          >
             <BrainIcon className="size-4" />
             {getThinkingMessage(isStreaming, duration)}
-            <ChevronDownIcon
+            {/* <ChevronDownIcon
               className={cn(
                 "size-4 transition-transform",
                 isOpen ? "rotate-180" : "rotate-0"
               )}
-            />
-          </>
+            /> */}
+          </div>
         )}
-      </CollapsibleTrigger>
+      </>
+      // </CollapsibleTrigger>
     );
   }
 );
