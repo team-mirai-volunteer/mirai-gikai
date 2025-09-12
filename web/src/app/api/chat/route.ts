@@ -69,7 +69,7 @@ export async function POST(req: Request) {
 
   // Vercel AI Gatewayを通じて直接モデルを指定
   const result = streamText({
-    model: "openai/gpt-5",
+    model: "openai/gpt-5-mini",
     system: systemPrompt,
     messages: convertToModelMessages(messages),
   });
