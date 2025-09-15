@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Calendar, Edit } from "lucide-react";
+import { Calendar, Edit, FileText } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,6 +38,12 @@ function BillCard({ bill }: { bill: Bill }) {
               <Button variant="outline" size="sm">
                 <Edit className="h-4 w-4 mr-1" />
                 編集
+              </Button>
+            </Link>
+            <Link href={`/bills/${bill.id}/contents/edit`}>
+              <Button variant="outline" size="sm">
+                <FileText className="h-4 w-4 mr-1" />
+                コンテンツ
               </Button>
             </Link>
           </div>
