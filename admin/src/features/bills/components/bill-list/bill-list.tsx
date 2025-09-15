@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Calendar, Edit, FileText } from "lucide-react";
+import { Calendar, Edit, FileText, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -85,6 +85,12 @@ export async function BillList() {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <div className="text-sm text-gray-600">{bills.length}件の議案</div>
+        <Link href="/bills/new">
+          <Button>
+            <Plus className="h-4 w-4 mr-1" />
+            新規作成
+          </Button>
+        </Link>
       </div>
 
       <div className="space-y-4">

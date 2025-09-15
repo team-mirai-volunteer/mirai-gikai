@@ -7,40 +7,33 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 
-import { updateBill } from "../actions/update-bill";
-import { type Bill, type BillUpdateInput, billUpdateSchema } from "../types";
+import { createBill } from "../actions/create-bill";
+import { type BillCreateInput, billCreateSchema } from "../types";
 import { BillFormFields } from "./bill-form-fields";
 import { useBillForm } from "../hooks/use-bill-form";
 
-interface BillEditFormProps {
-  bill: Bill;
-}
-
-export function BillEditForm({ bill }: BillEditFormProps) {
+export function BillCreateForm() {
   const { isSubmitting, error, handleSubmit, handleCancel } = useBillForm();
 
-  const form = useForm<BillUpdateInput>({
-    resolver: zodResolver(billUpdateSchema),
+  const form = useForm<BillCreateInput>({
+    resolver: zodResolver(billCreateSchema),
     defaultValues: {
-      name: bill.name,
-      status: bill.status,
-      originating_house: bill.originating_house,
-      status_note: bill.status_note,
-      published_at: new Date(bill.published_at).toISOString().slice(0, 16),
+      name: "",
+      status: "introduced",
+      originating_house: "HR",
+      status_note: null,
+      published_at: new Date().toISOString().slice(0, 16),
     },
   });
 
-  const onSubmit = (data: BillUpdateInput) => {
-    handleSubmit(
-      () => updateBill(bill.id, data),
-      "更新中にエラーが発生しました"
-    );
+  const onSubmit = (data: BillCreateInput) => {
+    handleSubmit(() => createBill(data), "作成中にエラーが発生しました");
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>議案基本情報編集</CardTitle>
+        <CardTitle>議案新規作成</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -55,7 +48,7 @@ export function BillEditForm({ bill }: BillEditFormProps) {
 
             <div className="flex items-center gap-4">
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "保存中..." : "保存"}
+                {isSubmitting ? "作成中..." : "作成"}
               </Button>
               <Button
                 type="button"

@@ -13,16 +13,19 @@ export type DifficultyLevel = "easy" | "normal" | "hard";
 export const billContentUpdateSchema = z.object({
   title: z
     .string()
-    .min(1, "タイトルは必須です")
-    .max(200, "タイトルは200文字以内で入力してください"),
+    .max(200, "タイトルは200文字以内で入力してください")
+    .optional()
+    .default(""),
   summary: z
     .string()
-    .min(1, "要約は必須です")
-    .max(500, "要約は500文字以内で入力してください"),
+    .max(500, "要約は500文字以内で入力してください")
+    .optional()
+    .default(""),
   content: z
     .string()
-    .min(1, "内容は必須です")
-    .max(50000, "内容は50000文字以内で入力してください"),
+    .max(50000, "内容は50000文字以内で入力してください")
+    .optional()
+    .default(""),
 });
 
 export type BillContentUpdateInput = z.infer<typeof billContentUpdateSchema>;

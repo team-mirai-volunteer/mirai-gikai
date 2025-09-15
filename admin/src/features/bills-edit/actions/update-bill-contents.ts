@@ -24,31 +24,39 @@ export async function updateBillContents(
     // Supabaseで更新
     const supabase = createAdminClient();
 
-    // 各難易度レベルの更新を並行実行
-    const updatePromises = (
+    // 各難易度レベルのupsertを並行実行
+    const upsertPromises = (
       ["easy", "normal", "hard"] as DifficultyLevel[]
     ).map(async (difficulty) => {
       const data = validatedData[difficulty];
 
-      const { error } = await supabase
-        .from("bill_contents")
-        .update({
-          title: data.title,
-          summary: data.summary,
-          content: data.content,
+      // 空のコンテンツの場合はスキップ（削除も行わない）
+      if (!data.title && !data.summary && !data.content) {
+        return;
+      }
+
+      const { error } = await supabase.from("bill_contents").upsert(
+        {
+          bill_id: billId,
+          difficulty_level: difficulty,
+          title: data.title || "",
+          summary: data.summary || "",
+          content: data.content || "",
           updated_at: new Date().toISOString(),
-        })
-        .eq("bill_id", billId)
-        .eq("difficulty_level", difficulty);
+        },
+        {
+          onConflict: "bill_id,difficulty_level",
+        }
+      );
 
       if (error) {
         throw new Error(
-          `議案コンテンツ（${difficulty}）の更新に失敗しました: ${error.message}`
+          `議案コンテンツ（${difficulty}）のupsertに失敗しました: ${error.message}`
         );
       }
     });
 
-    await Promise.all(updatePromises);
+    await Promise.all(upsertPromises);
 
     // キャッシュをリフレッシュ
     revalidatePath("/bills");
