@@ -63,7 +63,9 @@ export function BillEditForm({ bill }: BillEditFormProps) {
     try {
       await updateBill(bill.id, data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "更新中にエラーが発生しました");
+      setError(
+        err instanceof Error ? err.message : "更新中にエラーが発生しました"
+      );
       setIsSubmitting(false);
     }
   }
@@ -117,7 +119,9 @@ export function BillEditForm({ bill }: BillEditFormProps) {
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormDescription>現在の審議状況を選択してください</FormDescription>
+                    <FormDescription>
+                      現在の審議状況を選択してください
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -146,7 +150,9 @@ export function BillEditForm({ bill }: BillEditFormProps) {
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormDescription>議案を提出した議院を選択してください</FormDescription>
+                    <FormDescription>
+                      議案を提出した議院を選択してください
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -183,7 +189,9 @@ export function BillEditForm({ bill }: BillEditFormProps) {
                   <FormControl>
                     <Input type="datetime-local" {...field} />
                   </FormControl>
-                  <FormDescription>議案が公開される日時を設定してください</FormDescription>
+                  <FormDescription>
+                    議案が公開される日時を設定してください
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

@@ -7,12 +7,22 @@ export type BillUpdate = Database["public"]["Tables"]["bills"]["Update"];
 
 // バリデーションスキーマ
 export const billUpdateSchema = z.object({
-  name: z.string().min(1, "議案名は必須です").max(200, "議案名は200文字以内で入力してください"),
-  status: z.enum(
-    ["introduced", "in_originating_house", "in_receiving_house", "enacted", "rejected"]
-  ),
+  name: z
+    .string()
+    .min(1, "議案名は必須です")
+    .max(200, "議案名は200文字以内で入力してください"),
+  status: z.enum([
+    "introduced",
+    "in_originating_house",
+    "in_receiving_house",
+    "enacted",
+    "rejected",
+  ]),
   originating_house: z.enum(["HR", "HC"]),
-  status_note: z.string().max(500, "ステータス備考は500文字以内で入力してください").nullable(),
+  status_note: z
+    .string()
+    .max(500, "ステータス備考は500文字以内で入力してください")
+    .nullable(),
   published_at: z.string().min(1, "公開日時は必須です"),
 });
 
