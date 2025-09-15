@@ -40,14 +40,13 @@ export const BILL_STATUS_CONFIG: Record<
   },
 };
 
-// ステータスのオプション（フォームで使用）
-export const BILL_STATUS_OPTIONS = [
-  { value: "introduced", label: "提出済み" },
-  { value: "in_originating_house", label: "提出院審議中" },
-  { value: "in_receiving_house", label: "送付院審議中" },
-  { value: "enacted", label: "成立" },
-  { value: "rejected", label: "否決" },
-] as const;
+// ステータスのオプション（フォームで使用） - BILL_STATUS_CONFIGから自動生成
+export const BILL_STATUS_OPTIONS = Object.entries(BILL_STATUS_CONFIG).map(
+  ([value, config]) => ({
+    value: value as BillStatus,
+    label: config.label,
+  })
+);
 
 // 提出院の設定
 export const ORIGINATING_HOUSE_CONFIG: Record<OriginatingHouse, string> = {
@@ -55,8 +54,10 @@ export const ORIGINATING_HOUSE_CONFIG: Record<OriginatingHouse, string> = {
   HC: "参議院",
 };
 
-// 提出院のオプション（フォームで使用）
-export const ORIGINATING_HOUSE_OPTIONS = [
-  { value: "HR", label: "衆議院" },
-  { value: "HC", label: "参議院" },
-] as const;
+// 提出院のオプション（フォームで使用） - ORIGINATING_HOUSE_CONFIGから自動生成
+export const ORIGINATING_HOUSE_OPTIONS = Object.entries(
+  ORIGINATING_HOUSE_CONFIG
+).map(([value, label]) => ({
+  value: value as OriginatingHouse,
+  label,
+}));
