@@ -47,7 +47,9 @@ async function _mockResponse(_req: Request) {
 }
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage<{ billContext: BillWithContent }>[] } =
+  const {
+    messages,
+  }: { messages: UIMessage<{ billContext: BillWithContent }>[] } =
     await req.json();
 
   // Extract bill context from the first user message data if available
