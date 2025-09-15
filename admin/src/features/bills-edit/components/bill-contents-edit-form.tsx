@@ -54,25 +54,23 @@ export function BillContentsEditForm({
     {} as Record<DifficultyLevel, BillContent>
   );
 
-  const form = useForm<BillContentsUpdateInput>({
+  // 難易度別のデフォルト値を生成する共通関数
+  const getContentForDifficulty = (difficulty: DifficultyLevel) => ({
+    title: contentsByDifficulty[difficulty]?.title || "",
+    summary: contentsByDifficulty[difficulty]?.summary || "",
+    content: contentsByDifficulty[difficulty]?.content || "",
+  });
+
+  // フォームのデフォルト値を生成
+  const defaultValues = {
+    easy: getContentForDifficulty("easy"),
+    normal: getContentForDifficulty("normal"),
+    hard: getContentForDifficulty("hard"),
+  };
+
+  const form = useForm({
     resolver: zodResolver(billContentsUpdateSchema),
-    defaultValues: {
-      easy: {
-        title: contentsByDifficulty.easy?.title || "",
-        summary: contentsByDifficulty.easy?.summary || "",
-        content: contentsByDifficulty.easy?.content || "",
-      },
-      normal: {
-        title: contentsByDifficulty.normal?.title || "",
-        summary: contentsByDifficulty.normal?.summary || "",
-        content: contentsByDifficulty.normal?.content || "",
-      },
-      hard: {
-        title: contentsByDifficulty.hard?.title || "",
-        summary: contentsByDifficulty.hard?.summary || "",
-        content: contentsByDifficulty.hard?.content || "",
-      },
-    },
+    defaultValues,
   });
 
   async function onSubmit(data: BillContentsUpdateInput) {

@@ -35,21 +35,19 @@ export async function updateBillContents(
         return;
       }
 
-      const { error } = await supabase
-        .from("bill_contents")
-        .upsert(
-          {
-            bill_id: billId,
-            difficulty_level: difficulty,
-            title: data.title || "",
-            summary: data.summary || "",
-            content: data.content || "",
-            updated_at: new Date().toISOString(),
-          },
-          {
-            onConflict: "bill_id,difficulty_level",
-          }
-        );
+      const { error } = await supabase.from("bill_contents").upsert(
+        {
+          bill_id: billId,
+          difficulty_level: difficulty,
+          title: data.title || "",
+          summary: data.summary || "",
+          content: data.content || "",
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: "bill_id,difficulty_level",
+        }
+      );
 
       if (error) {
         throw new Error(
