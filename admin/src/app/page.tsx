@@ -1,16 +1,15 @@
 import { redirect } from "next/navigation";
 
-import { checkAdminPermission } from "@/lib/auth/permissions";
-import { getCurrentUser } from "@/features/auth/lib/auth-server";
+import { getCurrentAdmin } from "@/features/auth/lib/auth-server";
 
 export default async function HomePage() {
-  const user = await getCurrentUser();
+  const admin = await getCurrentAdmin();
 
-  // 既にログイン済みの場合はダッシュボードへ
-  if (user && checkAdminPermission(user)) {
+  // 管理者としてログイン済みの場合はダッシュボードへ
+  if (admin) {
     redirect("/dashboard");
   }
 
-  // 未ログインの場合はログイン画面へ
+  // 未ログインまたは管理者でない場合はログイン画面へ
   redirect("/login");
 }
