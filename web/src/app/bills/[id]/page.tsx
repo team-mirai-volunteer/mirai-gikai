@@ -23,9 +23,8 @@ export async function generateMetadata({
     };
   }
 
-  // bill_contentのsummaryがあればそれを使用、なければ従来のdescription等を使用
-  const description =
-    bill.bill_content?.summary || bill.description || "議案の詳細情報";
+  // bill_contentのsummaryがあればそれを使用、なければデフォルト値を使用
+  const description = bill.bill_content?.summary || "議案の詳細情報";
 
   return {
     title: bill.name,

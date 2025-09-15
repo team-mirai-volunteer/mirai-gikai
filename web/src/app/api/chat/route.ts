@@ -1,4 +1,4 @@
-import type { Bill } from "@/features/bills/types";
+import type { BillWithContent } from "@/features/bills/types";
 import {
   streamText,
   convertToModelMessages,
@@ -47,7 +47,7 @@ async function _mockResponse(_req: Request) {
 }
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage<{ billContext: Bill }>[] } =
+  const { messages }: { messages: UIMessage<{ billContext: BillWithContent }>[] } =
     await req.json();
 
   // Extract bill context from the first user message data if available
@@ -58,8 +58,9 @@ export async function POST(req: Request) {
 
     議案情報：
     - 名称: ${billContext?.name}
-    - 説明: ${billContext?.description || ""}
-    - 詳細: ${billContext?.body_markdown || ""}
+    - タイトル: ${billContext?.bill_content?.title || ""}
+    - 要約: ${billContext?.bill_content?.summary || ""}
+    - 詳細: ${billContext?.bill_content?.content || ""}
 
     ルール：
     1. この議案に関する質問にのみ回答する

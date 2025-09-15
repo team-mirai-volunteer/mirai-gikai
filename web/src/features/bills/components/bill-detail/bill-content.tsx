@@ -7,8 +7,8 @@ interface BillContentProps {
 }
 
 export async function BillContent({ bill }: BillContentProps) {
-  // 新しいbill_contentがあればそれを使用、なければ従来のbody_markdownを使用
-  const markdownContent = bill.bill_content?.content || bill.body_markdown;
+  // bill_contentからコンテンツを取得
+  const markdownContent = bill.bill_content?.content;
 
   if (!markdownContent) {
     return null;

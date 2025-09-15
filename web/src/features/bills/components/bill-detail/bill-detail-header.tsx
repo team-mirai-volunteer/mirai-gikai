@@ -7,8 +7,8 @@ interface BillDetailHeaderProps {
 }
 
 export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
-  // bill_content?.titleがあればそれを使用、なければheadlineを使用
-  const displayTitle = bill.bill_content?.title || bill.headline;
+  const displayTitle = bill.bill_content?.title;
+  const displaySummary = bill.bill_content?.summary;
 
   return (
     <header className="mb-8">
@@ -27,8 +27,8 @@ export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
         <BillStatusBadge status={bill.status} />
       </div>
 
-      {bill.description && (
-        <div className="mt-4 text-muted-foreground">{bill.description}</div>
+      {displaySummary && (
+        <div className="mt-4 text-muted-foreground">{displaySummary}</div>
       )}
     </header>
   );

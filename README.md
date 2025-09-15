@@ -21,3 +21,13 @@ pnpm seed
 # サーバー起動
 pnpm dev
 ```
+
+## マイグレーション
+
+```bash
+# マイグレーションファイル生成
+npx supabase migration new マイグレーション名
+
+# マイグレーション実行 & 型ファイル更新
+pnpm supabase:migration
+```

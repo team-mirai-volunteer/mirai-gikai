@@ -77,10 +77,7 @@ export type Database = {
       }
       bills: {
         Row: {
-          body_markdown: string | null
           created_at: string
-          description: string | null
-          headline: string | null
           id: string
           name: string
           originating_house: Database["public"]["Enums"]["house_enum"]
@@ -90,10 +87,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          body_markdown?: string | null
           created_at?: string
-          description?: string | null
-          headline?: string | null
           id?: string
           name: string
           originating_house: Database["public"]["Enums"]["house_enum"]
@@ -103,10 +97,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          body_markdown?: string | null
           created_at?: string
-          description?: string | null
-          headline?: string | null
           id?: string
           name?: string
           originating_house?: Database["public"]["Enums"]["house_enum"]

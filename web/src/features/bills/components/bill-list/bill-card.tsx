@@ -8,10 +8,10 @@ interface BillCardProps {
 }
 
 export function BillCard({ bill }: BillCardProps) {
-  // bill_content?.titleがあればそれを使用、なければheadlineを使用
-  const displayTitle = bill.bill_content?.title || bill.headline;
-  // bill_content?.summaryがあればそれを使用、なければdescriptionを使用
-  const displaySummary = bill.bill_content?.summary || bill.description;
+  // bill_content?.titleがあれば表示
+  const displayTitle = bill.bill_content?.title;
+  // bill_content?.summaryがあれば表示
+  const displaySummary = bill.bill_content?.summary;
 
   return (
     <Card className="hover:bg-muted/50 transition-colors">
