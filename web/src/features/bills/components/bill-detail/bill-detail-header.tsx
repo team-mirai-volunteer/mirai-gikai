@@ -1,17 +1,20 @@
 import { formatDate } from "@/lib/utils/date";
 import { BillStatusBadge } from "../bill-list/bill-status-badge";
-import type { Bill } from "../../types";
+import type { BillWithContent } from "../../types";
 
 interface BillDetailHeaderProps {
-  bill: Bill;
+  bill: BillWithContent;
 }
 
 export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
+  // bill_content?.titleがあればそれを使用、なければheadlineを使用
+  const displayTitle = bill.bill_content?.title || bill.headline;
+
   return (
     <header className="mb-8">
-      {bill.headline && (
+      {displayTitle && (
         <div className="text-lg text-muted-foreground mb-4 font-medium">
-          {bill.headline}
+          {displayTitle}
         </div>
       )}
 

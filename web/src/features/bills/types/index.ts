@@ -5,15 +5,25 @@ export type Bill = Database["public"]["Tables"]["bills"]["Row"];
 export type BillInsert = Database["public"]["Tables"]["bills"]["Insert"];
 export type BillUpdate = Database["public"]["Tables"]["bills"]["Update"];
 
+export type BillContent = Database["public"]["Tables"]["bill_contents"]["Row"];
+export type BillContentInsert = Database["public"]["Tables"]["bill_contents"]["Insert"];
+export type BillContentUpdate = Database["public"]["Tables"]["bill_contents"]["Update"];
+
 export type MiraiStance = Database["public"]["Tables"]["mirai_stances"]["Row"];
 
 // Enums
 export type HouseEnum = Database["public"]["Enums"]["house_enum"];
 export type BillStatusEnum = Database["public"]["Enums"]["bill_status_enum"];
 export type StanceTypeEnum = Database["public"]["Enums"]["stance_type_enum"];
+export type DifficultyLevelEnum = Database["public"]["Enums"]["difficulty_level_enum"];
 
 // Combined types for UI
 export type BillWithStance = Bill & {
+  mirai_stance?: MiraiStance;
+};
+
+export type BillWithContent = Bill & {
+  bill_content?: BillContent;
   mirai_stance?: MiraiStance;
 };
 

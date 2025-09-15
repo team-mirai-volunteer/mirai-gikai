@@ -1,17 +1,20 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { parseMarkdown } from "@/lib/utils/markdown";
-import type { Bill } from "../../types";
+import type { BillWithContent } from "../../types";
 
 interface BillContentProps {
-  bill: Bill;
+  bill: BillWithContent;
 }
 
 export async function BillContent({ bill }: BillContentProps) {
-  if (!bill.body_markdown) {
+  // 新しいbill_contentがあればそれを使用、なければ従来のbody_markdownを使用
+  const markdownContent = bill.bill_content?.content || bill.body_markdown;
+
+  if (!markdownContent) {
     return null;
   }
 
-  const htmlContent = await parseMarkdown(bill.body_markdown);
+  const htmlContent = await parseMarkdown(markdownContent);
 
   return (
     <Card>
