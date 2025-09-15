@@ -40,24 +40,8 @@ export const BILL_STATUS_CONFIG: Record<
   },
 };
 
-// ステータスのオプション（フォームで使用） - BILL_STATUS_CONFIGから自動生成
-export const BILL_STATUS_OPTIONS = Object.entries(BILL_STATUS_CONFIG).map(
-  ([value, config]) => ({
-    value: value as BillStatus,
-    label: config.label,
-  })
-);
-
 // 提出院の設定
 export const ORIGINATING_HOUSE_CONFIG: Record<OriginatingHouse, string> = {
   HR: "衆議院",
   HC: "参議院",
 };
-
-// 提出院のオプション（フォームで使用） - ORIGINATING_HOUSE_CONFIGから自動生成
-export const ORIGINATING_HOUSE_OPTIONS = Object.entries(
-  ORIGINATING_HOUSE_CONFIG
-).map(([value, label]) => ({
-  value: value as OriginatingHouse,
-  label,
-}));

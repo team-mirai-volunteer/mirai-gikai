@@ -27,14 +27,26 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 import { updateBill } from "../actions/update-bill";
+import { type Bill, type BillUpdateInput, billUpdateSchema } from "../types";
 import {
-  type Bill,
-  type BillUpdateInput,
-  billUpdateSchema,
-  BILL_STATUS_OPTIONS,
-  ORIGINATING_HOUSE_OPTIONS,
-} from "../types";
+  BILL_STATUS_CONFIG,
+  ORIGINATING_HOUSE_CONFIG,
+} from "@/features/bills/constants/bill-config";
+import type { BillStatus, OriginatingHouse } from "@/features/bills/types";
 
+const BILL_STATUS_OPTIONS = Object.entries(BILL_STATUS_CONFIG).map(
+  ([value, config]) => ({
+    value: value as BillStatus,
+    label: config.label,
+  })
+);
+
+const ORIGINATING_HOUSE_OPTIONS = Object.entries(ORIGINATING_HOUSE_CONFIG).map(
+  ([value, label]) => ({
+    value: value as OriginatingHouse,
+    label,
+  })
+);
 interface BillEditFormProps {
   bill: Bill;
 }

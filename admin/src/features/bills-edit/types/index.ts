@@ -27,9 +27,3 @@ export const billUpdateSchema = z.object({
 });
 
 export type BillUpdateInput = z.infer<typeof billUpdateSchema>;
-
-// 共通設定から再エクスポート
-export {
-  BILL_STATUS_OPTIONS,
-  ORIGINATING_HOUSE_OPTIONS,
-} from "../../bills/constants/bill-config";
