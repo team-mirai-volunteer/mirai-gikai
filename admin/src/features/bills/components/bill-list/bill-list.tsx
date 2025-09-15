@@ -98,51 +98,19 @@ function BillCard({ bill }: { bill: Bill }) {
 }
 
 export async function BillList() {
-  try {
-    const bills = await getBills();
+  const bills = await getBills();
 
-    if (bills.length === 0) {
-      return (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              議案がありません
-            </h3>
-            <p className="text-gray-600">まだ議案が登録されていません。</p>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div>
-        <div className="mb-4 flex items-center justify-between">
-          <div className="text-sm text-gray-600">{bills.length}件の議案</div>
-        </div>
-
-        <div className="space-y-4">
-          {bills.map((bill) => (
-            <BillCard key={bill.id} bill={bill} />
-          ))}
-        </div>
+  return (
+    <div>
+      <div className="mb-4 flex items-center justify-between">
+        <div className="text-sm text-gray-600">{bills.length}件の議案</div>
       </div>
-    );
-  } catch (error) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            エラーが発生しました
-          </h3>
-          <p className="text-gray-600">
-            {error instanceof Error
-              ? error.message
-              : "議案の取得に失敗しました"}
-          </p>
-        </div>
+
+      <div className="space-y-4">
+        {bills.map((bill) => (
+          <BillCard key={bill.id} bill={bill} />
+        ))}
       </div>
-    );
-  }
+    </div>
+  );
 }
