@@ -1,53 +1,17 @@
 import Link from "next/link";
-import {
-  AlertCircle,
-  Calendar,
-  CheckCircle,
-  Clock,
-  Edit,
-  FileText,
-  XCircle,
-} from "lucide-react";
+import { Calendar, Edit } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getBills } from "../../api/get-bills";
-import type { Bill, BillStatus, OriginatingHouse } from "../../types";
-
-const statusConfig: Record<
-  BillStatus,
-  { label: string; icon: React.ElementType; color: string }
-> = {
-  introduced: {
-    label: "提出済み",
-    icon: FileText,
-    color: "text-blue-600 bg-blue-50",
-  },
-  in_originating_house: {
-    label: "提出院審議中",
-    icon: Clock,
-    color: "text-yellow-600 bg-yellow-50",
-  },
-  in_receiving_house: {
-    label: "送付院審議中",
-    icon: AlertCircle,
-    color: "text-orange-600 bg-orange-50",
-  },
-  enacted: {
-    label: "成立",
-    icon: CheckCircle,
-    color: "text-green-600 bg-green-50",
-  },
-  rejected: { label: "否決", icon: XCircle, color: "text-red-600 bg-red-50" },
-};
-
-const originatingHouseConfig: Record<OriginatingHouse, string> = {
-  HR: "衆議院",
-  HC: "参議院",
-};
+import type { Bill, BillStatus } from "../../types";
+import {
+  BILL_STATUS_CONFIG,
+  ORIGINATING_HOUSE_CONFIG,
+} from "../../constants/bill-config";
 
 function StatusBadge({ status }: { status: BillStatus }) {
-  const config = statusConfig[status];
+  const config = BILL_STATUS_CONFIG[status];
   const Icon = config.icon;
 
   return (
@@ -84,7 +48,7 @@ function BillCard({ bill }: { bill: Bill }) {
           <div>
             <span className="text-gray-500">提出院:</span>
             <div className="font-medium text-gray-900">
-              {originatingHouseConfig[bill.originating_house]}
+              {ORIGINATING_HOUSE_CONFIG[bill.originating_house]}
             </div>
           </div>
           <div>

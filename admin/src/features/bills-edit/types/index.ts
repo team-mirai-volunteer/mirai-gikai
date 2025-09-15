@@ -28,17 +28,8 @@ export const billUpdateSchema = z.object({
 
 export type BillUpdateInput = z.infer<typeof billUpdateSchema>;
 
-// ステータスのラベル定義
-export const BILL_STATUS_OPTIONS = [
-  { value: "introduced", label: "提出済み" },
-  { value: "in_originating_house", label: "提出院審議中" },
-  { value: "in_receiving_house", label: "送付院審議中" },
-  { value: "enacted", label: "成立" },
-  { value: "rejected", label: "否決" },
-] as const;
-
-// 提出院のラベル定義
-export const ORIGINATING_HOUSE_OPTIONS = [
-  { value: "HR", label: "衆議院" },
-  { value: "HC", label: "参議院" },
-] as const;
+// 共通設定から再エクスポート
+export {
+  BILL_STATUS_OPTIONS,
+  ORIGINATING_HOUSE_OPTIONS,
+} from "../../bills/constants/bill-config";
