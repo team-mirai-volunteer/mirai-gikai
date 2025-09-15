@@ -4,9 +4,10 @@ import { z } from "zod";
 // 既存の型を再利用
 export type Bill = Database["public"]["Tables"]["bills"]["Row"];
 export type BillUpdate = Database["public"]["Tables"]["bills"]["Update"];
+export type BillInsert = Database["public"]["Tables"]["bills"]["Insert"];
 
-// バリデーションスキーマ
-export const billUpdateSchema = z.object({
+// 共通のバリデーションスキーマ
+const billBaseSchema = z.object({
   name: z
     .string()
     .min(1, "議案名は必須です")
@@ -26,4 +27,10 @@ export const billUpdateSchema = z.object({
   published_at: z.string().min(1, "公開日時は必須です"),
 });
 
+// 更新用スキーマ（既存）
+export const billUpdateSchema = billBaseSchema;
 export type BillUpdateInput = z.infer<typeof billUpdateSchema>;
+
+// 新規作成用スキーマ
+export const billCreateSchema = billBaseSchema;
+export type BillCreateInput = z.infer<typeof billCreateSchema>;

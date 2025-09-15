@@ -118,13 +118,13 @@ export function BillContentsEditForm({
                     name={`${level.value}.title`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>タイトル *</FormLabel>
+                        <FormLabel>タイトル</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
                         <FormDescription>
                           {level.label}
-                          レベル向けのタイトルを入力してください（最大200文字）
+                          レベル向けのタイトルを入力してください（任意・最大200文字）
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -136,13 +136,13 @@ export function BillContentsEditForm({
                     name={`${level.value}.summary`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>要約 *</FormLabel>
+                        <FormLabel>要約</FormLabel>
                         <FormControl>
                           <Textarea {...field} className="min-h-[100px]" />
                         </FormControl>
                         <FormDescription>
                           {level.label}
-                          レベル向けの要約を入力してください（最大500文字）
+                          レベル向けの要約を入力してください（任意・最大500文字）
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -154,7 +154,7 @@ export function BillContentsEditForm({
                     name={`${level.value}.content`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>内容 *</FormLabel>
+                        <FormLabel>内容</FormLabel>
                         <FormControl>
                           <Textarea
                             {...field}
@@ -163,7 +163,7 @@ export function BillContentsEditForm({
                         </FormControl>
                         <FormDescription>
                           {level.label}
-                          レベル向けの内容をMarkdown形式で入力してください（最大50000文字）
+                          レベル向けの内容をMarkdown形式で入力してください（任意・最大50000文字）
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
