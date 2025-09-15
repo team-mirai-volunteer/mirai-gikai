@@ -1,12 +1,15 @@
+import Link from "next/link";
 import {
-  Calendar,
   AlertCircle,
+  Calendar,
   CheckCircle,
   Clock,
+  Edit,
   FileText,
   XCircle,
 } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getBills } from "../../api/get-bills";
 import type { Bill, BillStatus, OriginatingHouse } from "../../types";
@@ -65,7 +68,15 @@ function BillCard({ bill }: { bill: Bill }) {
           <CardTitle className="text-lg font-semibold text-gray-900 leading-6">
             {bill.name}
           </CardTitle>
-          <StatusBadge status={bill.status} />
+          <div className="flex items-center gap-2">
+            <StatusBadge status={bill.status} />
+            <Link href={`/bills/${bill.id}/edit`}>
+              <Button variant="outline" size="sm">
+                <Edit className="h-4 w-4 mr-1" />
+                編集
+              </Button>
+            </Link>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
