@@ -2,4 +2,3 @@ packages:
   - "packages/*"
   - "admin"
   - "web"
-  - "supabase/seed"

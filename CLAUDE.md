@@ -17,7 +17,38 @@
 
 ## Next.js アーキテクチャ
 
-Next.js では Bulletproof React のアーキテクチャを採用しています。
+Next.js では Bulletproof React の feature ベースアーキテクチャを採用しています。
 
-- feature ベースのディレクトリ構成とする
+### 基本原則
+
+- feature ベースのディレクトリ構成
 - barrel export は禁止（export 用の index.ts を作らない）
+- Server Components を優先して使用
+- 必要な場合のみ Client Components を使用
+
+### features ディレクトリ構造
+
+各 feature は以下の構造に従います：
+
+```
+src/features/{feature-name}/
+├── components/           # コンポーネント
+│   └── {component-name}.tsx
+├── actions/             # Server Actions
+│   └── {action-name}.ts
+├── api/                 # データ取得関数（Server Components用）
+│   └── {api-name}.ts
+└── types/              # 型定義
+    └── index.ts
+```
+
+### 命名規則
+
+- ファイル名：ケバブケース（`bill-list.tsx`）
+- コンポーネント名：パスカルケース（`BillList`）
+- 関数名：キャメルケース（`getBills`）
+
+### コンポーネント分類
+
+- **Server Components**: デフォルト（async 可能、データ取得可能）
+- **Client Components**: `"use client"` ディレクティブ付き（インタラクション、状態管理）

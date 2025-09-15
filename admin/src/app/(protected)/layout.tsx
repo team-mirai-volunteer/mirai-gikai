@@ -42,20 +42,20 @@ export default async function DashboardLayout({
           <div className="flex space-x-8">
             <a
               href="/dashboard"
-              className="flex items-center space-x-2 text-sm font-medium text-blue-600 hover:text-blue-700"
+              className="flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-blue-700"
             >
               <BarChart3 className="h-4 w-4" />
               <span>ダッシュボード</span>
             </a>
             <a
-              href="/dashboard/bills"
+              href="/bills"
               className="flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-gray-700"
             >
               <FileText className="h-4 w-4" />
               <span>議案管理</span>
             </a>
             <a
-              href="/dashboard/settings"
+              href="/settings"
               className="flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-gray-700"
             >
               <Settings className="h-4 w-4" />

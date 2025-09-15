@@ -1,25 +1,17 @@
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@mirai-gikai/supabase";
 import { bills, createMiraiStances } from "./data";
 import { createBillContents } from "./bill-contents-data";
+import { createClient } from "@supabase/supabase-js";
+import { Database } from "@mirai-gikai/supabase";
 
-// Supabase client with service role key (for bypassing RLS)
-const supabaseUrl = process.env.SUPABASE_URL || "http://127.0.0.1:54321";
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!supabaseServiceRoleKey) {
-  console.error("SUPABASE_SERVICE_ROLE_KEY is required");
-  process.exit(1);
+export function createAdminClient() {
+  return createClient<Database>(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 }
 
-const supabase = createClient<Database>(supabaseUrl, supabaseServiceRoleKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
-
 async function seedDatabase() {
+  const supabase = createAdminClient();
   console.log("🌱 Starting database seeding...");
 
   try {
