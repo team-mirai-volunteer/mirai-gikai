@@ -7,7 +7,6 @@ interface BillContentProps {
 }
 
 export async function BillContent({ bill }: BillContentProps) {
-  // bill_contentからコンテンツを取得
   const markdownContent = bill.bill_content?.content;
 
   if (!markdownContent) {

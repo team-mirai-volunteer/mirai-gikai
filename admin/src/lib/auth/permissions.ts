@@ -1,5 +1,4 @@
-import type { User } from "@supabase/supabase-js";
-
+import type { User } from "../supabase/auth";
 /**
  * ユーザーがadmin権限を持っているかチェック
  */

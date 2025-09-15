@@ -1,5 +1,3 @@
-import type { Database } from "@mirai-gikai/supabase";
-
 // 一時的にDifficultyLevelを定義（マイグレーション前）
 type DifficultyLevel = "easy" | "normal" | "hard";
 

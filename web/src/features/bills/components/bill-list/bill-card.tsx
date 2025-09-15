@@ -8,9 +8,7 @@ interface BillCardProps {
 }
 
 export function BillCard({ bill }: BillCardProps) {
-  // bill_content?.titleがあれば表示
   const displayTitle = bill.bill_content?.title;
-  // bill_content?.summaryがあれば表示
   const displaySummary = bill.bill_content?.summary;
 
   return (

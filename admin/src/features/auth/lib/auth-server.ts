@@ -1,11 +1,11 @@
-import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createAuthClient } from "@/lib/supabase/auth";
 
 export async function getCurrentSession() {
-  const supabase = await createServerClient();
+  const authClient = await createAuthClient();
   const {
     data: { session },
     error,
-  } = await supabase.auth.getSession();
+  } = await authClient.getSession();
 
   if (error) {
     throw new Error("セッション情報の取得に失敗しました。");
