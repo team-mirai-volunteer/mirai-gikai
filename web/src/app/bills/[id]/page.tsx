@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
 import { BillDetailLayout } from "@/features/bills/components/bill-detail/bill-detail-layout";
 import { ChatButton } from "@/features/chat/components/chat-button";
@@ -22,12 +23,15 @@ export async function generateMetadata({
     };
   }
 
+  // bill_contentのsummaryがあればそれを使用、なければデフォルト値を使用
+  const description = bill.bill_content?.summary || "議案の詳細情報";
+
   return {
     title: bill.name,
-    description: bill.headline || bill.description || "議案の詳細情報",
+    description: description,
     openGraph: {
       title: bill.name,
-      description: bill.headline || bill.description || "議案の詳細情報",
+      description: description,
       type: "article",
       publishedTime: bill.published_at,
       modifiedTime: bill.updated_at,
@@ -37,16 +41,22 @@ export async function generateMetadata({
 
 export default async function BillDetailPage({ params }: BillDetailPageProps) {
   const { id } = await params;
-  const billWithStance = await getBillById(id);
+  const [billWithContent, currentDifficulty] = await Promise.all([
+    getBillById(id),
+    getDifficultyLevel(),
+  ]);
 
-  if (!billWithStance) {
+  if (!billWithContent) {
     notFound();
   }
 
   return (
     <>
-      <BillDetailLayout bill={billWithStance} />
-      <ChatButton billContext={billWithStance} />
+      <BillDetailLayout
+        bill={billWithContent}
+        currentDifficulty={currentDifficulty}
+      />
+      <ChatButton billContext={billWithContent} />
     </>
   );
 }

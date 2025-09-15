@@ -1,14 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils/date";
-import type { Bill } from "../../types";
+import { HOUSE_LABELS, type BillWithContent } from "../../types";
 import { BillStatusBadge } from "./bill-status-badge";
-import { HOUSE_LABELS } from "../../types";
 
 interface BillCardProps {
-  bill: Bill;
+  bill: BillWithContent;
 }
 
 export function BillCard({ bill }: BillCardProps) {
+  // bill_content?.titleがあれば表示
+  const displayTitle = bill.bill_content?.title;
+  // bill_content?.summaryがあれば表示
+  const displaySummary = bill.bill_content?.summary;
+
   return (
     <Card className="hover:bg-muted/50 transition-colors">
       <CardHeader className="pb-3">
@@ -19,9 +23,14 @@ export function BillCard({ bill }: BillCardProps) {
             <time>{formatDate(bill.published_at)}</time>
           </div>
           <CardTitle className="text-lg leading-tight">{bill.name}</CardTitle>
-          {bill.headline && (
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {bill.headline}
+          {displayTitle && (
+            <p className="text-sm font-medium text-muted-foreground">
+              {displayTitle}
+            </p>
+          )}
+          {displaySummary && (
+            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+              {displaySummary}
             </p>
           )}
         </div>

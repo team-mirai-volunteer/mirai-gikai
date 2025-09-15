@@ -20,4 +20,4 @@
 Next.js では Bulletproof React のアーキテクチャを採用しています。
 
 - feature ベースのディレクトリ構成とする
-- barell export は禁止（export 用の index.ts を作らない）
+- barrel export は禁止（export 用の index.ts を作らない）

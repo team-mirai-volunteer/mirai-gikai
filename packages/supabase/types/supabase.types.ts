@@ -34,12 +34,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      bill_contents: {
+        Row: {
+          bill_id: string
+          content: string
+          created_at: string
+          difficulty_level: Database["public"]["Enums"]["difficulty_level_enum"]
+          id: string
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          bill_id: string
+          content: string
+          created_at?: string
+          difficulty_level: Database["public"]["Enums"]["difficulty_level_enum"]
+          id?: string
+          summary: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          bill_id?: string
+          content?: string
+          created_at?: string
+          difficulty_level?: Database["public"]["Enums"]["difficulty_level_enum"]
+          id?: string
+          summary?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bill_contents_bill_id_fkey"
+            columns: ["bill_id"]
+            isOneToOne: false
+            referencedRelation: "bills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bills: {
         Row: {
-          body_markdown: string | null
           created_at: string
-          description: string | null
-          headline: string | null
           id: string
           name: string
           originating_house: Database["public"]["Enums"]["house_enum"]
@@ -49,10 +87,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          body_markdown?: string | null
           created_at?: string
-          description?: string | null
-          headline?: string | null
           id?: string
           name: string
           originating_house: Database["public"]["Enums"]["house_enum"]
@@ -62,10 +97,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          body_markdown?: string | null
           created_at?: string
-          description?: string | null
-          headline?: string | null
           id?: string
           name?: string
           originating_house?: Database["public"]["Enums"]["house_enum"]
@@ -164,6 +196,7 @@ export type Database = {
         | "enacted"
         | "rejected"
       chat_role_enum: "user" | "system" | "assistant"
+      difficulty_level_enum: "easy" | "normal" | "hard"
       house_enum: "HR" | "HC"
       stance_type_enum: "for" | "against" | "neutral"
     }
@@ -304,6 +337,7 @@ export const Constants = {
         "rejected",
       ],
       chat_role_enum: ["user", "system", "assistant"],
+      difficulty_level_enum: ["easy", "normal", "hard"],
       house_enum: ["HR", "HC"],
       stance_type_enum: ["for", "against", "neutral"],
     },

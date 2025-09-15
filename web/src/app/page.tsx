@@ -1,20 +1,30 @@
 import { Container } from "@/components/layouts/container";
-import { BillList } from "@/features/bills/components";
+import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
+import { DifficultySelector } from "@/features/bill-difficulty/components/difficulty-selector";
 import { getBills } from "@/features/bills/api/get-bills";
+import { BillList } from "@/features/bills/components";
 
 export default async function Home() {
-  const bills = await getBills();
+  const [bills, currentDifficulty] = await Promise.all([
+    getBills(),
+    getDifficultyLevel(),
+  ]);
 
   return (
     <Container>
       <div className="py-8">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">
-            みらい議会
-          </h1>
-          <p className="text-gray-600">
-            国会で審議される議案をわかりやすくお伝えします
-          </p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">
+                みらい議会
+              </h1>
+              <p className="text-gray-600">
+                国会で審議される議案をわかりやすくお伝えします
+              </p>
+            </div>
+            <DifficultySelector currentLevel={currentDifficulty} />
+          </div>
         </header>
 
         <main>

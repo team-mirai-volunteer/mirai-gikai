@@ -1,9 +1,9 @@
 import Link from "next/link";
-import type { Bill } from "../../types";
+import type { BillWithContent } from "../../types";
 import { BillCard } from "./bill-card";
 
 interface BillListProps {
-  bills: Bill[];
+  bills: BillWithContent[];
 }
 
 export function BillList({ bills }: BillListProps) {

@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@mirai-gikai/supabase";
 import { bills, createMiraiStances } from "./data";
+import { createBillContents } from "./bill-contents-data";
 
 // Supabase client with service role key (for bypassing RLS)
 const supabaseUrl = process.env.SUPABASE_URL || "http://127.0.0.1:54321";
@@ -34,6 +35,10 @@ async function seedDatabase() {
       .delete()
       .neq("id", "00000000-0000-0000-0000-000000000000");
     await supabase
+      .from("bill_contents")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase
       .from("bills")
       .delete()
       .neq("id", "00000000-0000-0000-0000-000000000000");
@@ -54,6 +59,27 @@ async function seedDatabase() {
     }
 
     console.log(`✅ Inserted ${insertedBills.length} bills`);
+
+    // Insert bill_contents
+    console.log("📚 Inserting bill contents...");
+    const billContents = createBillContents(insertedBills);
+
+    const { data: insertedContents, error: contentsError } = await supabase
+      .from("bill_contents")
+      .insert(billContents)
+      .select("id");
+
+    if (contentsError) {
+      throw new Error(
+        `Failed to insert bill contents: ${contentsError.message}`
+      );
+    }
+
+    if (!insertedContents) {
+      throw new Error("No bill contents were inserted");
+    }
+
+    console.log(`✅ Inserted ${insertedContents.length} bill contents`);
 
     // Insert mirai_stances
     console.log("🎯 Inserting mirai stances...");
@@ -79,6 +105,7 @@ async function seedDatabase() {
     console.log("🎉 Database seeding completed successfully!");
     console.log("\n📊 Summary:");
     console.log(`  Bills: ${insertedBills.length}`);
+    console.log(`  Bill Contents: ${insertedContents.length}`);
     console.log(`  Mirai Stances: ${insertedStances.length}`);
   } catch (error) {
     console.error("❌ Error seeding database:", error);

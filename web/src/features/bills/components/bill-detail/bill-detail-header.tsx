@@ -1,17 +1,20 @@
 import { formatDate } from "@/lib/utils/date";
 import { BillStatusBadge } from "../bill-list/bill-status-badge";
-import type { Bill } from "../../types";
+import type { BillWithContent } from "../../types";
 
 interface BillDetailHeaderProps {
-  bill: Bill;
+  bill: BillWithContent;
 }
 
 export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
+  const displayTitle = bill.bill_content?.title;
+  const displaySummary = bill.bill_content?.summary;
+
   return (
     <header className="mb-8">
-      {bill.headline && (
+      {displayTitle && (
         <div className="text-lg text-muted-foreground mb-4 font-medium">
-          {bill.headline}
+          {displayTitle}
         </div>
       )}
 
@@ -24,8 +27,8 @@ export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
         <BillStatusBadge status={bill.status} />
       </div>
 
-      {bill.description && (
-        <div className="mt-4 text-muted-foreground">{bill.description}</div>
+      {displaySummary && (
+        <div className="mt-4 text-muted-foreground">{displaySummary}</div>
       )}
     </header>
   );
