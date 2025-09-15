@@ -14,10 +14,8 @@ export async function createBill(input: BillCreateInput) {
     // バリデーション
     const validatedData = billCreateSchema.parse(input);
 
-    // status_noteがnullの場合は空文字に変換
     const insertData = {
       ...validatedData,
-      status_note: validatedData.status_note || null,
       published_at: new Date(validatedData.published_at).toISOString(),
     };
 
