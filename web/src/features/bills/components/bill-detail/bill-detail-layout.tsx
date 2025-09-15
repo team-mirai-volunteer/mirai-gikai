@@ -1,5 +1,6 @@
-import type { BillWithContent, DifficultyLevelEnum } from "../../types";
-import { DifficultySelector } from "../difficulty-selector";
+import { DifficultySelector } from "@/features/bill-difficulty/components/difficulty-selector";
+import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
+import type { BillWithContent } from "../../types";
 import { BillContent } from "./bill-content";
 import { BillDetailHeader } from "./bill-detail-header";
 import { MiraiStanceCard } from "./mirai-stance-card";
@@ -9,7 +10,10 @@ interface BillDetailLayoutProps {
   currentDifficulty: DifficultyLevelEnum;
 }
 
-export function BillDetailLayout({ bill, currentDifficulty }: BillDetailLayoutProps) {
+export function BillDetailLayout({
+  bill,
+  currentDifficulty,
+}: BillDetailLayoutProps) {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <BillDetailHeader bill={bill} />

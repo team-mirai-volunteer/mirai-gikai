@@ -1,5 +1,5 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { getDifficultyLevel } from "../actions/difficulty";
+import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
 import type { BillWithContent } from "../types";
 
 export async function getBillById(id: string): Promise<BillWithContent | null> {

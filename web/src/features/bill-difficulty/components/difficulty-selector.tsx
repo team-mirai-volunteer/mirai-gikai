@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useId } from "react";
+import { useId, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -8,18 +8,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { DifficultyLevelEnum } from "../types";
-import { setDifficultyLevel } from "../actions/difficulty";
+import { setDifficultyLevel } from "../actions/set-difficulty-level";
+import { DIFFICULTY_LABELS, type DifficultyLevelEnum } from "../types";
 
 interface DifficultySelectorProps {
   currentLevel: DifficultyLevelEnum;
 }
-
-const DIFFICULTY_LABELS: Record<DifficultyLevelEnum, string> = {
-  easy: "やさしい",
-  normal: "ふつう",
-  hard: "難しい",
-};
 
 export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
   const [selectedLevel, setSelectedLevel] =
@@ -45,7 +39,10 @@ export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
 
   return (
     <div className="flex items-center gap-3">
-      <label htmlFor="difficulty-selector" className="text-sm font-medium">
+      <label
+        htmlFor={`${uniqueId}-difficulty-selector`}
+        className="text-sm font-medium"
+      >
         読みやすさ：
       </label>
       <Select

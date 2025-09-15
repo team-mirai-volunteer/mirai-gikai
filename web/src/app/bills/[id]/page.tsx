@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getDifficultyLevel } from "@/features/bills/actions/difficulty";
+import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
 import { BillDetailLayout } from "@/features/bills/components/bill-detail/bill-detail-layout";
 import { ChatButton } from "@/features/chat/components/chat-button";

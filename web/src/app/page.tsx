@@ -1,8 +1,8 @@
 import { Container } from "@/components/layouts/container";
-import { getDifficultyLevel } from "@/features/bills/actions/difficulty";
+import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
+import { DifficultySelector } from "@/features/bill-difficulty/components/difficulty-selector";
 import { getBills } from "@/features/bills/api/get-bills";
 import { BillList } from "@/features/bills/components";
-import { DifficultySelector } from "@/features/bills/components/difficulty-selector";
 
 export default async function Home() {
   const [bills, currentDifficulty] = await Promise.all([
