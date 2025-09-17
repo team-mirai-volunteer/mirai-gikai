@@ -30,6 +30,17 @@ export function parseBasicAuth(
   }
 }
 
+export function isPageSpeedInsights(request: NextRequest): boolean {
+  const userAgent = request.headers.get("user-agent") || "";
+
+  // PageSpeed Insights の User-Agent パターンをチェック
+  return (
+    userAgent.includes("Chrome-Lighthouse") ||
+    userAgent.includes("PageSpeed Insights") ||
+    userAgent.includes("Google Page Speed Insights")
+  );
+}
+
 export function validateBasicAuth(
   request: NextRequest,
   config: BasicAuthConfig
