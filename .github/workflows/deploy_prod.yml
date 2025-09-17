@@ -1,0 +1,37 @@
+name: Migrate DB then Deploy (prod)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  migrate-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Supabase CLI セットアップ
+      - uses: supabase/setup-cli@v1
+        with:
+            version: latest
+
+      # Supabase プロジェクトへリンク（ノンインタラクティブ）
+      - name: Supabase link
+        run: |
+          supabase link --project-ref $SUPABASE_PROJECT_REF --password $SUPABASE_DB_PASSWORD
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+      # マイグレーション適用（idempotent）
+      - name: Supabase db push
+        run: |
+          supabase db push --include-all
+          supabase config push
+
+      # 成功したら Vercel デプロイを開始
+      - name: Trigger Vercel Deploy Hook
+        run: |
+          curl -X POST "${{ secrets.WEB_VERCEL_DEPLOY_HOOK_URL }}"
+          curl -X POST "${{ secrets.ADMIN_VERCEL_DEPLOY_HOOK_URL }}"
