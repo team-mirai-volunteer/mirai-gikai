@@ -1,5 +1,6 @@
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- Enable extensions schema & uuid-ossp
+create schema if not exists extensions;
+create extension if not exists "uuid-ossp" with schema extensions;
 
 -- Create ENUM types
 CREATE TYPE house_enum AS ENUM ('HR', 'HC');
@@ -15,7 +16,7 @@ CREATE TYPE chat_role_enum AS ENUM ('user', 'system', 'assistant');
 
 -- Create bills table
 CREATE TABLE bills (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     name TEXT NOT NULL,
     headline TEXT,
     description TEXT,
@@ -30,7 +31,7 @@ CREATE TABLE bills (
 
 -- Create mirai_stances table
 CREATE TABLE mirai_stances (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     bill_id UUID NOT NULL UNIQUE REFERENCES bills(id) ON DELETE CASCADE,
     type stance_type_enum NOT NULL,
     comment TEXT,
@@ -40,7 +41,7 @@ CREATE TABLE mirai_stances (
 
 -- Create chats table
 CREATE TABLE chats (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     bill_id UUID NOT NULL REFERENCES bills(id) ON DELETE CASCADE,
     user_id UUID,
     role chat_role_enum NOT NULL,

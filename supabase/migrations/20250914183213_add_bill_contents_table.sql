@@ -3,7 +3,7 @@ CREATE TYPE difficulty_level_enum AS ENUM ('easy', 'normal', 'hard');
 
 -- Create bill_contents table
 CREATE TABLE bill_contents (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
   bill_id UUID NOT NULL REFERENCES bills(id) ON DELETE CASCADE,
   difficulty_level difficulty_level_enum NOT NULL,
   title TEXT NOT NULL,
