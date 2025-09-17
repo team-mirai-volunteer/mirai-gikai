@@ -31,3 +31,14 @@ npx supabase migration new マイグレーション名
 # マイグレーション実行 & 型ファイル更新
 pnpm supabase:migration
 ```
+
+## Adminユーザーの作成
+
+1. Supabase Studio上で Authentication > Add User からユーザーを作成
+2. Supabase Studio上で以下のSQLを実行
+
+```sql
+UPDATE auth.users
+SET raw_app_meta_data = raw_app_meta_data || '{"roles": ["admin"]}'::jsonb
+WHERE email = '<1で作成したユーザーのemail>';
+```
