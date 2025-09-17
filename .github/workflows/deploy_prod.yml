@@ -29,6 +29,8 @@ jobs:
         run: |
           supabase db push --include-all
           supabase config push
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
       # 成功したら Vercel デプロイを開始
       - name: Trigger Vercel Deploy Hook
