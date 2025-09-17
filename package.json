@@ -5,7 +5,6 @@
   "scripts": {
     "supabase:types:gen": "npx supabase gen types typescript --local > packages/supabase/types/supabase.types.ts",
     "supabase:migration": "npx supabase migration up && pnpm run supabase:types:gen",
-    "supabase:deploy": "npx supabase db push --include-all && npx supabase config push",
     "dev": "dotenv -e .env -- pnpm -r --stream --parallel run dev",
     "seed": "dotenv -e .env -- pnpm --filter @mirai-gikai/seed seed",
     "typecheck": "pnpm -r run typecheck",
