@@ -28,14 +28,13 @@ export function ChatButton({ billContext, difficultyLevel }: ChatButtonProps) {
         <MessageCircle className="h-6 w-6" />
       </button>
 
-      {isOpen && (
-        <ChatWindow
-          billContext={billContext}
-          difficultyLevel={difficultyLevel}
-          chatState={chatState}
-          onClose={() => setIsOpen(false)}
-        />
-      )}
+      <ChatWindow
+        billContext={billContext}
+        difficultyLevel={difficultyLevel}
+        chatState={chatState}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+      />
     </>
   );
 }
