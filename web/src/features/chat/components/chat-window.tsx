@@ -25,12 +25,14 @@ import type { Bill } from "@/features/bills/types";
 
 interface ChatWindowProps {
   billContext: Bill;
+  difficultyLevel: string;
   chatState: ReturnType<typeof import("@ai-sdk/react").useChat>;
   onClose: () => void;
 }
 
 export function ChatWindow({
   billContext,
+  difficultyLevel,
   chatState,
   onClose,
 }: ChatWindowProps) {
@@ -46,11 +48,11 @@ export function ChatWindow({
       return;
     }
 
-    // Send message with bill context in data
+    // Send message with bill context and difficulty level in data
     // By default, this sends a HTTP POST request to the /api/chat endpoint.
     sendMessage({
       text: message.text ?? "",
-      metadata: { billContext },
+      metadata: { billContext, difficultyLevel },
     });
 
     // Reset form

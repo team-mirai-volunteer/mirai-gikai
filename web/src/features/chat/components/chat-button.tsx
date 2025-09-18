@@ -8,9 +8,10 @@ import { ChatWindow } from "./chat-window";
 
 interface ChatButtonProps {
   billContext: Bill;
+  difficultyLevel: string;
 }
 
-export function ChatButton({ billContext }: ChatButtonProps) {
+export function ChatButton({ billContext, difficultyLevel }: ChatButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   // Chat state をここで管理することで、モーダルが閉じても状態が保持される
@@ -30,6 +31,7 @@ export function ChatButton({ billContext }: ChatButtonProps) {
       {isOpen && (
         <ChatWindow
           billContext={billContext}
+          difficultyLevel={difficultyLevel}
           chatState={chatState}
           onClose={() => setIsOpen(false)}
         />

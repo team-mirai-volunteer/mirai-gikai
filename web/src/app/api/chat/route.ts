@@ -49,11 +49,46 @@ async function _mockResponse(_req: Request) {
 export async function POST(req: Request) {
   const {
     messages,
-  }: { messages: UIMessage<{ billContext: BillWithContent }>[] } =
-    await req.json();
+  }: {
+    messages: UIMessage<{
+      billContext: BillWithContent;
+      difficultyLevel: string;
+    }>[];
+  } = await req.json();
 
-  // Extract bill context from the first user message data if available
+  // Extract bill context and difficulty level from the first user message data if available
   const billContext = messages[0]?.metadata?.billContext;
+  const difficultyLevel = messages[0]?.metadata?.difficultyLevel || "normal";
+
+  // 難易度に応じたシステムプロンプトの設定
+  const getDifficultyInstructions = (level: string) => {
+    switch (level) {
+      case "easy":
+        return `
+        回答の難易度：やさしい（小学生でもわかる内容）
+        - 小学生にも理解できるよう、とても簡単な言葉で説明してください
+        - 専門用語は使わず、日常的な言葉に置き換えてください
+        - 例え話やイメージしやすい表現を多用してください
+        - 小学4年生レベルの漢字の使用にとどめてください
+        `;
+      case "hard":
+        return `
+        回答の難易度：難しい（専門用語を含む詳細な内容）
+        - 専門用語を正確に使用し、詳細で網羅的な説明をしてください
+        - 法律的な背景や制度的な文脈も含めて説明してください
+        - 複数の観点から議案を分析し、深い考察を提供してください
+        - 関連する法令や制度についても言及してください
+        `;
+      default: // "normal"
+        return `
+        回答の難易度：ふつう（中学生レベルの内容）
+        - 中学生が理解できる程度の語彙と表現を使用してください
+        - 専門用語は使用してもよいが、必ず説明を併記してください
+        - 適度に詳しく、かつ分かりやすい説明を心がけてください
+        - 具体例を交えて説明してください
+        `;
+    }
+  };
 
   const systemPrompt = `
     あなたは日本の議案について説明する専門的なアシスタントです。
@@ -64,10 +99,13 @@ export async function POST(req: Request) {
     - 要約: ${billContext?.bill_content?.summary || ""}
     - 詳細: ${billContext?.bill_content?.content || ""}
 
+    ${getDifficultyInstructions(difficultyLevel)}
+
     ルール：
     1. この議案に関する質問にのみ回答する
-    2. 分かりやすく簡潔に説明する
-    3. 専門用語は必要に応じて解説する
+    2. 上記の難易度設定に従って説明する
+    3. 正確で客観的な情報を提供する
+    4. 政治的に中立な立場を保つ
   `;
 
   // Vercel AI Gatewayを通じて直接モデルを指定
