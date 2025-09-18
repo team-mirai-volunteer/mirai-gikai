@@ -106,11 +106,15 @@ export async function POST(req: Request) {
     2. 上記の難易度設定に従って説明する
     3. 正確で客観的な情報を提供する
     4. 政治的に中立な立場を保つ
+    5. 回答は600文字以下を目安にしつつ、フレンドリーかつサポーティブな口調で行う
+    6. 回答が難しい場合は、その旨を丁寧に伝える
+    7. メッセージのおわりは、会話の深堀りをサポートするような文章で締めくくる
+    7. ただし、毎回質問で終わると、不自然になるので、適宜調整する
   `;
 
   // Vercel AI Gatewayを通じて直接モデルを指定
   const result = streamText({
-    model: "openai/gpt-5-mini",
+    model: "openai/gpt-4o-mini",
     // "openai/gpt-5-mini" Context 400K Input Tokens $0.25/M Output Tokens $2.00/M Cache Read Tokens $0.03/M
     // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M Cache Read Tokens $0.07/M
     // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
