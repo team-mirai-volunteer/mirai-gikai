@@ -15,14 +15,6 @@ export default async function Home() {
       <div className="py-8">
         <header className="mb-8">
           <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">
-                みらい議会
-              </h1>
-              <p className="text-gray-600">
-                国会で審議される議案をわかりやすくお伝えします
-              </p>
-            </div>
             <DifficultySelector currentLevel={currentDifficulty} />
           </div>
         </header>

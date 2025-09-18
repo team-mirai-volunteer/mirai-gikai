@@ -1,8 +1,8 @@
-import { Home, FileText, BarChart3, Settings, User } from "lucide-react";
-import { getCurrentSession } from "@/features/auth/lib/auth-server";
+import { BarChart3, FileText, Home, Settings, User } from "lucide-react";
 import { LogoutButton } from "@/features/auth/components/logout-button";
+import { getCurrentSession } from "@/features/auth/lib/auth-server";
 
-export default async function DashboardLayout({
+export default async function MainLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -41,25 +41,11 @@ export default async function DashboardLayout({
         <nav className="mb-8">
           <div className="flex space-x-8">
             <a
-              href="/dashboard"
-              className="flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-blue-700"
-            >
-              <BarChart3 className="h-4 w-4" />
-              <span>ダッシュボード</span>
-            </a>
-            <a
               href="/bills"
               className="flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-gray-700"
             >
               <FileText className="h-4 w-4" />
               <span>議案管理</span>
-            </a>
-            <a
-              href="/settings"
-              className="flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-gray-700"
-            >
-              <Settings className="h-4 w-4" />
-              <span>設定</span>
             </a>
           </div>
         </nav>

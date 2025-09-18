@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
-import { updateSession } from "@/lib/supabase/middleware";
 import { NextResponse } from "next/server";
 import { checkAdminPermission } from "@/lib/auth/permissions";
+import { updateSession } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname === "/login") {
     if (user && checkAdminPermission(user)) {
       const url = request.nextUrl.clone();
-      url.pathname = "/dashboard";
+      url.pathname = "/bills";
       return NextResponse.redirect(url);
     }
     // ログインページは常にアクセス可能

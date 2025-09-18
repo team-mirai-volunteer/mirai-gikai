@@ -43,5 +43,5 @@ export type BillContentsUpdateInput = z.infer<typeof billContentsUpdateSchema>;
 export const DIFFICULTY_LEVELS: { value: DifficultyLevel; label: string }[] = [
   { value: "easy", label: "やさしい" },
   { value: "normal", label: "ふつう" },
-  { value: "hard", label: "むずかしい" },
+  { value: "hard", label: "難しい" },
 ];

@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { signIn } from "../lib/auth-client";
 import type { LoginFormData } from "../types";
@@ -15,7 +15,7 @@ export function useLogin() {
       setError(null);
 
       await signIn(data.email, data.password);
-      router.push("/dashboard");
+      router.push("/bills");
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
