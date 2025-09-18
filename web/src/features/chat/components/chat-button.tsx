@@ -1,9 +1,10 @@
 "use client";
 
+import { useChat } from "@ai-sdk/react";
 import { MessageCircle } from "lucide-react";
 import { useState } from "react";
-import { ChatWindow } from "./chat-window";
 import type { Bill } from "@/features/bills/types";
+import { ChatWindow } from "./chat-window";
 
 interface ChatButtonProps {
   billContext: Bill;
@@ -11,6 +12,9 @@ interface ChatButtonProps {
 
 export function ChatButton({ billContext }: ChatButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Chat state をここで管理することで、モーダルが閉じても状態が保持される
+  const chatState = useChat();
 
   return (
     <>
@@ -26,6 +30,7 @@ export function ChatButton({ billContext }: ChatButtonProps) {
       {isOpen && (
         <ChatWindow
           billContext={billContext}
+          chatState={chatState}
           onClose={() => setIsOpen(false)}
         />
       )}

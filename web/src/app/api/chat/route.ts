@@ -1,10 +1,10 @@
-import type { BillWithContent } from "@/features/bills/types";
 import {
-  streamText,
   convertToModelMessages,
-  type UIMessage,
   simulateReadableStream,
+  streamText,
+  type UIMessage,
 } from "ai";
+import type { BillWithContent } from "@/features/bills/types";
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);

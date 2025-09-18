@@ -1,14 +1,13 @@
 "use client";
 
-import { useChat } from "@ai-sdk/react";
 import { X } from "lucide-react";
+import { useState } from "react";
 import {
   Conversation,
   ConversationContent,
 } from "@/components/ai-elements/conversation";
 import { Loader } from "@/components/ai-elements/loader";
 import { Message, MessageContent } from "@/components/ai-elements/message";
-import { Response } from "@/components/ai-elements/response";
 import {
   PromptInput,
   PromptInputBody,
@@ -16,23 +15,27 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
-import { useState } from "react";
-import type { Bill } from "@/features/bills/types";
 import {
   Reasoning,
   ReasoningContent,
   ReasoningTrigger,
 } from "@/components/ai-elements/reasoning";
+import { Response } from "@/components/ai-elements/response";
+import type { Bill } from "@/features/bills/types";
 
 interface ChatWindowProps {
   billContext: Bill;
+  chatState: ReturnType<typeof import("@ai-sdk/react").useChat>;
   onClose: () => void;
 }
 
-export function ChatWindow({ billContext, onClose }: ChatWindowProps) {
+export function ChatWindow({
+  billContext,
+  chatState,
+  onClose,
+}: ChatWindowProps) {
   const [input, setInput] = useState("");
-  // By default, the useChat hook sends a HTTP POST request to the /api/chat endpoint.
-  const { messages, sendMessage, status } = useChat();
+  const { messages, sendMessage, status } = chatState;
 
   const isResponding = status === "streaming" || status === "submitted";
 
@@ -44,6 +47,7 @@ export function ChatWindow({ billContext, onClose }: ChatWindowProps) {
     }
 
     // Send message with bill context in data
+    // By default, this sends a HTTP POST request to the /api/chat endpoint.
     sendMessage({
       text: message.text ?? "",
       metadata: { billContext },
@@ -82,7 +86,6 @@ export function ChatWindow({ billContext, onClose }: ChatWindowProps) {
                   例えば、以下のような質問にお答えできます：
                   <br />• この議案の目的は何ですか？
                   <br />• どのような影響がありますか？
-                  <br />• みらいはなぜこのスタンスを取っているのですか？
                   <br />
                   <br />
                   お気軽にご質問ください。
@@ -93,7 +96,7 @@ export function ChatWindow({ billContext, onClose }: ChatWindowProps) {
           {messages.map((message) => (
             <Message key={message.id} from={message.role}>
               <MessageContent>
-                {message.parts.map((part, i) => {
+                {message.parts.map((part, i: number) => {
                   switch (part.type) {
                     case "text":
                       return (
