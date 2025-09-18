@@ -1,14 +1,14 @@
-import Link from "next/link";
 import { Calendar, Edit, FileText, Plus } from "lucide-react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getBills } from "../../api/get-bills";
-import type { Bill, BillStatus } from "../../types";
 import {
   BILL_STATUS_CONFIG,
   ORIGINATING_HOUSE_CONFIG,
 } from "../../constants/bill-config";
+import type { Bill, BillStatus } from "../../types";
 
 function StatusBadge({ status }: { status: BillStatus }) {
   const config = BILL_STATUS_CONFIG[status];
@@ -28,29 +28,31 @@ function BillCard({ bill }: { bill: Bill }) {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
           <CardTitle className="text-lg font-semibold text-gray-900 leading-6">
             {bill.name}
           </CardTitle>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
             <StatusBadge status={bill.status} />
-            <Link href={`/bills/${bill.id}/edit`}>
-              <Button variant="outline" size="sm">
-                <Edit className="h-4 w-4 mr-1" />
-                編集
-              </Button>
-            </Link>
-            <Link href={`/bills/${bill.id}/contents/edit`}>
-              <Button variant="outline" size="sm">
-                <FileText className="h-4 w-4 mr-1" />
-                コンテンツ
-              </Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link href={`/bills/${bill.id}/edit`}>
+                <Button variant="outline" size="sm">
+                  <Edit className="h-4 w-4 mr-1" />
+                  編集
+                </Button>
+              </Link>
+              <Link href={`/bills/${bill.id}/contents/edit`}>
+                <Button variant="outline" size="sm">
+                  <FileText className="h-4 w-4 mr-1" />
+                  コンテンツ
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 text-sm">
           <div>
             <span className="text-gray-500">提出院:</span>
             <div className="font-medium text-gray-900">
@@ -63,7 +65,7 @@ function BillCard({ bill }: { bill: Bill }) {
               {bill.status_note || "-"}
             </div>
           </div>
-          <div>
+          <div className="sm:col-span-2 lg:col-span-1">
             <span className="text-gray-500 flex items-center gap-1">
               <Calendar className="h-4 w-4" />
               公開日:
@@ -83,7 +85,7 @@ export async function BillList() {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="text-sm text-gray-600">{bills.length}件の議案</div>
         <Link href="/bills/new">
           <Button>

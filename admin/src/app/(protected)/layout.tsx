@@ -25,10 +25,10 @@ export default async function MainLayout({
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-sm text-gray-700">
+            <div className="flex items-center space-x-2 md:space-x-4">
+              <div className="hidden sm:flex items-center space-x-2 text-sm text-gray-700">
                 <User className="h-4 w-4" />
-                <span>{session?.user.email}</span>
+                <span className="hidden md:inline">{session?.user.email}</span>
               </div>
               <LogoutButton />
             </div>
@@ -36,10 +36,10 @@ export default async function MainLayout({
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
         {/* Navigation */}
-        <nav className="mb-8">
-          <div className="flex space-x-8">
+        <nav className="mb-6 md:mb-8">
+          <div className="flex space-x-4 md:space-x-8">
             <a
               href="/bills"
               className="flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-gray-700"
