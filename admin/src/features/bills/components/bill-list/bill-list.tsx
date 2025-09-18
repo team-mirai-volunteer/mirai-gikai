@@ -4,13 +4,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getBills } from "../../api/get-bills";
-import {
-  BILL_STATUS_CONFIG,
-  ORIGINATING_HOUSE_CONFIG,
-} from "../../constants/bill-config";
+import { BILL_STATUS_CONFIG } from "../../constants/bill-config";
 import type { Bill, BillStatus } from "../../types";
+import { getBillStatusLabel, HOUSE_LABELS } from "../../types";
 
-function StatusBadge({ status }: { status: BillStatus }) {
+function StatusBadge({ status, originatingHouse }: { status: BillStatus; originatingHouse: Bill["originating_house"] }) {
   const config = BILL_STATUS_CONFIG[status];
   const Icon = config.icon;
 
@@ -19,7 +17,7 @@ function StatusBadge({ status }: { status: BillStatus }) {
       className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium ${config.color}`}
     >
       <Icon className="h-4 w-4" />
-      <span>{config.label}</span>
+      <span>{getBillStatusLabel(status, originatingHouse)}</span>
     </div>
   );
 }
@@ -33,7 +31,7 @@ function BillCard({ bill }: { bill: Bill }) {
             {bill.name}
           </CardTitle>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <StatusBadge status={bill.status} />
+            <StatusBadge status={bill.status} originatingHouse={bill.originating_house} />
             <div className="flex items-center gap-2">
               <Link href={`/bills/${bill.id}/edit`}>
                 <Button variant="outline" size="sm">
@@ -56,7 +54,7 @@ function BillCard({ bill }: { bill: Bill }) {
           <div>
             <span className="text-gray-500">提出院:</span>
             <div className="font-medium text-gray-900">
-              {ORIGINATING_HOUSE_CONFIG[bill.originating_house]}
+              {HOUSE_LABELS[bill.originating_house]}
             </div>
           </div>
           <div>

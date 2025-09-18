@@ -1,5 +1,6 @@
 "use client";
 
+import type { Control } from "react-hook-form";
 import {
   FormControl,
   FormDescription,
@@ -17,23 +18,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-
-import {
-  BILL_STATUS_CONFIG,
-  ORIGINATING_HOUSE_CONFIG,
-} from "@/features/bills/constants/bill-config";
 import type { BillStatus, OriginatingHouse } from "@/features/bills/types";
-import type { Control } from "react-hook-form";
+import { HOUSE_LABELS } from "@/features/bills/types";
 import type { BillCreateInput } from "../types";
 
-const BILL_STATUS_OPTIONS = Object.entries(BILL_STATUS_CONFIG).map(
-  ([value, config]) => ({
-    value: value as BillStatus,
-    label: config.label,
-  })
-);
+const BILL_STATUS_OPTIONS: Array<{ value: BillStatus; label: string }> = [
+  { value: "introduced", label: "提出済み" },
+  { value: "in_originating_house", label: "審議中（提出院）" },
+  { value: "in_receiving_house", label: "審議中（送付院）" },
+  { value: "enacted", label: "成立" },
+  { value: "rejected", label: "否決" },
+];
 
-const ORIGINATING_HOUSE_OPTIONS = Object.entries(ORIGINATING_HOUSE_CONFIG).map(
+const ORIGINATING_HOUSE_OPTIONS = Object.entries(HOUSE_LABELS).map(
   ([value, label]) => ({
     value: value as OriginatingHouse,
     label,

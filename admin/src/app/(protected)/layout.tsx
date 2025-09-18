@@ -1,4 +1,4 @@
-import { BarChart3, FileText, Home, Settings, User } from "lucide-react";
+import { FileText, Home, User } from "lucide-react";
 import { LogoutButton } from "@/features/auth/components/logout-button";
 import { getCurrentSession } from "@/features/auth/lib/auth-server";
 
