@@ -11,6 +11,7 @@ import { Message, MessageContent } from "@/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputBody,
+  PromptInputError,
   type PromptInputMessage,
   PromptInputSubmit,
   PromptInputTextarea,
@@ -37,7 +38,7 @@ export function ChatWindow({
   onClose,
 }: ChatWindowProps) {
   const [input, setInput] = useState("");
-  const { messages, sendMessage, status } = chatState;
+  const { messages, sendMessage, status, error } = chatState;
 
   const isResponding = status === "streaming" || status === "submitted";
 
@@ -153,6 +154,7 @@ export function ChatWindow({
             className="m-2"
           />
         </PromptInput>
+        <PromptInputError status={status} error={error} />
       </div>
     </div>
   );

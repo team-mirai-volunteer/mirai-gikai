@@ -1,21 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import type { ChatStatus, FileUIPart } from "ai";
 import {
   ImageIcon,
@@ -46,6 +30,22 @@ import {
   useRef,
   useState,
 } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 type AttachmentsContext = {
   files: (FileUIPart & { id: string })[];
@@ -503,6 +503,36 @@ export const PromptInputTextarea = ({
   );
 };
 
+export type PromptInputErrorProps = HTMLAttributes<HTMLDivElement> & {
+  status?: ChatStatus;
+  error?: Error | null;
+};
+
+export const PromptInputError = ({
+  className,
+  status,
+  error,
+  ...props
+}: PromptInputErrorProps) => {
+  if (status !== "error") {
+    return null;
+  }
+
+  return (
+    <div
+      className={cn("px-3 py-2 text-xs text-red-600 border-t", className)}
+      {...props}
+    >
+      <div>エラーが発生しました。数秒後に再送信してください。</div>
+      {error?.message && (
+        <div className="mt-1 text-red-500 opacity-80">
+          詳細: {error.message}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export type PromptInputToolbarProps = HTMLAttributes<HTMLDivElement>;
 
 export const PromptInputToolbar = ({
@@ -619,9 +649,8 @@ export const PromptInputSubmit = ({
     Icon = <Loader2Icon className="size-4 animate-spin" />;
   } else if (status === "streaming") {
     Icon = <SquareIcon className="size-4" />;
-  } else if (status === "error") {
-    Icon = <XIcon className="size-4" />;
   }
+  // エラー時も通常の送信アイコンを表示
 
   return (
     <Button
