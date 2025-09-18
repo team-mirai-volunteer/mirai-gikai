@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils/date";
-import { HOUSE_LABELS, type BillWithContent } from "../../types";
+import { type BillWithContent, HOUSE_LABELS } from "../../types";
 import { BillStatusBadge } from "./bill-status-badge";
 
 interface BillCardProps {
@@ -35,7 +35,10 @@ export function BillCard({ bill }: BillCardProps) {
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">
-          <BillStatusBadge status={bill.status} />
+          <BillStatusBadge
+            status={bill.status}
+            originatingHouse={bill.originating_house}
+          />
         </div>
       </CardContent>
     </Card>

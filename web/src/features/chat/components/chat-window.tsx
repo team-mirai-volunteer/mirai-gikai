@@ -5,6 +5,7 @@ import { useState } from "react";
 import {
   Conversation,
   ConversationContent,
+  ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
 import { Loader } from "@/components/ai-elements/loader";
 import { Message, MessageContent } from "@/components/ai-elements/message";
@@ -134,6 +135,7 @@ export function ChatWindow({
           ))}
           {status === "submitted" && <Loader />}
         </ConversationContent>
+        <ConversationScrollButton />
       </Conversation>
 
       {/* 入力エリア */}

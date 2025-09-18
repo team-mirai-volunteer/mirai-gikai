@@ -1,13 +1,18 @@
 import { Badge } from "@/components/ui/badge";
-import type { BillStatusEnum } from "../../types";
-import { BILL_STATUS_LABELS } from "../../types";
+import type { BillStatusEnum, HouseEnum } from "../../types";
+import { getBillStatusLabel } from "../../types";
 
 interface BillStatusBadgeProps {
   status: BillStatusEnum;
+  originatingHouse?: HouseEnum | null;
   className?: string;
 }
 
-export function BillStatusBadge({ status, className }: BillStatusBadgeProps) {
+export function BillStatusBadge({
+  status,
+  originatingHouse,
+  className,
+}: BillStatusBadgeProps) {
   const getStatusVariant = (status: BillStatusEnum) => {
     switch (status) {
       case "introduced":
@@ -24,7 +29,7 @@ export function BillStatusBadge({ status, className }: BillStatusBadgeProps) {
 
   return (
     <Badge variant={getStatusVariant(status)} className={className}>
-      {BILL_STATUS_LABELS[status]}
+      {getBillStatusLabel(status, originatingHouse)}
     </Badge>
   );
 }

@@ -1,6 +1,6 @@
 import { formatDate } from "@/lib/utils/date";
-import { BillStatusBadge } from "../bill-list/bill-status-badge";
 import type { BillWithContent } from "../../types";
+import { BillStatusBadge } from "../bill-list/bill-status-badge";
 
 interface BillDetailHeaderProps {
   bill: BillWithContent;
@@ -24,7 +24,10 @@ export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
         <time dateTime={bill.published_at}>
           公表日: {formatDate(bill.published_at)}
         </time>
-        <BillStatusBadge status={bill.status} />
+        <BillStatusBadge
+          status={bill.status}
+          originatingHouse={bill.originating_house}
+        />
       </div>
 
       {displaySummary && (

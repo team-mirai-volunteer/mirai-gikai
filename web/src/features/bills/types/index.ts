@@ -28,19 +28,39 @@ export type BillWithContent = Bill & {
   mirai_stance?: MiraiStance;
 };
 
-// Status display mapping
-export const BILL_STATUS_LABELS: Record<BillStatusEnum, string> = {
-  introduced: "提出済み",
-  in_originating_house: "発議院審議中",
-  in_receiving_house: "受議院審議中",
-  enacted: "成立",
-  rejected: "否決",
-};
-
+// House display mapping
 export const HOUSE_LABELS: Record<HouseEnum, string> = {
   HR: "衆議院",
   HC: "参議院",
 };
+
+// ステータスを日本語ラベルに変換する関数
+export function getBillStatusLabel(
+  status: BillStatusEnum,
+  originatingHouse?: HouseEnum | null
+): string {
+  switch (status) {
+    case "introduced":
+      return "提出済み";
+    case "in_originating_house":
+      if (originatingHouse) {
+        return `${HOUSE_LABELS[originatingHouse]}審議中`;
+      }
+      return "審議中"; // フォールバック
+    case "in_receiving_house":
+      if (originatingHouse) {
+        const receivingHouse = originatingHouse === "HR" ? "HC" : "HR";
+        return `${HOUSE_LABELS[receivingHouse]}審議中`;
+      }
+      return "審議中"; // フォールバック
+    case "enacted":
+      return "成立";
+    case "rejected":
+      return "否決";
+    default:
+      return status; // 未知のステータスはそのまま返す
+  }
+}
 
 export const STANCE_LABELS: Record<StanceTypeEnum, string> = {
   for: "賛成",
