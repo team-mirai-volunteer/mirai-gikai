@@ -56,7 +56,10 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
         bill={billWithContent}
         currentDifficulty={currentDifficulty}
       />
-      <ChatButton billContext={billWithContent} difficultyLevel={currentDifficulty} />
+      <ChatButton
+        billContext={billWithContent}
+        difficultyLevel={currentDifficulty}
+      />
     </>
   );
 }

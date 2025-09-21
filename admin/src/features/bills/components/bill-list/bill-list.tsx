@@ -8,7 +8,13 @@ import { BILL_STATUS_CONFIG } from "../../constants/bill-config";
 import type { Bill, BillStatus } from "../../types";
 import { getBillStatusLabel, HOUSE_LABELS } from "../../types";
 
-function StatusBadge({ status, originatingHouse }: { status: BillStatus; originatingHouse: Bill["originating_house"] }) {
+function StatusBadge({
+  status,
+  originatingHouse,
+}: {
+  status: BillStatus;
+  originatingHouse: Bill["originating_house"];
+}) {
   const config = BILL_STATUS_CONFIG[status];
   const Icon = config.icon;
 
@@ -31,7 +37,10 @@ function BillCard({ bill }: { bill: Bill }) {
             {bill.name}
           </CardTitle>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <StatusBadge status={bill.status} originatingHouse={bill.originating_house} />
+            <StatusBadge
+              status={bill.status}
+              originatingHouse={bill.originating_house}
+            />
             <div className="flex items-center gap-2">
               <Link href={`/bills/${bill.id}/edit`}>
                 <Button variant="outline" size="sm">
