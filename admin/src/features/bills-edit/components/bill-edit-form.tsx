@@ -8,9 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 
 import { updateBill } from "../actions/update-bill";
+import { useBillForm } from "../hooks/use-bill-form";
 import { type Bill, type BillUpdateInput, billUpdateSchema } from "../types";
 import { BillFormFields } from "./bill-form-fields";
-import { useBillForm } from "../hooks/use-bill-form";
 
 interface BillEditFormProps {
   bill: Bill;
@@ -27,6 +27,7 @@ export function BillEditForm({ bill }: BillEditFormProps) {
       originating_house: bill.originating_house,
       status_note: bill.status_note,
       published_at: new Date(bill.published_at).toISOString().slice(0, 16),
+      thumbnail_url: bill.thumbnail_url,
     },
   });
 
@@ -45,7 +46,7 @@ export function BillEditForm({ bill }: BillEditFormProps) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <BillFormFields control={form.control} />
+            <BillFormFields control={form.control} billId={bill.id} />
 
             {error && (
               <div className="rounded-md bg-red-50 p-4 text-sm text-red-800">

@@ -3,8 +3,8 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { billUpdateSchema, type BillUpdateInput } from "../types";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
+import { type BillUpdateInput, billUpdateSchema } from "../types";
 
 export async function updateBill(id: string, input: BillUpdateInput) {
   try {
@@ -19,11 +19,7 @@ export async function updateBill(id: string, input: BillUpdateInput) {
     const { error } = await supabase
       .from("bills")
       .update({
-        name: validatedData.name,
-        status: validatedData.status,
-        originating_house: validatedData.originating_house,
-        status_note: validatedData.status_note,
-        published_at: validatedData.published_at,
+        ...validatedData,
         updated_at: new Date().toISOString(),
       })
       .eq("id", id);

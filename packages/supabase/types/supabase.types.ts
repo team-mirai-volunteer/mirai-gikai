@@ -84,6 +84,7 @@ export type Database = {
           published_at: string
           status: Database["public"]["Enums"]["bill_status_enum"]
           status_note: string | null
+          thumbnail_url: string | null
           updated_at: string
         }
         Insert: {
@@ -94,6 +95,7 @@ export type Database = {
           published_at: string
           status: Database["public"]["Enums"]["bill_status_enum"]
           status_note?: string | null
+          thumbnail_url?: string | null
           updated_at?: string
         }
         Update: {
@@ -104,6 +106,7 @@ export type Database = {
           published_at?: string
           status?: Database["public"]["Enums"]["bill_status_enum"]
           status_note?: string | null
+          thumbnail_url?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -186,7 +189,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       bill_status_enum:

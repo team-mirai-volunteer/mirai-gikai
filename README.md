@@ -29,7 +29,7 @@ pnpm dev
 npx supabase migration new マイグレーション名
 
 # マイグレーション実行 & 型ファイル更新
-pnpm supabase:migration
+pnpm supabase:migrate
 ```
 
 ## Adminユーザーの作成
