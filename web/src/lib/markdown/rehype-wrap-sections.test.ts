@@ -3,7 +3,7 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 import { describe, expect, it } from "vitest";
-import { rehypeWrapSections } from "./rehype-plugins";
+import { rehypeWrapSections } from "./rehype-wrap-sections";
 
 // テスト用のヘルパー関数：HTMLを正規化して比較しやすくする
 function normalizeHTML(html: string): string {
@@ -45,6 +45,66 @@ Content for section 2.`;
 <section><p>Content for section 2.</p></section>`;
 
     expect(normalizeHTML(output)).toBe(normalizeHTML(expected));
+  });
+
+  it("should not create sections for content before first h2", async () => {
+    const input = `# Title
+
+Introduction paragraph.
+
+Regular content without h2.`;
+
+    const result = await processor.process(input);
+    const output = result.toString();
+
+    const expected = `<h1>Title</h1>
+<p>Introduction paragraph.</p>
+<p>Regular content without h2.</p>`;
+
+    expect(output).toBe(expected);
+  });
+
+  it("should handle multiple h2 sections correctly", async () => {
+    const input = `## First Section
+
+First content.
+
+## Second Section
+
+Second content.
+
+## Third Section
+
+Third content.`;
+
+    const result = await processor.process(input);
+    const output = result.toString();
+
+    const expected = `<h2>First Section</h2>
+<section><p>First content.</p></section>
+<h2>Second Section</h2>
+<section><p>Second content.</p></section>
+<h2>Third Section</h2>
+<section><p>Third content.</p></section>`;
+
+    expect(normalizeHTML(output)).toBe(normalizeHTML(expected));
+  });
+
+  it("should handle h2 with no following content", async () => {
+    const input = `## Empty Section
+
+## Another Section
+
+Some content here.`;
+
+    const result = await processor.process(input);
+    const output = result.toString();
+
+    const expected = `<h2>Empty Section</h2>
+<h2>Another Section</h2>
+<section><p>Some content here.</p></section>`;
+
+    expect(output).toBe(expected);
   });
 
   it("should handle mixed heading levels correctly", async () => {

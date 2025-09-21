@@ -3,16 +3,20 @@ import rehypeStringify from "rehype-stringify";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
-import { rehypeWrapSections } from "./rehype-plugins";
+import { rehypeEmbedYouTube } from "./rehype-embed-youtube";
+import { rehypeWrapSections } from "./rehype-wrap-sections";
 
 /**
  * MarkdownをHTMLに変換するプロセッサー
+ * 注意: rehypeSanitizeの後にrehypeEmbedYouTubeを配置することで、
+ * sanitizeされた安全なコンテンツに対してYouTube埋め込みを追加
  */
 const processor = unified()
   .use(remarkParse)
   .use(remarkRehype)
   .use(rehypeWrapSections)
   .use(rehypeSanitize)
+  .use(rehypeEmbedYouTube)
   .use(rehypeStringify);
 
 /**
