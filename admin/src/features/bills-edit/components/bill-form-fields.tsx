@@ -21,6 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { BillStatus, OriginatingHouse } from "@/features/bills/types";
 import { HOUSE_LABELS } from "@/features/bills/types";
 import type { BillCreateInput } from "../types";
+import { ThumbnailUpload } from "./thumbnail-upload";
 
 const BILL_STATUS_OPTIONS: Array<{ value: BillStatus; label: string }> = [
   { value: "introduced", label: "提出済み" },
@@ -39,9 +40,10 @@ const ORIGINATING_HOUSE_OPTIONS = Object.entries(HOUSE_LABELS).map(
 
 interface BillFormFieldsProps {
   control: Control<BillCreateInput>;
+  billId?: string;
 }
 
-export function BillFormFields({ control }: BillFormFieldsProps) {
+export function BillFormFields({ control, billId }: BillFormFieldsProps) {
   return (
     <>
       <FormField
@@ -151,6 +153,27 @@ export function BillFormFields({ control }: BillFormFieldsProps) {
             </FormControl>
             <FormDescription>
               議案が公開される日時を設定してください
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name="thumbnail_url"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>サムネイル画像</FormLabel>
+            <FormControl>
+              <ThumbnailUpload
+                value={field.value}
+                onChange={field.onChange}
+                billId={billId}
+              />
+            </FormControl>
+            <FormDescription>
+              議案のサムネイル画像を設定してください（任意）
             </FormDescription>
             <FormMessage />
           </FormItem>

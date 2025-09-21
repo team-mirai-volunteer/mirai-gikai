@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { formatDate } from "@/lib/utils/date";
 import type { BillWithContent } from "../../types";
 import { BillStatusBadge } from "../bill-list/bill-status-badge";
@@ -12,6 +13,19 @@ export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
 
   return (
     <header className="mb-8">
+      {bill.thumbnail_url && (
+        <div className="relative mb-6 w-full h-80">
+          <Image
+            src={bill.thumbnail_url}
+            alt={bill.name}
+            fill
+            className="object-cover rounded-lg"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority
+          />
+        </div>
+      )}
+
       {displayTitle && (
         <div className="text-lg text-muted-foreground mb-4 font-medium">
           {displayTitle}

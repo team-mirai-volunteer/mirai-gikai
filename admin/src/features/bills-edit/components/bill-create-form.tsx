@@ -23,6 +23,7 @@ export function BillCreateForm() {
       originating_house: "HR",
       status_note: null,
       published_at: new Date().toISOString().slice(0, 16),
+      thumbnail_url: null,
     },
   });
 

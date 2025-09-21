@@ -67,7 +67,8 @@ export function ChatWindow({
     <div
       className={`fixed inset-x-0 bottom-0 z-50 h-[70vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[600px] md:w-[400px] md:rounded-lg flex flex-col border ${
         isOpen ? "visible" : "invisible"
-      }`}>
+      }`}
+    >
       {/* ヘッダー */}
       <div className="flex items-center justify-between border-b p-4 bg-gray-50 md:rounded-t-lg">
         <h2 className="text-lg font-semibold">議案について質問する</h2>
