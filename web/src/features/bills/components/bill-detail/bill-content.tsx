@@ -1,4 +1,4 @@
-import { parseMarkdown } from "@/lib/utils/markdown";
+import { parseMarkdown } from "@/lib/markdown";
 import type { BillWithContent } from "../../types";
 
 interface BillContentProps {

@@ -1,14 +1,9 @@
 import type { Element, ElementContent, Root } from "hast";
-import rehypeSanitize from "rehype-sanitize";
-import rehypeStringify from "rehype-stringify";
-import remarkParse from "remark-parse";
-import remarkRehype from "remark-rehype";
-import { unified } from "unified";
 
 /**
  * h2要素とその後続要素をsectionで囲むrehypeプラグイン
  */
-function rehypeWrapSections() {
+export function rehypeWrapSections() {
   return (tree: Root) => {
     let currentSection: Element | null = null;
 
@@ -47,24 +42,4 @@ function rehypeWrapSections() {
       tree.children.push(currentSection);
     }
   };
-}
-
-/**
- * MarkdownをHTMLに変換するプロセッサー
- */
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkRehype)
-  .use(rehypeWrapSections)
-  .use(rehypeSanitize)
-  .use(rehypeStringify);
-
-/**
- * MarkdownテキストをHTMLに変換
- * @param markdown - Markdown形式のテキスト
- * @returns HTML文字列
- */
-export async function parseMarkdown(markdown: string): Promise<string> {
-  const result = await processor.process(markdown);
-  return result.toString();
 }
