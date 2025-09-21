@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StanceBadge } from "../bill-list/stance-badge";
 import type { MiraiStance } from "../../types";
+import { StanceBadge } from "../bill-list/stance-badge";
 
 interface MiraiStanceCardProps {
   stance: MiraiStance;
@@ -8,10 +8,10 @@ interface MiraiStanceCardProps {
 
 export function MiraiStanceCard({ stance }: MiraiStanceCardProps) {
   return (
-    <Card className="border-primary/20 bg-primary/5">
+    <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">政党チームみらいの見解</CardTitle>
+          <CardTitle className="text-lg">チームみらいの見解</CardTitle>
           <StanceBadge stance={stance.type} />
         </div>
       </CardHeader>

@@ -52,7 +52,7 @@ export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
       >
         <SelectTrigger
           id={`${uniqueId}-difficulty-selector`}
-          className="w-[180px]"
+          className="w-[180px] bg-white"
           aria-label="難易度を選択"
         >
           <SelectValue />

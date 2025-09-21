@@ -7,6 +7,7 @@
     "supabase:migrate": "npx supabase migration up && pnpm run supabase:types:gen",
     "dev": "dotenv -e .env -- pnpm -r --stream --parallel run dev",
     "seed": "dotenv -e .env -- pnpm --filter @mirai-gikai/seed seed",
+    "test": "pnpm -r --parallel run test",
     "typecheck": "pnpm -r run typecheck",
     "lint": "biome format . && biome lint .",
     "lint:fix": "biome format --write . && biome lint --write ."

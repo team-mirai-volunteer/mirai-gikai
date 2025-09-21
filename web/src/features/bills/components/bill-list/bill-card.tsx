@@ -35,18 +35,14 @@ export function BillCard({ bill }: BillCardProps) {
                 <time>{formatDate(bill.published_at)}</time>
               </div>
               <CardTitle className="text-lg leading-tight">
-                {bill.name}
+                {displayTitle}
               </CardTitle>
-              {displayTitle && (
-                <p className="text-sm font-medium text-muted-foreground">
-                  {displayTitle}
-                </p>
-              )}
               {displaySummary && (
-                <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                  {displaySummary}
-                </p>
+                <p className="text-sm line-clamp-2 mt-1">{displaySummary}</p>
               )}
+              <p className="text-sm font-medium text-muted-foreground">
+                {bill.name}
+              </p>
             </div>
           </CardHeader>
           <CardContent>

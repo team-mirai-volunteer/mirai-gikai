@@ -1,8 +1,9 @@
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkRehype from "remark-rehype";
 import rehypeSanitize from "rehype-sanitize";
 import rehypeStringify from "rehype-stringify";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import { unified } from "unified";
+import { rehypeWrapSections } from "./rehype-plugins";
 
 /**
  * MarkdownをHTMLに変換するプロセッサー
@@ -10,6 +11,7 @@ import rehypeStringify from "rehype-stringify";
 const processor = unified()
   .use(remarkParse)
   .use(remarkRehype)
+  .use(rehypeWrapSections)
   .use(rehypeSanitize)
   .use(rehypeStringify);
 
