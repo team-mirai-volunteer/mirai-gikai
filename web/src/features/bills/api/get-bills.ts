@@ -15,6 +15,7 @@ const _getCachedBills = unstable_cache(
     const supabase = createAdminClient();
 
     // JOINを使用して一度のクエリでbill_contentsも取得
+    // 公開ステータスの議案のみを取得
     const { data, error } = await supabase
       .from("bills")
       .select(
@@ -32,6 +33,7 @@ const _getCachedBills = unstable_cache(
         )
       `
       )
+      .eq("publish_status", "published") // 公開済み議案のみ
       .eq("bill_contents.difficulty_level", difficultyLevel)
       .order("published_at", { ascending: false });
 

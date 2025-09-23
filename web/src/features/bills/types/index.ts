@@ -18,6 +18,9 @@ export type HouseEnum = Database["public"]["Enums"]["house_enum"];
 export type BillStatusEnum = Database["public"]["Enums"]["bill_status_enum"];
 export type StanceTypeEnum = Database["public"]["Enums"]["stance_type_enum"];
 
+// 公開ステータス型（議案の公開/非公開を管理）
+export type BillPublishStatus = "draft" | "published";
+
 // Combined types for UI
 export type BillWithStance = Bill & {
   mirai_stance?: MiraiStance;

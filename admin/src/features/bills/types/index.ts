@@ -5,6 +5,8 @@ export type BillInsert = Database["public"]["Tables"]["bills"]["Insert"];
 export type BillUpdate = Database["public"]["Tables"]["bills"]["Update"];
 
 export type BillStatus = Database["public"]["Enums"]["bill_status_enum"];
+export type BillPublishStatus =
+  Database["public"]["Enums"]["bill_publish_status"];
 export type OriginatingHouse = Database["public"]["Enums"]["house_enum"];
 
 export type BillWithContent = Bill & {

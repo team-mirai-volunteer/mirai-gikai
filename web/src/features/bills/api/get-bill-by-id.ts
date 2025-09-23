@@ -3,6 +3,7 @@ import { unstable_cache } from "next/cache";
 import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "../types";
+import { getBillContentWithDifficulty } from "./helpers/get-bill-content";
 
 export async function getBillById(id: string): Promise<BillWithContent | null> {
   // キャッシュ外でcookiesにアクセス
@@ -18,10 +19,16 @@ const _getCachedBillById = unstable_cache(
     const supabase = createAdminClient();
 
     // 基本的なbill情報、見解、コンテンツを並列取得
+    // 公開ステータスの議案のみを取得
     const [billResult, miraiStanceResult, billContent] = await Promise.all([
-      supabase.from("bills").select("*").eq("id", id).single(),
+      supabase
+        .from("bills")
+        .select("*")
+        .eq("id", id)
+        .eq("publish_status", "published") // 公開済み議案のみ
+        .single(),
       supabase.from("mirai_stances").select("*").eq("bill_id", id).single(),
-      _getBillContentWithDifficulty(id, difficultyLevel),
+      getBillContentWithDifficulty(id, difficultyLevel),
     ]);
 
     const { data: bill, error: billError } = billResult;
@@ -44,25 +51,3 @@ const _getCachedBillById = unstable_cache(
     tags: ["bills"],
   }
 );
-
-async function _getBillContentWithDifficulty(
-  billId: string,
-  difficultyLevel: DifficultyLevelEnum
-) {
-  const supabase = createAdminClient();
-
-  // 選択された難易度のコンテンツを取得
-  const { data: billContent, error } = await supabase
-    .from("bill_contents")
-    .select("*")
-    .eq("bill_id", billId)
-    .eq("difficulty_level", difficultyLevel)
-    .single();
-
-  if (error) {
-    console.error(`Failed to fetch bill content: ${error.message}`);
-    return null;
-  }
-
-  return billContent;
-}

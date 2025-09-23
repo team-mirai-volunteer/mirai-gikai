@@ -81,6 +81,7 @@ export type Database = {
           id: string
           name: string
           originating_house: Database["public"]["Enums"]["house_enum"]
+          publish_status: Database["public"]["Enums"]["bill_publish_status"]
           published_at: string
           status: Database["public"]["Enums"]["bill_status_enum"]
           status_note: string | null
@@ -92,6 +93,7 @@ export type Database = {
           id?: string
           name: string
           originating_house: Database["public"]["Enums"]["house_enum"]
+          publish_status?: Database["public"]["Enums"]["bill_publish_status"]
           published_at: string
           status: Database["public"]["Enums"]["bill_status_enum"]
           status_note?: string | null
@@ -103,6 +105,7 @@ export type Database = {
           id?: string
           name?: string
           originating_house?: Database["public"]["Enums"]["house_enum"]
+          publish_status?: Database["public"]["Enums"]["bill_publish_status"]
           published_at?: string
           status?: Database["public"]["Enums"]["bill_status_enum"]
           status_note?: string | null
@@ -184,6 +187,41 @@ export type Database = {
           },
         ]
       }
+      preview_tokens: {
+        Row: {
+          bill_id: string
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          id: string
+          token: string
+        }
+        Insert: {
+          bill_id: string
+          created_at?: string
+          created_by?: string | null
+          expires_at: string
+          id?: string
+          token: string
+        }
+        Update: {
+          bill_id?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "preview_tokens_bill_id_fkey"
+            columns: ["bill_id"]
+            isOneToOne: false
+            referencedRelation: "bills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -195,6 +233,7 @@ export type Database = {
       }
     }
     Enums: {
+      bill_publish_status: "draft" | "published"
       bill_status_enum:
         | "introduced"
         | "in_originating_house"
@@ -335,6 +374,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      bill_publish_status: ["draft", "published"],
       bill_status_enum: [
         "introduced",
         "in_originating_house",
