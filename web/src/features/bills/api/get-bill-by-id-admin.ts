@@ -1,7 +1,7 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
-import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "../types";
+import { getBillContentWithDifficulty } from "./utils/get-bill-content";
 
 /**
  * 管理者用: 公開/非公開問わず議案を取得
@@ -19,7 +19,7 @@ export async function getBillByIdAdmin(
   const [billResult, miraiStanceResult, billContent] = await Promise.all([
     supabase.from("bills").select("*").eq("id", id).single(),
     supabase.from("mirai_stances").select("*").eq("bill_id", id).single(),
-    _getBillContentWithDifficulty(id, difficultyLevel),
+    getBillContentWithDifficulty(id, difficultyLevel),
   ]);
 
   const { data: bill, error: billError } = billResult;
@@ -35,26 +35,4 @@ export async function getBillByIdAdmin(
     mirai_stance: miraiStance || undefined,
     bill_content: billContent || undefined,
   };
-}
-
-async function _getBillContentWithDifficulty(
-  billId: string,
-  difficultyLevel: DifficultyLevelEnum
-) {
-  const supabase = createAdminClient();
-
-  // 選択された難易度のコンテンツを取得
-  const { data: billContent, error } = await supabase
-    .from("bill_contents")
-    .select("*")
-    .eq("bill_id", billId)
-    .eq("difficulty_level", difficultyLevel)
-    .single();
-
-  if (error) {
-    console.error(`Failed to fetch bill content: ${error.message}`);
-    return null;
-  }
-
-  return billContent;
 }
