@@ -3,7 +3,7 @@ import { unstable_cache } from "next/cache";
 import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "../types";
-import { getBillContentWithDifficulty } from "./utils/get-bill-content";
+import { getBillContentWithDifficulty } from "./helpers/get-bill-content";
 
 export async function getBillById(id: string): Promise<BillWithContent | null> {
   // キャッシュ外でcookiesにアクセス

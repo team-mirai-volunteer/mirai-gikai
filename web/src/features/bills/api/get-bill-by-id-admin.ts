@@ -1,7 +1,7 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
 import type { BillWithContent } from "../types";
-import { getBillContentWithDifficulty } from "./utils/get-bill-content";
+import { getBillContentWithDifficulty } from "./helpers/get-bill-content";
 
 /**
  * 管理者用: 公開/非公開問わず議案を取得
