@@ -4,13 +4,19 @@ import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficult
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "../types";
 
-export async function getBillById(id: string): Promise<BillWithContent | null> {
+/**
+ * 管理者用: 公開/非公開問わず議案を取得
+ * プレビュー機能で使用
+ */
+export async function getBillByIdAdmin(
+  id: string
+): Promise<BillWithContent | null> {
   // キャッシュ外でcookiesにアクセス
   const difficultyLevel = await getDifficultyLevel();
-  return _getCachedBillById(id, difficultyLevel);
+  return _getCachedBillByIdAdmin(id, difficultyLevel);
 }
 
-const _getCachedBillById = unstable_cache(
+const _getCachedBillByIdAdmin = unstable_cache(
   async (
     id: string,
     difficultyLevel: DifficultyLevelEnum
@@ -18,14 +24,9 @@ const _getCachedBillById = unstable_cache(
     const supabase = createAdminClient();
 
     // 基本的なbill情報、見解、コンテンツを並列取得
-    // 公開ステータスの議案のみを取得
+    // ステータスに関係なく取得（管理者用）
     const [billResult, miraiStanceResult, billContent] = await Promise.all([
-      supabase
-        .from("bills")
-        .select("*")
-        .eq("id", id)
-        .eq("publish_status", "published") // 公開済み議案のみ
-        .single(),
+      supabase.from("bills").select("*").eq("id", id).single(),
       supabase.from("mirai_stances").select("*").eq("bill_id", id).single(),
       _getBillContentWithDifficulty(id, difficultyLevel),
     ]);
@@ -44,10 +45,10 @@ const _getCachedBillById = unstable_cache(
       bill_content: billContent || undefined,
     };
   },
-  ["bill-by-id"],
+  ["bill-by-id-admin"],
   {
-    revalidate: 600, // 10分（600秒）
-    tags: ["bills"],
+    revalidate: 60, // プレビューは短いキャッシュ（1分）
+    tags: ["bills", "admin"],
   }
 );
 
