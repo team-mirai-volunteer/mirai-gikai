@@ -18,12 +18,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { BillStatus, OriginatingHouse } from "@/features/bills/types";
-import { HOUSE_LABELS } from "@/features/bills/types";
+import {
+  type BillStatus,
+  HOUSE_LABELS,
+  type OriginatingHouse,
+} from "@/features/bills/types";
 import type { BillCreateInput } from "../types";
 import { ThumbnailUpload } from "./thumbnail-upload";
 
 const BILL_STATUS_OPTIONS: Array<{ value: BillStatus; label: string }> = [
+  { value: "preparing", label: "準備中" },
   { value: "introduced", label: "提出済み" },
   { value: "in_originating_house", label: "審議中（提出院）" },
   { value: "in_receiving_house", label: "審議中（送付院）" },

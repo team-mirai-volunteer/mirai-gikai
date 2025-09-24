@@ -3,6 +3,7 @@ import {
   CheckCircle,
   Clock,
   FileText,
+  Settings,
   XCircle,
 } from "lucide-react";
 
@@ -13,6 +14,10 @@ export const BILL_STATUS_CONFIG: Record<
   BillStatus,
   { icon: React.ElementType; color: string }
 > = {
+  preparing: {
+    icon: Settings,
+    color: "text-gray-600 bg-gray-50",
+  },
   introduced: {
     icon: FileText,
     color: "text-blue-600 bg-blue-50",

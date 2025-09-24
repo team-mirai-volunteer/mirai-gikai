@@ -43,6 +43,8 @@ export function getBillStatusLabel(
   originatingHouse?: HouseEnum | null
 ): string {
   switch (status) {
+    case "preparing":
+      return "準備中";
     case "introduced":
       return "提出済み";
     case "in_originating_house":

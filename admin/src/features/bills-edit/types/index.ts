@@ -16,6 +16,7 @@ const billBaseSchema = z.object({
     .min(1, "議案名は必須です")
     .max(200, "議案名は200文字以内で入力してください"),
   status: z.enum([
+    "preparing",
     "introduced",
     "in_originating_house",
     "in_receiving_house",
