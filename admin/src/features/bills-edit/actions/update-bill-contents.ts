@@ -2,18 +2,21 @@
 
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { requireAdmin } from "@/features/auth/lib/auth-server";
 import {
-  billContentsUpdateSchema,
   type BillContentsUpdateInput,
+  billContentsUpdateSchema,
   type DifficultyLevel,
 } from "../types/bill-contents";
-import { requireAdmin } from "@/features/auth/lib/auth-server";
+
+export type UpdateBillContentsResult =
+  | { success: true }
+  | { success: false; error: string };
 
 export async function updateBillContents(
   billId: string,
   input: BillContentsUpdateInput
-) {
+): Promise<UpdateBillContentsResult> {
   try {
     // 管理者権限チェック
     await requireAdmin();
@@ -61,14 +64,14 @@ export async function updateBillContents(
     // キャッシュをリフレッシュ
     revalidatePath("/bills");
     revalidatePath(`/bills/${billId}/contents/edit`);
+
+    return { success: true };
   } catch (error) {
     console.error("Update bill contents error:", error);
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
-    throw new Error("議案コンテンツの更新中にエラーが発生しました");
-  }
+    const errorMessage = error instanceof Error
+      ? error.message
+      : "議案コンテンツの更新中にエラーが発生しました";
 
-  // 成功したら一覧ページへリダイレクト
-  redirect("/bills");
+    return { success: false, error: errorMessage };
+  }
 }

@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,8 +18,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 
 import { updateBillContents } from "../actions/update-bill-contents";
 import type { Bill } from "../types";
@@ -28,8 +29,8 @@ import type {
   DifficultyLevel,
 } from "../types/bill-contents";
 import {
-  DIFFICULTY_LEVELS,
   billContentsUpdateSchema,
+  DIFFICULTY_LEVELS,
 } from "../types/bill-contents";
 
 interface BillContentsEditFormProps {
@@ -77,14 +78,16 @@ export function BillContentsEditForm({
     setIsSubmitting(true);
     setError(null);
 
-    try {
-      await updateBillContents(bill.id, data);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "更新中にエラーが発生しました"
-      );
-      setIsSubmitting(false);
+    const result = await updateBillContents(bill.id, data);
+
+    if (result.success) {
+      toast.success("議案コンテンツを更新しました");
+    } else {
+      setError(result.error);
+      toast.error("更新に失敗しました");
     }
+
+    setIsSubmitting(false);
   }
 
   return (
