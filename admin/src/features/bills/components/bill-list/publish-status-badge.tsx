@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronDown, Eye, EyeOff, Globe, Lock } from "lucide-react";
+import { ChevronDown, Eye, EyeOff, Globe, Loader2, Lock } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -19,10 +20,25 @@ export function PublishStatusBadge({
   billId,
   publishStatus,
 }: PublishStatusBadgeProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [open, setOpen] = useState(true);
   const isPublished = publishStatus === "published";
 
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const formData = new FormData();
+      formData.append("billId", billId);
+      formData.append("currentStatus", publishStatus);
+      await togglePublishStatusAction(formData);
+      setOpen(false); // Popoverを閉じる
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
@@ -44,30 +60,32 @@ export function PublishStatusBadge({
       </PopoverTrigger>
       <PopoverContent className="w-56">
         <div className="space-y-2">
-          <h4 className="font-medium leading-none">公開ステータス</h4>
+          <h4 className="text-xs leading-none">公開ステータス</h4>
           <div>
-            <form action={togglePublishStatusAction}>
-              <input type="hidden" name="billId" value={billId} />
-              <input type="hidden" name="currentStatus" value={publishStatus} />
-              <Button
-                type="submit"
-                variant="default"
-                size="sm"
-                className="w-full justify-start"
-              >
-                {isPublished ? (
-                  <>
-                    <Lock className="h-4 w-4 mr-2" />
-                    下書きに戻す
-                  </>
-                ) : (
-                  <>
-                    <Globe className="h-4 w-4 mr-2" />
-                    公開する
-                  </>
-                )}
-              </Button>
-            </form>
+            <Button
+              onClick={handleSubmit}
+              variant="default"
+              size="sm"
+              disabled={isSubmitting}
+              className="w-full justify-start"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  処理中...
+                </>
+              ) : isPublished ? (
+                <>
+                  <Lock className="h-4 w-4 mr-2" />
+                  下書きに戻す
+                </>
+              ) : (
+                <>
+                  <Globe className="h-4 w-4 mr-2" />
+                  公開する
+                </>
+              )}
+            </Button>
           </div>
         </div>
       </PopoverContent>

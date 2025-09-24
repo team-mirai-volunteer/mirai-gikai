@@ -1,6 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
 import { invalidateBillCache } from "@/lib/utils/cache-invalidation";
@@ -31,8 +32,7 @@ export async function togglePublishStatusAction(formData: FormData) {
     throw new Error(result.error || "ステータスの更新に失敗しました");
   }
 
-  // 同じページにリダイレクト
-  redirect("/bills");
+  revalidatePath("/bills");
 }
 
 async function _updateBillPublishStatus(
