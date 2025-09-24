@@ -1,9 +1,9 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
+import { invalidateBillCache } from "@/lib/utils/cache-invalidation";
 import type { BillPublishStatus } from "../types";
 
 interface UpdatePublishStatusResult {
@@ -55,9 +55,8 @@ async function _updateBillPublishStatus(
       };
     }
 
-    // 管理画面の議案一覧とwebサイトのキャッシュを更新
-    revalidatePath("/bills");
-    revalidatePath("/admin/bills", "page");
+    // web側のキャッシュを無効化
+    await invalidateBillCache();
 
     return { success: true };
   } catch (error) {

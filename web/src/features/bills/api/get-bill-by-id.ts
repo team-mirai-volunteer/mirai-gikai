@@ -2,6 +2,7 @@ import { createAdminClient } from "@mirai-gikai/supabase";
 import { unstable_cache } from "next/cache";
 import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import type { BillWithContent } from "../types";
 import { getBillContentWithDifficulty } from "./helpers/get-bill-content";
 
@@ -48,6 +49,6 @@ const _getCachedBillById = unstable_cache(
   ["bill-by-id"],
   {
     revalidate: 600, // 10分（600秒）
-    tags: ["bills"],
+    tags: [CACHE_TAGS.BILLS],
   }
 );

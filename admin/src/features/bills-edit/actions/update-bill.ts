@@ -1,9 +1,9 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
+import { invalidateBillCache } from "@/lib/utils/cache-invalidation";
 import { type BillUpdateInput, billUpdateSchema } from "../types";
 
 export async function updateBill(id: string, input: BillUpdateInput) {
@@ -28,9 +28,8 @@ export async function updateBill(id: string, input: BillUpdateInput) {
       throw new Error(`議案の更新に失敗しました: ${error.message}`);
     }
 
-    // キャッシュをリフレッシュ
-    revalidatePath("/bills");
-    revalidatePath(`/bills/${id}/edit`);
+    // web側のキャッシュを無効化
+    await invalidateBillCache();
   } catch (error) {
     console.error("Update bill error:", error);
     if (error instanceof Error) {

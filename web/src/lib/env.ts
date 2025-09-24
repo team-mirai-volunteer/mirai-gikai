@@ -5,6 +5,7 @@
 
 export const env = {
   adminUrl: process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3001",
+  revalidateSecret: process.env.REVALIDATE_SECRET,
 } as const;
 
 // 型定義

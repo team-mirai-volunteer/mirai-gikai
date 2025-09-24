@@ -1,8 +1,8 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
+import { invalidateBillCache } from "@/lib/utils/cache-invalidation";
 import {
   type BillContentsUpdateInput,
   billContentsUpdateSchema,
@@ -61,16 +61,16 @@ export async function updateBillContents(
 
     await Promise.all(upsertPromises);
 
-    // キャッシュをリフレッシュ
-    revalidatePath("/bills");
-    revalidatePath(`/bills/${billId}/contents/edit`);
+    // web側のキャッシュを無効化
+    await invalidateBillCache();
 
     return { success: true };
   } catch (error) {
     console.error("Update bill contents error:", error);
-    const errorMessage = error instanceof Error
-      ? error.message
-      : "議案コンテンツの更新中にエラーが発生しました";
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "議案コンテンツの更新中にエラーが発生しました";
 
     return { success: false, error: errorMessage };
   }

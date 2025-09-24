@@ -16,6 +16,7 @@ export const env = {
   webUrl: process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3000",
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
   supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  revalidateSecret: process.env.REVALIDATE_SECRET,
 } as const;
 
 // 型定義
