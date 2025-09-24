@@ -8,9 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 
 import { createBill } from "../actions/create-bill";
+import { useBillForm } from "../hooks/use-bill-form";
 import { type BillCreateInput, billCreateSchema } from "../types";
 import { BillFormFields } from "./bill-form-fields";
-import { useBillForm } from "../hooks/use-bill-form";
 
 export function BillCreateForm() {
   const { isSubmitting, error, handleSubmit, handleCancel } = useBillForm();
@@ -19,7 +19,7 @@ export function BillCreateForm() {
     resolver: zodResolver(billCreateSchema),
     defaultValues: {
       name: "",
-      status: "introduced",
+      status: "preparing",
       originating_house: "HR",
       status_note: null,
       published_at: new Date().toISOString().slice(0, 16),
