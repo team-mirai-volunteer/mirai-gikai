@@ -13,6 +13,7 @@ import { getBills } from "../../api/get-bills";
 import { BILL_STATUS_CONFIG } from "../../constants/bill-config";
 import type { Bill, BillStatus } from "../../types";
 import { getBillStatusLabel } from "../../types";
+import { BillActionsMenu } from "../bill-actions-menu/bill-actions-menu";
 import { PreviewButton } from "./preview-button";
 import { PublishStatusBadge } from "./publish-status-badge";
 import { ViewButton } from "./view-button";
@@ -45,6 +46,7 @@ function BillCard({ bill }: { bill: Bill }) {
           <CardTitle className="text-lg font-semibold text-gray-900 leading-6">
             {bill.name}
           </CardTitle>
+          <BillActionsMenu billId={bill.id} billName={bill.name} />
         </div>
         <div className="flex flex-none flex-wrap gap-2">
           <PublishStatusBadge

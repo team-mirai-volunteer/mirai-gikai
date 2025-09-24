@@ -21,7 +21,7 @@ export async function createBill(input: BillCreateInput) {
 
     // Supabaseに挿入
     const supabase = createAdminClient();
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("bills")
       .insert(insertData)
       .select("id")
