@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
 import { BillDetailLayout } from "@/features/bills/components/bill-detail/bill-detail-layout";
-import { ChatButton } from "@/features/chat/components/chat-button";
 
 interface BillDetailPageProps {
   params: Promise<{
@@ -51,15 +50,9 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
   }
 
   return (
-    <>
-      <BillDetailLayout
-        bill={billWithContent}
-        currentDifficulty={currentDifficulty}
-      />
-      <ChatButton
-        billContext={billWithContent}
-        difficultyLevel={currentDifficulty}
-      />
-    </>
+    <BillDetailLayout
+      bill={billWithContent}
+      currentDifficulty={currentDifficulty}
+    />
   );
 }

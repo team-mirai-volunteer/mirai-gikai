@@ -19,14 +19,20 @@ import { TextSelectionPortal } from "./text-selection-tooltip-portal";
  *   selectionchangeイベントでの状態更新時にコンテンツDOMの再レンダリングを防ぐ
  */
 
-interface TextSelectionWrapperProps extends PropsWithChildren {}
+interface TextSelectionWrapperProps extends PropsWithChildren {
+  onOpenChat?: (selectedText: string) => void;
+}
 
-export function TextSelectionWrapper({ children }: TextSelectionWrapperProps) {
+export function TextSelectionWrapper({
+  children,
+  onOpenChat,
+}: TextSelectionWrapperProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleAskQuestion = (text: string) => {
-    console.log("AIに質問:", text);
-    // TODO: AIチャット機能と連携
+    if (onOpenChat) {
+      onOpenChat(text);
+    }
   };
 
   return (
