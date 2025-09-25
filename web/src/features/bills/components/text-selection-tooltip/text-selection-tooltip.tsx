@@ -1,8 +1,9 @@
 "use client";
 
 import { MessageCircleQuestion } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { useTooltipPosition } from "./use-tooltip-position";
 
 interface TextSelectionTooltipProps {
   isVisible: boolean;
@@ -11,53 +12,41 @@ interface TextSelectionTooltipProps {
   onAskQuestion: (text: string) => void;
 }
 
+const MOBILE_BREAKPOINT = 768;
+
 export function TextSelectionTooltip({
   isVisible,
   selectedText,
   rect,
   onAskQuestion,
 }: TextSelectionTooltipProps) {
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-
-  useEffect(() => {
-    if (!rect || !isVisible) return;
-
-    const tooltipHeight = 40;
-    const tooltipWidth = 104;
-    const margin = 4;
-
-    // viewport座標をそのまま使用（fixed positionで）
-    const top = rect.top - tooltipHeight - margin;
-    let left = rect.left + rect.width / 2 - tooltipWidth / 2;
-
-    // 画面左右からはみ出さないよう調整
-    const maxLeft = window.innerWidth - tooltipWidth - margin;
-    left = Math.max(margin, Math.min(left, maxLeft));
-
-    setPosition({ top, left });
-  }, [rect, isVisible]);
+  const isMobile = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+  const position = useTooltipPosition({ rect, isVisible, isMobile });
 
   if (!isVisible || !rect) {
     return null;
   }
 
+  const buttonSize = isMobile ? "text-sm h-8 px-3" : "text-xs h-7 px-2";
+  const iconSize = isMobile ? "h-4 w-4" : "h-3 w-3";
+  const shouldShake = isMobile;
+
   return (
     <div
-      className="fixed z-50 bg-white border border-gray-200 rounded-md shadow-lg p-1"
-      style={{
-        top: position.top,
-        left: position.left,
-      }}
+      className={`fixed z-50 bg-white border border-gray-200 rounded-md shadow-lg p-1 ${
+        shouldShake ? "animate-shake" : ""
+      }`}
+      style={position}
     >
       <div className="flex items-center gap-1">
         <Button
           size="sm"
           variant="ghost"
           onClick={() => onAskQuestion(selectedText)}
-          className="text-xs h-7 px-2"
+          className={buttonSize}
         >
-          <MessageCircleQuestion className="h-3 w-3 mr-1" />
-          AIに質問
+          <MessageCircleQuestion className={`mr-1 ${iconSize}`} />
+          {isMobile && "選択部分を"}AIに質問
         </Button>
       </div>
     </div>
