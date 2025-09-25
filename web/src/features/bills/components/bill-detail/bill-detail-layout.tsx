@@ -2,6 +2,7 @@ import { DifficultySelector } from "@/features/bill-difficulty/components/diffic
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "../../types";
 import { BillContent } from "./bill-content";
+import { BillDetailClient } from "./bill-detail-client";
 import { BillDetailHeader } from "./bill-detail-header";
 import { MiraiStanceCard } from "./mirai-stance-card";
 
@@ -23,7 +24,15 @@ export function BillDetailLayout({
         <DifficultySelector currentLevel={currentDifficulty} />
       </div>
 
-      <BillContent bill={bill} />
+      {/*
+        テキスト選択機能とチャット連携の実装パターン:
+        - BillContentはServer Componentのまま保持（SSRによる高速な初期レンダリング）
+        - BillDetailClientでクライアントサイド機能（テキスト選択、チャット連携）を提供
+        - このパターンによりSSRを保持しつつインタラクティブ機能を実装
+      */}
+      <BillDetailClient bill={bill} currentDifficulty={currentDifficulty}>
+        <BillContent bill={bill} />
+      </BillDetailClient>
 
       {bill.mirai_stance && (
         <div className="my-8">
