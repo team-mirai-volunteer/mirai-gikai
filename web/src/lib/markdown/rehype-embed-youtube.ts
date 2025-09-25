@@ -1,4 +1,5 @@
 import type { Element, Root } from "hast";
+import { visit } from "unist-util-visit";
 
 /**
  * YouTube URLからビデオIDを抽出する
@@ -24,11 +25,10 @@ function extractYouTubeId(url: string): string | null {
  */
 export function rehypeEmbedYouTube() {
   return (tree: Root) => {
-    function visit(node: Element, parent?: Element | Root) {
-      if (node.type === "element" && node.tagName === "p") {
+    visit(tree, "element", (node: Element, index, parent) => {
+      if (node.tagName === "p" && parent && typeof index === "number") {
         // p要素の中のテキストノードをチェック
-        for (let i = 0; i < node.children.length; i++) {
-          const child = node.children[i];
+        for (const child of node.children) {
           if (child.type === "text") {
             const text = child.value;
             const lines = text.split("\n");
@@ -54,12 +54,7 @@ export function rehypeEmbedYouTube() {
                   };
 
                   // p要素をiframe要素に置き換え
-                  if (parent?.children) {
-                    const index = parent.children.indexOf(node);
-                    if (index >= 0) {
-                      parent.children[index] = iframe;
-                    }
-                  }
+                  parent.children[index] = iframe;
                   return;
                 }
               }
@@ -67,22 +62,6 @@ export function rehypeEmbedYouTube() {
           }
         }
       }
-
-      // 子要素を再帰的に処理
-      if (node.children) {
-        for (const child of node.children) {
-          if (child.type === "element") {
-            visit(child, node);
-          }
-        }
-      }
-    }
-
-    // ルート要素の子要素を処理
-    for (const child of tree.children) {
-      if (child.type === "element") {
-        visit(child, tree);
-      }
-    }
+    });
   };
 }

@@ -1,21 +1,32 @@
-import rehypeSanitize from "rehype-sanitize";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import rehypeStringify from "rehype-stringify";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 import { rehypeEmbedYouTube } from "./rehype-embed-youtube";
+import { rehypeExternalLinks } from "./rehype-external-links";
 import { rehypeWrapSections } from "./rehype-wrap-sections";
+
+// rehypeSanitizeのスキーマをカスタマイズ（target="_blank"とrel属性を許可）
+const sanitizeSchema = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    a: [...(defaultSchema.attributes?.a || []), "target", "rel"],
+  },
+};
 
 /**
  * MarkdownをHTMLに変換するプロセッサー
- * 注意: rehypeSanitizeの後にrehypeEmbedYouTubeを配置することで、
- * sanitizeされた安全なコンテンツに対してYouTube埋め込みを追加
+ * 注意: rehypeSanitizeの後にカスタムプラグインを配置することで、
+ * sanitizeされた安全なコンテンツに対して変換を適用
  */
 const processor = unified()
   .use(remarkParse)
   .use(remarkRehype)
   .use(rehypeWrapSections)
-  .use(rehypeSanitize)
+  .use(rehypeSanitize, sanitizeSchema)
+  .use(rehypeExternalLinks)
   .use(rehypeEmbedYouTube)
   .use(rehypeStringify);
 
