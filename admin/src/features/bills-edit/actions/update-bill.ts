@@ -1,7 +1,6 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { redirect } from "next/navigation";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
 import { invalidateBillCache } from "@/lib/utils/cache-invalidation";
 import { type BillUpdateInput, billUpdateSchema } from "../types";
@@ -37,7 +36,4 @@ export async function updateBill(id: string, input: BillUpdateInput) {
     }
     throw new Error("議案の更新中にエラーが発生しました");
   }
-
-  // 成功したら一覧ページへリダイレクト
-  redirect("/bills");
 }

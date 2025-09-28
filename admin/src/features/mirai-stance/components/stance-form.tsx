@@ -38,12 +38,15 @@ import {
 interface StanceFormProps {
   billId: string;
   stance?: MiraiStance | null;
+  billStatus?: string;
 }
 
-export function StanceForm({ billId, stance }: StanceFormProps) {
+export function StanceForm({ billId, stance, billStatus }: StanceFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const isPreparing = billStatus === "preparing";
 
   const form = useForm<StanceInput>({
     resolver: zodResolver(stanceInputSchema),
@@ -103,6 +106,11 @@ export function StanceForm({ billId, stance }: StanceFormProps) {
     <Card>
       <CardHeader>
         <CardTitle>チームみらいのスタンス</CardTitle>
+        {isPreparing && (
+          <p className="text-sm text-muted-foreground">
+            法案提出前のため、スタンス設定は無効化されています。
+          </p>
+        )}
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -116,7 +124,11 @@ export function StanceForm({ billId, stance }: StanceFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>スタンス</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={isPreparing}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="スタンスを選択" />
@@ -147,6 +159,7 @@ export function StanceForm({ billId, stance }: StanceFormProps) {
                     <Textarea
                       placeholder="スタンスについての詳細説明を入力"
                       className="min-h-[120px] resize-y"
+                      disabled={isPreparing}
                       {...field}
                     />
                   </FormControl>
@@ -156,14 +169,14 @@ export function StanceForm({ billId, stance }: StanceFormProps) {
             />
 
             <div className="flex gap-2">
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || isPreparing}>
                 {isSubmitting ? "保存中..." : stance ? "更新" : "作成"}
               </Button>
               {stance && (
                 <Button
                   type="button"
                   variant="destructive"
-                  disabled={isDeleting}
+                  disabled={isDeleting || isPreparing}
                   onClick={handleDelete}
                 >
                   {isDeleting ? "削除中..." : "削除"}

@@ -43,7 +43,7 @@ export default async function BillEditPage({ params }: BillEditPageProps) {
 
       <div className="space-y-6">
         <BillEditForm bill={bill} />
-        <StanceForm billId={bill.id} stance={stance} />
+        <StanceForm billId={bill.id} stance={stance} billStatus={bill.status} />
       </div>
     </div>
   );

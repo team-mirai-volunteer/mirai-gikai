@@ -1,5 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { isNextRedirectError } from "@/lib/utils/redirect";
 
 export function useBillForm() {
@@ -16,12 +17,15 @@ export function useBillForm() {
 
     try {
       await submitFn();
+      toast.success("保存しました");
+      router.refresh();
     } catch (err) {
       // Next.jsのリダイレクトエラーはそのまま投げる
       if (isNextRedirectError(err)) {
         throw err;
       }
       setError(err instanceof Error ? err.message : errorMessage);
+    } finally {
       setIsSubmitting(false);
     }
   };
