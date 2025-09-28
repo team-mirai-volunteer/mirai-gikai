@@ -16,10 +16,10 @@ export function BillDetailLayout({
   bill,
   currentDifficulty,
 }: BillDetailLayoutProps) {
+  const showMiraiStance = bill.status === "preparing" || bill.mirai_stance;
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <BillDetailHeader bill={bill} />
-
       {/*
         テキスト選択機能とチャット連携の実装パターン:
         - BillContentはServer Componentのまま保持（SSRによる高速な初期レンダリング）
@@ -29,8 +29,7 @@ export function BillDetailLayout({
       <BillDetailClient bill={bill} currentDifficulty={currentDifficulty}>
         <BillContent bill={bill} />
       </BillDetailClient>
-
-      {bill.mirai_stance && (
+      {showMiraiStance && (
         <div className="my-8">
           <MiraiStanceCard
             stance={bill.mirai_stance}
@@ -38,7 +37,6 @@ export function BillDetailLayout({
           />
         </div>
       )}
-
       {/* シェアボタン */}
       <div className="my-8">
         <BillShareButtons bill={bill} />

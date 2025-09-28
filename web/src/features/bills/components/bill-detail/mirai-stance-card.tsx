@@ -3,13 +3,17 @@ import type { BillStatusEnum, MiraiStance } from "../../types";
 import { STANCE_LABELS } from "../../types";
 
 interface MiraiStanceCardProps {
-  stance: MiraiStance;
+  stance?: MiraiStance;
   billStatus?: BillStatusEnum;
 }
 
 export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
   // 法案提出前の場合は専用のスタイルを使用
   const isPreparing = billStatus === "preparing";
+
+  if (!stance && !isPreparing) {
+    return null; // スタンスがなく、法案提出前でもない場合は何も表示しない
+  }
 
   // スタンスタイプに応じた背景色とボーダー色を設定
   const getStanceStyles = () => {
@@ -22,7 +26,7 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
       };
     }
 
-    switch (stance.type) {
+    switch (stance?.type) {
       case "for":
       case "conditional_for":
         return {
@@ -44,7 +48,7 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
           bg: "bg-[#8F8F8F]",
           border: "border-gray-500",
           textColor: "text-white",
-          label: STANCE_LABELS[stance.type],
+          label: stance != null ? STANCE_LABELS[stance.type] : "中立",
         };
     }
   };
@@ -85,7 +89,7 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
               <p className="text-base font-medium leading-relaxed whitespace-pre-wrap">
                 {isPreparing
                   ? "法案提出後に賛否を表明します。"
-                  : stance.comment}
+                  : stance?.comment}
               </p>
             </div>
           </div>
