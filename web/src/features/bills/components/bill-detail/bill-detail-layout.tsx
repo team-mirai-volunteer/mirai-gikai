@@ -1,3 +1,4 @@
+import { DifficultySelector } from "@/features/bill-difficulty/components/difficulty-selector";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "../../types";
 import { BillShareButtons } from "../share/bill-share-buttons";
@@ -31,7 +32,10 @@ export function BillDetailLayout({
 
       {bill.mirai_stance && (
         <div className="my-8">
-          <MiraiStanceCard stance={bill.mirai_stance} />
+          <MiraiStanceCard
+            stance={bill.mirai_stance}
+            billStatus={bill.status}
+          />
         </div>
       )}
 
