@@ -242,7 +242,7 @@ export type Database = {
         | "rejected"
         | "preparing"
       chat_role_enum: "user" | "system" | "assistant"
-      difficulty_level_enum: "easy" | "normal" | "hard"
+      difficulty_level_enum: "normal" | "hard"
       house_enum: "HR" | "HC"
       stance_type_enum:
         | "for"
@@ -391,7 +391,7 @@ export const Constants = {
         "preparing",
       ],
       chat_role_enum: ["user", "system", "assistant"],
-      difficulty_level_enum: ["easy", "normal", "hard"],
+      difficulty_level_enum: ["normal", "hard"],
       house_enum: ["HR", "HC"],
       stance_type_enum: [
         "for",

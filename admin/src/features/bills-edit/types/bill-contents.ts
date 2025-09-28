@@ -7,7 +7,7 @@ export type BillContentUpdate =
   Database["public"]["Tables"]["bill_contents"]["Update"];
 
 // 難易度レベルの型
-export type DifficultyLevel = "easy" | "normal" | "hard";
+export type DifficultyLevel = "normal" | "hard";
 
 // バリデーションスキーマ
 export const billContentUpdateSchema = z.object({
@@ -30,9 +30,8 @@ export const billContentUpdateSchema = z.object({
 
 export type BillContentUpdateInput = z.infer<typeof billContentUpdateSchema>;
 
-// 3つの難易度レベル用の入力型
+// 2つの難易度レベル用の入力型
 export const billContentsUpdateSchema = z.object({
-  easy: billContentUpdateSchema,
   normal: billContentUpdateSchema,
   hard: billContentUpdateSchema,
 });
@@ -41,7 +40,6 @@ export type BillContentsUpdateInput = z.infer<typeof billContentsUpdateSchema>;
 
 // 難易度レベル設定
 export const DIFFICULTY_LEVELS: { value: DifficultyLevel; label: string }[] = [
-  { value: "easy", label: "やさしい" },
   { value: "normal", label: "ふつう" },
   { value: "hard", label: "難しい" },
 ];

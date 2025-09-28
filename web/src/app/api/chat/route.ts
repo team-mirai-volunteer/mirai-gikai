@@ -4,6 +4,7 @@ import {
   streamText,
   type UIMessage,
 } from "ai";
+import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 
 async function _mockResponse(_req: Request) {
@@ -58,19 +59,12 @@ export async function POST(req: Request) {
 
   // Extract bill context and difficulty level from the first user message data if available
   const billContext = messages[0]?.metadata?.billContext;
-  const difficultyLevel = messages[0]?.metadata?.difficultyLevel || "normal";
+  const difficultyLevel = (messages[0]?.metadata?.difficultyLevel ||
+    "normal") as DifficultyLevelEnum;
 
   // 難易度に応じたシステムプロンプトの設定
-  const getDifficultyInstructions = (level: string) => {
+  const getDifficultyInstructions = (level: DifficultyLevelEnum) => {
     switch (level) {
-      case "easy":
-        return `
-        回答の難易度：やさしい（小学生でもわかる内容）
-        - 小学生にも理解できるよう、とても簡単な言葉で説明してください
-        - 専門用語は使わず、日常的な言葉に置き換えてください
-        - 例え話やイメージしやすい表現を多用してください
-        - 小学4年生レベルの漢字の使用にとどめてください
-        `;
       case "hard":
         return `
         回答の難易度：難しい（専門用語を含む詳細な内容）

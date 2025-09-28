@@ -64,7 +64,6 @@ export function BillContentsEditForm({
 
   // フォームのデフォルト値を生成
   const defaultValues = {
-    easy: getContentForDifficulty("easy"),
     normal: getContentForDifficulty("normal"),
     hard: getContentForDifficulty("hard"),
   };

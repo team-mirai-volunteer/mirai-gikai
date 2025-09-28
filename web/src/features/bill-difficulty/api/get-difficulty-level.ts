@@ -18,7 +18,7 @@ export async function getDifficultyLevel(): Promise<DifficultyLevelEnum> {
   }
 
   // 有効な値かチェック
-  const validLevels: DifficultyLevelEnum[] = ["easy", "normal", "hard"];
+  const validLevels: DifficultyLevelEnum[] = ["normal", "hard"];
   if (validLevels.includes(difficulty.value as DifficultyLevelEnum)) {
     return difficulty.value as DifficultyLevelEnum;
   }

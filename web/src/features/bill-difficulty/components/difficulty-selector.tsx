@@ -58,7 +58,7 @@ export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {(["easy", "normal", "hard"] as const).map((level) => (
+          {(["normal", "hard"] as const).map((level) => (
             <SelectItem key={level} value={level}>
               <div className="flex flex-col">
                 <span className="font-medium">{DIFFICULTY_LABELS[level]}</span>
