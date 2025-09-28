@@ -2,7 +2,6 @@
 
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { invalidateBillCache } from "@/lib/utils/cache-invalidation";
-import { isNextRedirectError } from "@/lib/utils/redirect";
 import type { StanceInput } from "../types";
 
 export async function updateStance(stanceId: string, data: StanceInput) {

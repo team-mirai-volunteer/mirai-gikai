@@ -1,6 +1,7 @@
 import { DifficultySelector } from "@/features/bill-difficulty/components/difficulty-selector";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "../../types";
+import { BillShareButtons } from "../share/bill-share-buttons";
 import { BillContent } from "./bill-content";
 import { BillDetailClient } from "./bill-detail-client";
 import { BillDetailHeader } from "./bill-detail-header";
@@ -39,6 +40,11 @@ export function BillDetailLayout({
           <MiraiStanceCard stance={bill.mirai_stance} />
         </div>
       )}
+
+      {/* シェアボタン */}
+      <div className="my-8">
+        <BillShareButtons bill={bill} />
+      </div>
     </div>
   );
 }
