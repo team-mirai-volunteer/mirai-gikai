@@ -1,7 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { MessageCircle } from "lucide-react";
+import Image from "next/image";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import type { Bill } from "@/features/bills/types";
 import { ChatWindow } from "./chat-window";
@@ -38,10 +38,16 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-4 right-4 z-50 rounded-full bg-primary p-4 text-white shadow-lg hover:bg-primary/90 transition-colors md:bottom-8 md:right-8"
+          className="fixed bottom-6 right-6 z-50 w-15 h-15 rounded-full bg-mirai-gradient border border-black shadow-lg hover:opacity-90 transition-opacity flex items-center justify-center md:bottom-8 md:right-8"
           aria-label="議案について質問する"
         >
-          <MessageCircle className="h-6 w-6" />
+          <Image
+            src="/icons/chat-icon.svg"
+            alt="チャット"
+            width={24}
+            height={22}
+            className="pointer-events-none"
+          />
         </button>
 
         <ChatWindow
