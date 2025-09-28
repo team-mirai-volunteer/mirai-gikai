@@ -1,13 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { setDifficultyLevel } from "../actions/set-difficulty-level";
 import { DIFFICULTY_LABELS, type DifficultyLevelEnum } from "../types";
 
@@ -21,12 +15,13 @@ export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
   const uniqueId = useId();
   const [isChanging, setIsChanging] = useState(false);
 
-  const handleChange = async (value: DifficultyLevelEnum) => {
+  const handleToggle = async (checked: boolean) => {
+    const newLevel = checked ? "hard" : "normal";
     setIsChanging(true);
-    setSelectedLevel(value);
+    setSelectedLevel(newLevel);
 
     try {
-      await setDifficultyLevel(value);
+      await setDifficultyLevel(newLevel);
       // Server Actionが成功したらページがrevalidateされて自動的にリロードされる
     } catch (error) {
       console.error("Failed to update difficulty level:", error);
@@ -40,33 +35,23 @@ export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
   return (
     <div className="flex items-center gap-3">
       <label
-        htmlFor={`${uniqueId}-difficulty-selector`}
+        htmlFor={`${uniqueId}-difficulty-toggle`}
         className="text-sm font-medium"
       >
         読みやすさ：
       </label>
-      <Select
-        value={selectedLevel}
-        onValueChange={handleChange}
-        disabled={isChanging}
-      >
-        <SelectTrigger
-          id={`${uniqueId}-difficulty-selector`}
-          className="w-[180px] bg-white"
-          aria-label="難易度を選択"
-        >
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {(["normal", "hard"] as const).map((level) => (
-            <SelectItem key={level} value={level}>
-              <div className="flex flex-col">
-                <span className="font-medium">{DIFFICULTY_LABELS[level]}</span>
-              </div>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-gray-600">
+          {selectedLevel === "normal" ? "ふつう" : "詳しめ"}
+        </span>
+        <Switch
+          id={`${uniqueId}-difficulty-toggle`}
+          checked={selectedLevel === "hard"}
+          onCheckedChange={handleToggle}
+          disabled={isChanging}
+          aria-label="難易度を切り替え"
+        />
+      </div>
     </div>
   );
 }
