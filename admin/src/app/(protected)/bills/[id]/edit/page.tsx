@@ -1,18 +1,24 @@
-import { notFound } from "next/navigation";
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 import { getBillById } from "@/features/bills-edit/api/get-bill-by-id";
 import { BillEditForm } from "@/features/bills-edit/components/bill-edit-form";
+import { getStanceByBillId } from "@/features/mirai-stance/api/get-stance-by-bill-id";
+import { StanceForm } from "@/features/mirai-stance/components/stance-form";
 
 interface BillEditPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function BillEditPage({ params }: BillEditPageProps) {
-  const bill = await getBillById(params.id);
+  const { id } = await params;
+  const [bill, stance] = await Promise.all([
+    getBillById(id),
+    getStanceByBillId(id),
+  ]);
 
   if (!bill) {
     notFound();
@@ -35,7 +41,10 @@ export default async function BillEditPage({ params }: BillEditPageProps) {
         <p className="text-gray-600 mt-1">議案の基本情報を編集します</p>
       </div>
 
-      <BillEditForm bill={bill} />
+      <div className="space-y-6">
+        <BillEditForm bill={bill} />
+        <StanceForm billId={bill.id} stance={stance} />
+      </div>
     </div>
   );
 }
