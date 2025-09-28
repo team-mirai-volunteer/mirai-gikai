@@ -29,7 +29,7 @@ export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
 
       <CardHeader>
         {displayTitle && (
-          <h1 className="text-3xl font-bold mb-4">{displayTitle}</h1>
+          <h1 className="text-2xl font-bold mb-4">{displayTitle}</h1>
         )}
 
         <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
@@ -45,7 +45,9 @@ export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
 
       <CardContent>
         {displaySummary && <div className="mb-4">{displaySummary}</div>}
-        <div className="text-muted-foreground font-medium">{bill.name}</div>
+        <div className="text-xs text-muted-foreground font-medium">
+          {bill.name}
+        </div>
       </CardContent>
     </Card>
   );
