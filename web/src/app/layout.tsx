@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Noto_Sans_JP } from "next/font/google";
+import { Lexend_Giga, Noto_Sans_JP } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import { Header } from "@/components/header";
 import "./globals.css";
@@ -8,6 +8,12 @@ const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-sans-jp",
   subsets: ["latin"],
   weight: ["400", "500", "700"],
+});
+
+const lexendGiga = Lexend_Giga({
+  variable: "--font-lexend-giga",
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -22,8 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body className={`${notoSansJP.variable} font-sans antialiased`}>
-        <NextTopLoader showSpinner={false} />
+      <body
+        className={`${notoSansJP.variable} ${lexendGiga.variable} font-sans antialiased`}
+      >
+        <NextTopLoader showSpinner={false} color="#2aa693" />
         <Header />
         <main className="min-h-screen mt-20">{children}</main>
       </body>
