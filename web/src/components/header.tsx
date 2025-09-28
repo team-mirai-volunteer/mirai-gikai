@@ -1,25 +1,30 @@
+import Image from "next/image";
 import Link from "next/link";
+import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
+import { DifficultySelector } from "@/features/bill-difficulty/components/difficulty-selector";
 
-export function Header() {
+export async function Header() {
+  const difficultyLevel = await getDifficultyLevel();
   return (
-    <header className="bg-white shadow-xs border-b">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="px-3 mt-4 fixed top-0 left-0 right-0 z-50">
+      <div className="rounded-full bg-white shadow-md max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo / Site Title */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="text-2xl font-bold">みらい議会</div>
+              <Image
+                src="/img/logo.svg"
+                alt="みらい議会"
+                width={42}
+                height={42}
+              />
+              <div className="text-xl font-bold">みらい議会</div>
             </Link>
           </div>
 
           {/* Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link
-              href="/"
-              className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
-            >
-              議案一覧
-            </Link>
+          <nav className="flex items-center space-x-8">
+            <DifficultySelector currentLevel={difficultyLevel} />
           </nav>
         </div>
       </div>

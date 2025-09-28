@@ -1,4 +1,3 @@
-import { DifficultySelector } from "@/features/bill-difficulty/components/difficulty-selector";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "../../types";
 import { BillShareButtons } from "../share/bill-share-buttons";
@@ -19,11 +18,6 @@ export function BillDetailLayout({
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <BillDetailHeader bill={bill} />
-
-      {/* 難易度切り替えセレクター */}
-      <div className="mb-6 flex justify-end">
-        <DifficultySelector currentLevel={currentDifficulty} />
-      </div>
 
       {/*
         テキスト選択機能とチャット連携の実装パターン:

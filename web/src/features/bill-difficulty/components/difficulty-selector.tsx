@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { setDifficultyLevel } from "../actions/set-difficulty-level";
-import { DIFFICULTY_LABELS, type DifficultyLevelEnum } from "../types";
+import type { DifficultyLevelEnum } from "../types";
 
 interface DifficultySelectorProps {
   currentLevel: DifficultyLevelEnum;
@@ -34,16 +34,8 @@ export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
 
   return (
     <div className="flex items-center gap-3">
-      <label
-        htmlFor={`${uniqueId}-difficulty-toggle`}
-        className="text-sm font-medium"
-      >
-        読みやすさ：
-      </label>
       <div className="flex items-center gap-2">
-        <span className="text-sm text-gray-600">
-          {selectedLevel === "normal" ? "ふつう" : "詳しめ"}
-        </span>
+        <span className="text-sm text-gray-600 font-bold">より詳しく</span>
         <Switch
           id={`${uniqueId}-difficulty-toggle`}
           checked={selectedLevel === "hard"}
