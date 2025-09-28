@@ -244,7 +244,13 @@ export type Database = {
       chat_role_enum: "user" | "system" | "assistant"
       difficulty_level_enum: "easy" | "normal" | "hard"
       house_enum: "HR" | "HC"
-      stance_type_enum: "for" | "against" | "neutral"
+      stance_type_enum:
+        | "for"
+        | "against"
+        | "neutral"
+        | "conditional_for"
+        | "conditional_against"
+        | "considering"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -387,7 +393,14 @@ export const Constants = {
       chat_role_enum: ["user", "system", "assistant"],
       difficulty_level_enum: ["easy", "normal", "hard"],
       house_enum: ["HR", "HC"],
-      stance_type_enum: ["for", "against", "neutral"],
+      stance_type_enum: [
+        "for",
+        "against",
+        "neutral",
+        "conditional_for",
+        "conditional_against",
+        "considering",
+      ],
     },
   },
 } as const
