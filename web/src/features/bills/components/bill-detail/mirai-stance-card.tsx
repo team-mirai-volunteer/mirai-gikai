@@ -58,7 +58,7 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
   return (
     <>
       <h2 className="text-[22px] font-bold mb-4">🗳️チームみらいの賛否</h2>
-      <div className="relative p-1 rounded-lg bg-gradient-to-br from-[#64D8C6] to-[#BCECB3]">
+      <div className="relative p-1 rounded-lg bg-mirai-gradient">
         <div className="bg-white rounded-lg px-6 py-8">
           <div className="flex flex-col gap-8">
             {/* ヘッダー部分：ロゴとスタンスバッジ */}

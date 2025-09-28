@@ -5,6 +5,7 @@ import { BillShareButtons } from "../share/bill-share-buttons";
 import { BillContent } from "./bill-content";
 import { BillDetailClient } from "./bill-detail-client";
 import { BillDetailHeader } from "./bill-detail-header";
+import { BillStatusProgress } from "./bill-status-progress";
 import { MiraiStanceCard } from "./mirai-stance-card";
 
 interface BillDetailLayoutProps {
@@ -20,6 +21,15 @@ export function BillDetailLayout({
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <BillDetailHeader bill={bill} />
+      {/* 議案ステータス進捗 */}
+      <div className="my-8">
+        <BillStatusProgress
+          status={bill.status}
+          originatingHouse={bill.originating_house}
+          statusNote={bill.status_note}
+        />
+      </div>
+
       {/*
         テキスト選択機能とチャット連携の実装パターン:
         - BillContentはServer Componentのまま保持（SSRによる高速な初期レンダリング）
@@ -29,6 +39,7 @@ export function BillDetailLayout({
       <BillDetailClient bill={bill} currentDifficulty={currentDifficulty}>
         <BillContent bill={bill} />
       </BillDetailClient>
+
       {showMiraiStance && (
         <div className="my-8">
           <MiraiStanceCard

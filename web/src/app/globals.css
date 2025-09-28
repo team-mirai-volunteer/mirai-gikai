@@ -44,6 +44,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --color-gray-300: #c7c7cc;
 }
 
 :root {
@@ -123,6 +125,12 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .bg-mirai-gradient {
+    background-image: linear-gradient(to bottom right, #64d8c6, #bcecb3);
   }
 }
 

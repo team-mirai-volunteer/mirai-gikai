@@ -27,24 +27,22 @@ export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
         </div>
       )}
 
-      <CardHeader>
+      <CardHeader className="pb-4">
         {displayTitle && (
           <h1 className="text-2xl font-bold mb-4">{displayTitle}</h1>
         )}
 
         <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <time dateTime={bill.published_at}>
-            公表日: {formatDate(bill.published_at)}
+            {formatDate(bill.published_at)}
           </time>
-          <BillStatusBadge
-            status={bill.status}
-            originatingHouse={bill.originating_house}
-          />
         </div>
       </CardHeader>
 
       <CardContent>
-        {displaySummary && <div className="mb-4">{displaySummary}</div>}
+        {displaySummary && (
+          <div className="mb-4 leading-relaxed">{displaySummary}</div>
+        )}
         <div className="text-xs text-muted-foreground font-medium">
           {bill.name}
         </div>
