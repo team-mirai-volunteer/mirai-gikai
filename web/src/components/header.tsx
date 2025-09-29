@@ -16,7 +16,7 @@ export async function Header() {
                 src="/img/logo.svg"
                 alt="みらい議会"
                 width={42}
-                height={42}
+                height={36}
               />
               <div className="text-xl font-bold">みらい議会</div>
             </Link>
