@@ -62,7 +62,13 @@ function StatusBadge({ message }: StatusBadgeProps) {
 }
 
 // プログレスステップコンポーネント
-function ProgressStep({ label, stepNumber, currentStep, isActive, isPreparing }: ProgressStepProps) {
+function ProgressStep({
+  label,
+  stepNumber,
+  currentStep,
+  isActive,
+  isPreparing,
+}: ProgressStepProps) {
   const isCurrentStep = isActive && stepNumber === currentStep;
 
   return (

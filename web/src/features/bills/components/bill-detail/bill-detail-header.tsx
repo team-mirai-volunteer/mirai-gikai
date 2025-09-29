@@ -2,7 +2,6 @@ import Image from "next/image";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils/date";
 import type { BillWithContent } from "../../types";
-import { BillStatusBadge } from "../bill-list/bill-status-badge";
 
 interface BillDetailHeaderProps {
   bill: BillWithContent;

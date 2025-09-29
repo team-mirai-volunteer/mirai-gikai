@@ -1,4 +1,3 @@
-import { DifficultySelector } from "@/features/bill-difficulty/components/difficulty-selector";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "../../types";
 import { BillShareButtons } from "../share/bill-share-buttons";
