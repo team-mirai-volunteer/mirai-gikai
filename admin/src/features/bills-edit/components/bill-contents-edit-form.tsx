@@ -98,8 +98,8 @@ export function BillContentsEditForm({
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <Tabs defaultValue="easy" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+            <Tabs defaultValue="normal" className="">
+              <TabsList className="grid w-full grid-cols-2">
                 {DIFFICULTY_LEVELS.map((level) => (
                   <TabsTrigger key={level.value} value={level.value}>
                     {level.label}
