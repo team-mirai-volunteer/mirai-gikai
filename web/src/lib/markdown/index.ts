@@ -1,5 +1,6 @@
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import rehypeStringify from "rehype-stringify";
+import remarkBreaks from "remark-breaks";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
@@ -23,6 +24,7 @@ const sanitizeSchema = {
  */
 const processor = unified()
   .use(remarkParse)
+  .use(remarkBreaks) // 改行を<br>タグに変換
   .use(remarkRehype)
   .use(rehypeWrapSections)
   .use(rehypeSanitize, sanitizeSchema)
