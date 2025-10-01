@@ -1,13 +1,13 @@
 import { FileText, Home, User } from "lucide-react";
 import { LogoutButton } from "@/features/auth/components/logout-button";
-import { getCurrentSession } from "@/features/auth/lib/auth-server";
+import { getCurrentAdmin } from "@/features/auth/lib/auth-server";
 
 export default async function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getCurrentSession();
+  const admin = await getCurrentAdmin();
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -28,7 +28,7 @@ export default async function MainLayout({
             <div className="flex items-center space-x-2 md:space-x-4">
               <div className="hidden sm:flex items-center space-x-2 text-sm text-gray-700">
                 <User className="h-4 w-4" />
-                <span className="hidden md:inline">{session?.user.email}</span>
+                <span className="hidden md:inline">{admin?.email}</span>
               </div>
               <LogoutButton />
             </div>

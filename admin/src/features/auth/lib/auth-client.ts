@@ -1,3 +1,4 @@
+import "client-only";
 import { createBrowserClient } from "@mirai-gikai/supabase";
 import { checkAdminPermission } from "@/lib/auth/permissions";
 
@@ -37,7 +38,7 @@ export async function getCurrentUser() {
     error,
   } = await authClient.getUser();
   if (error) {
-    throw new Error("ユーザー情報の取得に失敗しました。");
+    throw new Error(`ユーザー情報の取得に失敗しました。${error}`);
   }
   return user;
 }

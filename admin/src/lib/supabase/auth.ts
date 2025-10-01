@@ -1,3 +1,4 @@
+import "server-only";
 import type { Database } from "@mirai-gikai/supabase";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";

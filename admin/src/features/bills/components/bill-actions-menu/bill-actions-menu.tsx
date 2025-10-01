@@ -8,6 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { DeleteBillButton } from "./delete-bill-button";
+import { DuplicateBillButton } from "./duplicate-bill-button";
 
 interface BillActionsMenuProps {
   billId: string;
@@ -24,6 +25,7 @@ export function BillActionsMenu({ billId, billName }: BillActionsMenuProps) {
       </PopoverTrigger>
       <PopoverContent className="w-40 p-1" align="end">
         <div className="flex flex-col">
+          <DuplicateBillButton billId={billId} billName={billName} />
           <DeleteBillButton billId={billId} billName={billName} />
         </div>
       </PopoverContent>
