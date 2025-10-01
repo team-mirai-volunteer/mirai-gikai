@@ -29,7 +29,7 @@ export async function BillContent({ bill }: BillContentProps) {
             [&_a:hover]:!text-blue-800 [&_a:hover]:!underline
             [&_a]:transition-colors
             [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300
-            [&_blockquote]:pl-4 [&_blockquote]:italic
+            [&_blockquote]:pl-4
             [&_pre]:bg-gray-100 [&_pre]:p-4 [&_pre]:rounded [&_pre]:overflow-x-auto
             [&_code]:bg-gray-100 [&_code]:px-1 [&_code]:rounded
             [&_section]:bg-white [&_section]:px-4 [&_section]:py-8 [&_section]:rounded-md [&_section]:mb-9
