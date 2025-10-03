@@ -7,7 +7,7 @@ export async function getBills(): Promise<Bill[]> {
   const { data, error } = await supabase
     .from("bills")
     .select("*")
-    .order("published_at", { ascending: false });
+    .order("created_at", { ascending: false });
 
   if (error) {
     throw new Error(`議案の取得に失敗しました: ${error.message}`);

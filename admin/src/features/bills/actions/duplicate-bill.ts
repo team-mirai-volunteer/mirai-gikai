@@ -60,7 +60,12 @@ async function _fetchOriginalBill(billId: string) {
  * 複製した議案を作成
  */
 async function _createDuplicateBill(originalBill: Bill) {
-  const { id: _, ...billWithoutId } = originalBill;
+  const {
+    id: _,
+    created_at: __,
+    updated_at: ___,
+    ...billWithoutId
+  } = originalBill;
 
   const insertData: BillInsert = {
     ...billWithoutId,
