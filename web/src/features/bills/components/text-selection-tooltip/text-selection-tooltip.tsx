@@ -33,7 +33,7 @@ export function TextSelectionTooltip({
 
   return (
     <div
-      className={`fixed z-50 bg-white border border-gray-200 rounded-md shadow-lg p-1 ${
+      className={`fixed z-10 bg-white border border-gray-200 rounded-md shadow-lg p-1 ${
         shouldShake ? "animate-shake" : ""
       }`}
       style={position}
