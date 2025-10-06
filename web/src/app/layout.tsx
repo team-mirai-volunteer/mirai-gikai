@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Lexend_Giga, Noto_Sans_JP } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Header } from "@/components/header";
 import "./globals.css";
 
@@ -34,6 +35,7 @@ export default function RootLayout({
         <NextTopLoader showSpinner={false} color="#2aa693" />
         <Header />
         <main className="min-h-screen mt-20">{children}</main>
+        <SpeedInsights />
       </body>
     </html>
   );
