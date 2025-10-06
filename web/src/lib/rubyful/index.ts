@@ -3,10 +3,7 @@
  * ふりがな表示を管理するクライアントユーティリティ
  */
 
-import {
-  getRubyEnabledFromStorage,
-  setRubyEnabledToStorage,
-} from "./storage";
+import { getRubyEnabledFromStorage, setRubyEnabledToStorage } from "./storage";
 
 // DOM操作用の定数
 const SELECTORS = {
@@ -105,13 +102,7 @@ class RubyfulClient {
    * LocalStorageから表示状態を取得
    */
   getIsEnabledFromStorage(): boolean {
-<<<<<<< HEAD
     return getRubyEnabledFromStorage();
-=======
-    if (typeof window === "undefined") return false;
-    const stored = localStorage.getItem("rubyful-enabled");
-    return stored === "true";
->>>>>>> ada2766 (ルビ機能)
   }
 
   /**
