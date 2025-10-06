@@ -3,10 +3,7 @@
  * ふりがな表示を管理するクライアントユーティリティ
  */
 
-import {
-  getRubyEnabledFromStorage,
-  setRubyEnabledToStorage,
-} from "./storage";
+import { getRubyEnabledFromStorage, setRubyEnabledToStorage } from "./storage";
 
 // DOM操作用の定数
 const SELECTORS = {
