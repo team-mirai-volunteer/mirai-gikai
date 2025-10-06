@@ -3,8 +3,50 @@
  * ふりがな表示を管理するクライアントユーティリティ
  */
 
+import {
+  getRubyEnabledFromStorage,
+  setRubyEnabledToStorage,
+} from "./storage";
+
+// DOM操作用の定数
+const SELECTORS = {
+  RUBYFUL_RT: ".rubyful-rt",
+  RUBYFUL_RT_UNPROCESSED: ".rubyful-rt:not(.rubyful-processed)",
+} as const;
+
+const CLASSES = {
+  HIDDEN: "hidden",
+  RUBYFUL_PROCESSED: "rubyful-processed",
+} as const;
+
 class RubyfulClient {
   private isEnabled = false;
+
+  /**
+   * ルビ要素の表示状態を更新
+   */
+  private updateRubyVisibility(visible: boolean): void {
+    const action = visible ? "remove" : "add";
+
+    // Rubyful V2で自動生成されたルビ
+    document.querySelectorAll(SELECTORS.RUBYFUL_RT).forEach((element) => {
+      element.classList[action](CLASSES.HIDDEN);
+    });
+  }
+
+  /**
+   * 新しく追加されたルビ要素を処理
+   */
+  private processNewRubyElements(): void {
+    const action = this.isEnabled ? "remove" : "add";
+
+    document
+      .querySelectorAll(SELECTORS.RUBYFUL_RT_UNPROCESSED)
+      .forEach((element) => {
+        element.classList[action](CLASSES.HIDDEN);
+        element.classList.add(CLASSES.RUBYFUL_PROCESSED);
+      });
+  }
 
   /**
    * Rubyfulを初期化
@@ -13,8 +55,7 @@ class RubyfulClient {
     if (typeof window === "undefined") return;
 
     // LocalStorageから設定を復元
-    const stored = localStorage.getItem("rubyful-enabled");
-    this.isEnabled = stored === "true";
+    this.isEnabled = getRubyEnabledFromStorage();
 
     // 初期状態を適用
     if (this.isEnabled) {
@@ -29,12 +70,8 @@ class RubyfulClient {
    */
   show() {
     this.isEnabled = true;
-    localStorage.setItem("rubyful-enabled", "true");
-
-    // 全てのルビを表示
-    document.querySelectorAll(".rubyful-rt").forEach((element) => {
-      element.classList.remove("hidden");
-    });
+    setRubyEnabledToStorage(true);
+    this.updateRubyVisibility(true);
   }
 
   /**
@@ -42,12 +79,8 @@ class RubyfulClient {
    */
   hide() {
     this.isEnabled = false;
-    localStorage.setItem("rubyful-enabled", "false");
-
-    // 全てのルビを非表示
-    document.querySelectorAll(".rubyful-rt").forEach((element) => {
-      element.classList.add("hidden");
-    });
+    setRubyEnabledToStorage(false);
+    this.updateRubyVisibility(false);
   }
 
   /**
@@ -72,9 +105,7 @@ class RubyfulClient {
    * LocalStorageから表示状態を取得
    */
   getIsEnabledFromStorage(): boolean {
-    if (typeof window === "undefined") return false;
-    const stored = localStorage.getItem("rubyful-enabled");
-    return stored === "true";
+    return getRubyEnabledFromStorage();
   }
 
   /**
@@ -84,22 +115,7 @@ class RubyfulClient {
     if (typeof window === "undefined") return;
 
     const observer = new MutationObserver(() => {
-      // 新しく追加されたルビに対して表示状態を適用
-      if (this.isEnabled) {
-        document
-          .querySelectorAll(".rubyful-rt:not(.rubyful-processed)")
-          .forEach((element) => {
-            element.classList.remove("hidden");
-            element.classList.add("rubyful-processed");
-          });
-      } else {
-        document
-          .querySelectorAll(".rubyful-rt:not(.rubyful-processed)")
-          .forEach((element) => {
-            element.classList.add("hidden");
-            element.classList.add("rubyful-processed");
-          });
-      }
+      this.processNewRubyElements();
     });
 
     observer.observe(document.body, {
