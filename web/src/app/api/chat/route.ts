@@ -6,6 +6,9 @@ import {
 } from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
+import { createClient } from "@/lib/supabase/server";
+import { checkTokenLimit } from "@/features/chat/actions/check-token-limit";
+import { updateTokenUsage } from "@/features/chat/actions/update-token-usage";
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);
@@ -62,6 +65,34 @@ export async function POST(req: Request) {
   const difficultyLevel = (messages[0]?.metadata?.difficultyLevel ||
     "normal") as DifficultyLevelEnum;
 
+  // 匿名ユーザーIDを取得
+  const supabase = await createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  const userId = session.user.id;
+
+  // トークン制限チェック
+  const { canUse, remaining } = await checkTokenLimit(userId);
+
+  if (!canUse) {
+    return new Response(
+      JSON.stringify({
+        error: "Token limit reached",
+        message: "トークンの上限に達しました。",
+      }),
+      {
+        status: 429,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
   // 難易度に応じたシステムプロンプトの設定
   const getDifficultyInstructions = (level: DifficultyLevelEnum) => {
     switch (level) {
@@ -114,6 +145,12 @@ export async function POST(req: Request) {
     // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
     system: systemPrompt,
     messages: convertToModelMessages(messages),
+    onFinish: async ({ usage }) => {
+      // トークン使用量を記録（非同期）
+      if (usage) {
+        await updateTokenUsage(userId, usage.promptTokens, usage.completionTokens);
+      }
+    },
   });
 
   return result.toUIMessageStreamResponse();

@@ -2,8 +2,10 @@
 
 import { useChat } from "@ai-sdk/react";
 import Image from "next/image";
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import type { Bill } from "@/features/bills/types";
+import { useAnonymousAuth } from "../hooks/use-anonymous-auth";
+import { checkTokenLimit } from "../actions/check-token-limit";
 import { ChatWindow } from "./chat-window";
 
 interface ChatButtonProps {
@@ -18,9 +20,29 @@ export interface ChatButtonRef {
 export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
   ({ billContext, difficultyLevel }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
+    const { userId, isLoading } = useAnonymousAuth();
+    const [canUseChat, setCanUseChat] = useState(true);
+    const [tokenInfo, setTokenInfo] = useState<{
+      remaining: number;
+      tokenUsed: number;
+      tokenLimit: number;
+    } | null>(null);
 
     // Chat state をここで管理することで、モーダルが閉じても状態が保持される
     const chatState = useChat();
+
+    useEffect(() => {
+      async function checkLimit() {
+        if (!userId) return;
+
+        const { canUse, remaining, tokenUsed, tokenLimit } =
+          await checkTokenLimit(userId);
+        setCanUseChat(canUse);
+        setTokenInfo({ remaining, tokenUsed, tokenLimit });
+      }
+
+      checkLimit();
+    }, [userId]);
 
     useImperativeHandle(ref, () => ({
       openWithText: (selectedText: string) => {
@@ -32,6 +54,11 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
         });
       },
     }));
+
+    // 読み込み中またはトークン制限到達時は非表示
+    if (isLoading || !canUseChat) {
+      return null;
+    }
 
     return (
       <>
@@ -56,6 +83,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
           chatState={chatState}
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
+          tokenInfo={tokenInfo}
         />
       </>
     );

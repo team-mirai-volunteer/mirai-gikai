@@ -31,6 +31,11 @@ interface ChatWindowProps {
   chatState: ReturnType<typeof import("@ai-sdk/react").useChat>;
   isOpen: boolean;
   onClose: () => void;
+  tokenInfo: {
+    remaining: number;
+    tokenUsed: number;
+    tokenLimit: number;
+  } | null;
 }
 
 export function ChatWindow({
@@ -39,6 +44,7 @@ export function ChatWindow({
   chatState,
   isOpen,
   onClose,
+  tokenInfo,
 }: ChatWindowProps) {
   const [input, setInput] = useState("");
   const { messages, sendMessage, status, error } = chatState;
@@ -81,6 +87,14 @@ export function ChatWindow({
           <X className="h-5 w-5" />
         </button>
       </div>
+
+      {/* トークン残量表示 */}
+      {tokenInfo && (
+        <div className="border-b px-4 py-2 text-sm text-gray-600">
+          残りトークン: {tokenInfo.remaining.toLocaleString()} /{" "}
+          {tokenInfo.tokenLimit.toLocaleString()}
+        </div>
+      )}
 
       {/* メッセージエリア */}
       <Conversation className="flex-1">
