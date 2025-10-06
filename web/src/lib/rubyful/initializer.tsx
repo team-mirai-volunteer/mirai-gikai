@@ -2,7 +2,6 @@
 
 import Script from "next/script";
 import { rubyfulClient } from "./index";
-
 import "./styles.css";
 
 declare global {
