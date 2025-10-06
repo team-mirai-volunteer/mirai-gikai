@@ -6,13 +6,13 @@ import { DAILY_TOKEN_LIMIT } from "../constants/token-limits";
 export async function ensureAnonymousUser() {
   const supabase = await createClient();
 
-  // 既存セッションチェック
+  // 既存ユーザーチェック（より安全な方法）
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (session) {
-    return { userId: session.user.id, isNew: false };
+  if (user) {
+    return { userId: user.id, isNew: false };
   }
 
   // 匿名ユーザー作成

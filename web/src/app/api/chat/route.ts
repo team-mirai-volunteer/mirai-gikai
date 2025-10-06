@@ -65,17 +65,17 @@ export async function POST(req: Request) {
   const difficultyLevel = (messages[0]?.metadata?.difficultyLevel ||
     "normal") as DifficultyLevelEnum;
 
-  // 匿名ユーザーIDを取得
+  // 匿名ユーザーIDを取得（より安全な方法）
   const supabase = await createClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const userId = session.user.id;
+  const userId = user.id;
 
   // トークン制限チェック
   const { canUse, remaining } = await checkTokenLimit(userId);
