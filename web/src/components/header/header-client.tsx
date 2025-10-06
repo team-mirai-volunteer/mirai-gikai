@@ -1,10 +1,16 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
 import { DifficultySelector } from "@/features/bill-difficulty/components/difficulty-selector";
+import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
+import { HamburgerMenu } from "./hamburger-menu";
 
-export async function Header() {
-  const difficultyLevel = await getDifficultyLevel();
+interface HeaderClientProps {
+  difficultyLevel: DifficultyLevelEnum;
+}
+
+export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
   return (
     <header className="px-3 mt-4 fixed top-0 left-0 right-0 z-50">
       <div className="rounded-2xl bg-white shadow-md max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,8 +29,9 @@ export async function Header() {
           </div>
 
           {/* Navigation */}
-          <nav className="flex items-center space-x-8">
+          <nav className="flex items-center space-x-2">
             <DifficultySelector currentLevel={difficultyLevel} />
+            <HamburgerMenu />
           </nav>
         </div>
       </div>
