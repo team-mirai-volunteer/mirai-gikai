@@ -2,6 +2,7 @@
 
 import Script from "next/script";
 import { rubyfulClient } from "./index";
+
 import "./styles.css";
 
 declare global {
@@ -27,7 +28,7 @@ export function RubyfulInitializer() {
           // Rubyful V2を初期化（デフォルトで非表示）
           window.RubyfulV2.init({
             selector:
-              "main p:not(.no-ruby):not(.no-ruby *), main h1:not(.no-ruby):not(.no-ruby *), main h2:not(.no-ruby):not(.no-ruby *), main h3:not(.no-ruby):not(.no-ruby *), main h4:not(.no-ruby):not(.no-ruby *), main h5:not(.no-ruby):not(.no-ruby *), main h6:not(.no-ruby):not(.no-ruby *), main li:not(.no-ruby):not(.no-ruby *), main td:not(.no-ruby):not(.no-ruby *), main th:not(.no-ruby):not(.no-ruby *), main span:not(.no-ruby):not(.no-ruby *), main a:not(.no-ruby):not(.no-ruby *)",
+              "main p, main h1, main h2, main h3, main h4, main h5, main h6, main li, main td, main th, main span, main a",
             defaultDisplay: false,
             observeChanges: true,
             styles: {

@@ -105,7 +105,13 @@ class RubyfulClient {
    * LocalStorageから表示状態を取得
    */
   getIsEnabledFromStorage(): boolean {
+<<<<<<< HEAD
     return getRubyEnabledFromStorage();
+=======
+    if (typeof window === "undefined") return false;
+    const stored = localStorage.getItem("rubyful-enabled");
+    return stored === "true";
+>>>>>>> ada2766 (ルビ機能)
   }
 
   /**
