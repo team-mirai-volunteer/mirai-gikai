@@ -29,7 +29,7 @@ export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
           </div>
 
           {/* Navigation */}
-          <nav className="flex items-center space-x-4">
+          <nav className="flex items-center space-x-2">
             <DifficultySelector currentLevel={difficultyLevel} />
             <HamburgerMenu />
           </nav>
