@@ -173,3 +173,8 @@
 .animate-bounce-gentle {
   animation: bounce-gentle 2s ease-in-out infinite;
 }
+
+/* ルビボタンを非表示 */
+.ruby-button {
+  display: none;
+}

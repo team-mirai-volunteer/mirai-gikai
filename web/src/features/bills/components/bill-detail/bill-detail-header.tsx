@@ -40,11 +40,9 @@ export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
 
       <CardContent>
         {displaySummary && (
-          <div className="mb-4 leading-relaxed">{displaySummary}</div>
+          <p className="mb-4 leading-relaxed">{displaySummary}</p>
         )}
-        <div className="text-xs text-muted-foreground font-medium">
-          {bill.name}
-        </div>
+        <p className="text-xs text-muted-foreground font-medium">{bill.name}</p>
       </CardContent>
     </Card>
   );
