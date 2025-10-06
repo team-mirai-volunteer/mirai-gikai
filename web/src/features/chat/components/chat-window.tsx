@@ -64,106 +64,119 @@ export function ChatWindow({
   };
 
   return (
-    <div
-      className={`fixed inset-x-0 bottom-0 z-50 h-[70vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[600px] md:w-[400px] md:rounded-lg flex flex-col border ${
-        isOpen ? "visible" : "invisible"
-      }`}
-    >
-      {/* ヘッダー */}
-      <div className="flex items-center justify-between border-b p-4 bg-gray-50 md:rounded-t-lg">
-        <h2 className="text-lg font-semibold">議案について質問する</h2>
+    <>
+      {/* オーバーレイ */}
+      {isOpen && (
         <button
           type="button"
+          className="fixed inset-0 z-40 bg-black/50 transition-opacity cursor-default"
           onClick={onClose}
-          className="rounded-full p-1 hover:bg-gray-100"
-          aria-label="閉じる"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      </div>
+          aria-label="モーダルを閉じる"
+        />
+      )}
 
-      {/* メッセージエリア */}
-      <Conversation className="flex-1">
-        <ConversationContent>
-          {messages.length === 0 && (
-            <Message from="assistant">
-              <MessageContent>
-                <div>
-                  こんにちは！「{billContext.name}
-                  」について、ご質問はありませんか？
-                  <br />
-                  <br />
-                  例えば、以下のような質問にお答えできます：
-                  <br />• この議案の目的は何ですか？
-                  <br />• どのような影響がありますか？
-                  <br />
-                  <br />
-                  お気軽にご質問ください。
-                </div>
-              </MessageContent>
-            </Message>
-          )}
-          {messages.map((message) => (
-            <Message key={message.id} from={message.role}>
-              <MessageContent>
-                {message.parts.map((part, i: number) => {
-                  switch (part.type) {
-                    case "text":
-                      return (
-                        <Response
-                          key={`${message.id}-${i}`}
-                          className="break-words"
-                        >
-                          {part.text}
-                        </Response>
-                      );
-                    case "reasoning":
-                      return (
-                        <Reasoning
-                          key={`${message.id}-${i}`}
-                          className="w-full"
-                          // 最後のメッセージかつ最後のパートがストリーミング中
-                          isStreaming={
-                            status === "streaming" &&
-                            i === message.parts.length - 1 &&
-                            message.id === messages.at(-1)?.id
-                          }
-                        >
-                          <ReasoningTrigger />
-                          <ReasoningContent>{part.text}</ReasoningContent>
-                        </Reasoning>
-                      );
-                  }
-                  return null;
-                })}
-              </MessageContent>
-            </Message>
-          ))}
-          {status === "submitted" && <Loader />}
-        </ConversationContent>
-        <ConversationScrollButton />
-      </Conversation>
+      {/* チャットウィンドウ */}
+      <div
+        className={`fixed inset-x-0 bottom-0 z-50 h-[80vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[600px] md:w-[400px] md:rounded-lg rounded-t-lg flex flex-col border ${
+          isOpen ? "visible" : "invisible"
+        }`}
+      >
+        {/* ヘッダー */}
+        <div className="flex items-center justify-between border-b p-4 bg-gray-50 rounded-t-lg">
+          <h2 className="text-lg font-semibold">議案について質問する</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-1 hover:bg-gray-100"
+            aria-label="閉じる"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
 
-      {/* 入力エリア */}
-      <div className="m-4">
-        <PromptInput onSubmit={handleSubmit} className="flex items-end gap-1">
-          <PromptInputBody className="flex-1">
-            <PromptInputTextarea
-              onChange={(e) => setInput(e.target.value)}
-              value={input}
-              placeholder="質問を入力してください..."
-              // min-w-0, wrap-anywhere が無いと長文で親幅を押し広げてしまう
-              className={`min-h-8 min-w-0 wrap-anywhere`}
+        {/* メッセージエリア */}
+        <Conversation className="flex-1">
+          <ConversationContent>
+            {messages.length === 0 && (
+              <Message from="assistant">
+                <MessageContent>
+                  <div>
+                    こんにちは！「{billContext.name}
+                    」について、ご質問はありませんか？
+                    <br />
+                    <br />
+                    例えば、以下のような質問にお答えできます：
+                    <br />• この議案の目的は何ですか？
+                    <br />• どのような影響がありますか？
+                    <br />
+                    <br />
+                    お気軽にご質問ください。
+                  </div>
+                </MessageContent>
+              </Message>
+            )}
+            {messages.map((message) => (
+              <Message key={message.id} from={message.role}>
+                <MessageContent>
+                  {message.parts.map((part, i: number) => {
+                    switch (part.type) {
+                      case "text":
+                        return (
+                          <Response
+                            key={`${message.id}-${i}`}
+                            className="break-words"
+                          >
+                            {part.text}
+                          </Response>
+                        );
+                      case "reasoning":
+                        return (
+                          <Reasoning
+                            key={`${message.id}-${i}`}
+                            className="w-full"
+                            // 最後のメッセージかつ最後のパートがストリーミング中
+                            isStreaming={
+                              status === "streaming" &&
+                              i === message.parts.length - 1 &&
+                              message.id === messages.at(-1)?.id
+                            }
+                          >
+                            <ReasoningTrigger />
+                            <ReasoningContent>{part.text}</ReasoningContent>
+                          </Reasoning>
+                        );
+                    }
+                    return null;
+                  })}
+                </MessageContent>
+              </Message>
+            ))}
+            {status === "submitted" && <Loader />}
+          </ConversationContent>
+          <ConversationScrollButton />
+        </Conversation>
+
+        {/* 入力エリア */}
+        <div className="m-4">
+          <PromptInput onSubmit={handleSubmit} className="flex items-end gap-1">
+            <PromptInputBody className="flex-1">
+              <PromptInputTextarea
+                onChange={(e) => setInput(e.target.value)}
+                value={input}
+                placeholder="質問を入力してください..."
+                // min-w-0, wrap-anywhere が無いと長文で親幅を押し広げてしまう
+                className={`min-h-8 min-w-0 wrap-anywhere`}
+              />
+            </PromptInputBody>
+            <PromptInputSubmit
+              disabled={!input && !status}
+              status={status}
+              className="m-2"
             />
-          </PromptInputBody>
-          <PromptInputSubmit
-            disabled={!input && !status}
-            status={status}
-            className="m-2"
-          />
-        </PromptInput>
-        <PromptInputError status={status} error={error} />
+          </PromptInput>
+          <PromptInputError status={status} error={error} />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
