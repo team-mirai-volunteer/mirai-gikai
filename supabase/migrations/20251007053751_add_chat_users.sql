@@ -35,6 +35,11 @@ CREATE POLICY "chat_users_select_self"
     FOR SELECT
     USING (auth.uid() = id);
 
+CREATE POLICY "chat_users_insert_self"
+    ON chat_users
+    FOR INSERT
+    WITH CHECK (auth.uid() = id);
+
 CREATE POLICY "chat_users_update_self"
     ON chat_users
     FOR UPDATE

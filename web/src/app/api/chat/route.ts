@@ -64,6 +64,7 @@ export async function POST(req: Request) {
     const { data: authData, error } = await supabase.auth.signInAnonymously();
 
     if (error || !authData.session) {
+      console.error("Failed to initialize anonymous Supabase session", error);
       return new Response("Failed to initialize chat session", {
         status: 500,
       });
@@ -83,6 +84,7 @@ export async function POST(req: Request) {
     .maybeSingle();
 
   if (usageSelectError) {
+    console.error("Failed to fetch chat usage", usageSelectError);
     return new Response("Failed to fetch chat usage", { status: 500 });
   }
 
@@ -95,6 +97,7 @@ export async function POST(req: Request) {
     });
 
     if (insertError) {
+      console.error("Failed to initialize usage tracking", insertError);
       return new Response("Failed to initialize usage tracking", {
         status: 500,
       });
