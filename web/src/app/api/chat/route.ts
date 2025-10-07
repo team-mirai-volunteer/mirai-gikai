@@ -4,6 +4,9 @@ import {
   streamText,
   type UIMessage,
 } from "ai";
+import { createServerSupabase } from "@/lib/supabase/server";
+import { createAdminClient } from "@mirai-gikai/supabase";
+import { DAILY_TOKEN_LIMIT } from "@/features/chat/constants/token-limits";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 
@@ -56,6 +59,41 @@ export async function POST(req: Request) {
       difficultyLevel: string;
     }>[];
   } = await req.json();
+
+  // Ensure session (anonymous if needed)
+  const supabase = await createServerSupabase();
+  let {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) {
+    const { data } = await supabase.auth.signInAnonymously();
+    session = data.session!;
+  }
+  const userId = session.user.id;
+
+  // Check today's token usage via service role
+  const admin = createAdminClient();
+  // Use JST date (UTC+9) for daily tracking
+  const today = new Date(Date.now() + 9 * 60 * 60 * 1000)
+    .toISOString()
+    .split("T")[0];
+  const { data: usage } = await admin
+    .from("user_token_usage")
+    .select("token_used, token_limit")
+    .eq("user_id", userId)
+    .eq("date", today)
+    .maybeSingle();
+
+  const tokenUsed = usage?.token_used ?? 0;
+  const tokenLimit = usage?.token_limit ?? DAILY_TOKEN_LIMIT;
+  const remaining = tokenLimit - tokenUsed;
+
+  if (remaining <= 0) {
+    return new Response(
+      JSON.stringify({ error: "Token limit reached" }),
+      { status: 429, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
   // Extract bill context and difficulty level from the first user message data if available
   const billContext = messages[0]?.metadata?.billContext;
@@ -114,6 +152,37 @@ export async function POST(req: Request) {
     // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
     system: systemPrompt,
     messages: convertToModelMessages(messages),
+    onFinish: async ({ usage }) => {
+      try {
+        if (!usage) return;
+        const total = (usage.promptTokens || 0) + (usage.completionTokens || 0);
+        if (total <= 0) return;
+        // Upsert/update today's usage
+        const { data: current } = await admin
+          .from("user_token_usage")
+          .select("token_used")
+          .eq("user_id", userId)
+          .eq("date", today)
+          .maybeSingle();
+        const newUsed = (current?.token_used ?? 0) + total;
+        if (current) {
+          await admin
+            .from("user_token_usage")
+            .update({ token_used: newUsed })
+            .eq("user_id", userId)
+            .eq("date", today);
+        } else {
+          await admin.from("user_token_usage").insert({
+            user_id: userId,
+            date: today,
+            token_used: total,
+            token_limit: tokenLimit,
+          });
+        }
+      } catch (e) {
+        console.error("Failed to update token usage", e);
+      }
+    },
   });
 
   return result.toUIMessageStreamResponse();

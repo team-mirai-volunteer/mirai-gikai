@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Conversation,
   ConversationContent,
@@ -42,6 +42,7 @@ export function ChatWindow({
 }: ChatWindowProps) {
   const [input, setInput] = useState("");
   const { messages, sendMessage, status, error } = chatState;
+  const [tokenInfo, setTokenInfo] = useState<{ canUse: boolean; remaining: number; tokenLimit: number } | null>(null);
 
   const isResponding = status === "streaming" || status === "submitted";
 
@@ -63,6 +64,22 @@ export function ChatWindow({
     setInput("");
   };
 
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const res = await fetch("/api/chat/token-info", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled) setTokenInfo({ canUse: data.canUse, remaining: data.remaining, tokenLimit: data.tokenLimit });
+      } catch {
+        // ignore
+      }
+    };
+    load();
+    // re-check when modal is opened
+  }, [isOpen]);
+
   return (
     <div
       className={`fixed inset-x-0 bottom-0 z-50 h-[70vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[600px] md:w-[400px] md:rounded-lg flex flex-col border ${
@@ -81,6 +98,13 @@ export function ChatWindow({
           <X className="h-5 w-5" />
         </button>
       </div>
+
+      {/* 残りトークン表示 */}
+      {tokenInfo && (
+        <div className="border-b px-4 py-2 text-sm text-gray-600 bg-white">
+          残りトークン: {tokenInfo.remaining.toLocaleString()} / {tokenInfo.tokenLimit.toLocaleString()}
+        </div>
+      )}
 
       {/* メッセージエリア */}
       <Conversation className="flex-1">
@@ -151,13 +175,14 @@ export function ChatWindow({
             <PromptInputTextarea
               onChange={(e) => setInput(e.target.value)}
               value={input}
-              placeholder="質問を入力してください..."
+              placeholder={tokenInfo?.canUse === false ? "トークン上限に達しました" : "質問を入力してください..."}
               // min-w-0, wrap-anywhere が無いと長文で親幅を押し広げてしまう
               className={`min-h-8 min-w-0 wrap-anywhere`}
+              disabled={tokenInfo?.canUse === false}
             />
           </PromptInputBody>
           <PromptInputSubmit
-            disabled={!input && !status}
+            disabled={(!input && !status) || tokenInfo?.canUse === false}
             status={status}
             className="m-2"
           />

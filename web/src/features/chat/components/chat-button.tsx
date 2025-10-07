@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import Image from "next/image";
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import type { Bill } from "@/features/bills/types";
 import { ChatWindow } from "./chat-window";
 
@@ -22,6 +22,27 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
     // Chat state をここで管理することで、モーダルが閉じても状態が保持される
     const chatState = useChat();
 
+    const [canUseChat, setCanUseChat] = useState(true);
+
+    useEffect(() => {
+      let cancelled = false;
+      const load = async () => {
+        try {
+          const res = await fetch("/api/chat/token-info", { cache: "no-store" });
+          if (!res.ok) return;
+          const data = await res.json();
+          if (!cancelled) setCanUseChat(Boolean(data?.canUse));
+        } catch {
+          // ignore
+        }
+      };
+      load();
+      // also re-check when modal closes
+      return () => {
+        cancelled = true;
+      };
+    }, []);
+
     useImperativeHandle(ref, () => ({
       openWithText: (selectedText: string) => {
         const questionText = `「${selectedText}」について教えてください。`;
@@ -32,6 +53,10 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
         });
       },
     }));
+
+    if (!canUseChat) {
+      return null;
+    }
 
     return (
       <>
