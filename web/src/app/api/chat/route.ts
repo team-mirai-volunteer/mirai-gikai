@@ -6,6 +6,7 @@ import {
 } from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
+import { logTokenUsage } from "./token-usage";
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);
@@ -114,6 +115,9 @@ export async function POST(req: Request) {
     // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
     system: systemPrompt,
     messages: convertToModelMessages(messages),
+    onFinish({ totalUsage }) {
+      logTokenUsage(totalUsage);
+    },
   });
 
   return result.toUIMessageStreamResponse();
