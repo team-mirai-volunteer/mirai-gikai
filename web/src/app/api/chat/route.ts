@@ -109,6 +109,19 @@ export async function POST(req: Request) {
     );
   }
 
+  if (usageRecord.tokenRemaining <= 0) {
+    console.warn(
+      JSON.stringify({
+        event: "ai-chat-usage-limit-reached",
+        userId,
+        dateKey,
+      })
+    );
+    return new Response("No more tokens available for today", {
+      status: 429,
+    });
+  }
+
   const {
     messages,
   }: {
