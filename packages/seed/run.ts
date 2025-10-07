@@ -35,11 +35,15 @@ async function seedDatabase() {
       .delete()
       .neq("id", "00000000-0000-0000-0000-000000000000");
 
-    // Insert bills
+    // Insert bills (force publish_status to 'published')
     console.log("📄 Inserting bills...");
+    const billsToInsert = bills.map((b) => ({
+      ...b,
+      publish_status: "published" as Database["public"]["Enums"]["bill_publish_status"],
+    }));
     const { data: insertedBills, error: billsError } = await supabase
       .from("bills")
-      .insert(bills)
+      .insert(billsToInsert)
       .select("id, name");
 
     if (billsError) {
