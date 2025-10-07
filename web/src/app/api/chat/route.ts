@@ -88,7 +88,26 @@ export async function POST(req: Request) {
   const tokenLimit = usage?.token_limit ?? DAILY_TOKEN_LIMIT;
   const remaining = tokenLimit - tokenUsed;
 
+  if (process.env.NODE_ENV === "development") {
+    console.log("[chat] token budget (before)", {
+      userId,
+      tokenUsed,
+      tokenLimit,
+      remaining,
+      date: today,
+    });
+  }
+
   if (remaining <= 0) {
+    if (process.env.NODE_ENV === "development") {
+      console.log("[chat] limit reached -> rejecting", {
+        userId,
+        tokenUsed,
+        tokenLimit,
+        remaining,
+        date: today,
+      });
+    }
     return new Response(
       JSON.stringify({ error: "Token limit reached" }),
       { status: 429, headers: { "Content-Type": "application/json" } }
@@ -165,6 +184,20 @@ export async function POST(req: Request) {
           .eq("date", today)
           .maybeSingle();
         const newUsed = (current?.token_used ?? 0) + total;
+        if (process.env.NODE_ENV === "development") {
+          const remainingBefore = tokenLimit - (current?.token_used ?? 0);
+          const remainingAfter = tokenLimit - newUsed;
+          console.log("[chat] usage", {
+            userId,
+            promptTokens: usage.promptTokens || 0,
+            completionTokens: usage.completionTokens || 0,
+            total,
+            tokenLimit,
+            remainingBefore,
+            remainingAfter,
+            date: today,
+          });
+        }
         if (current) {
           await admin
             .from("user_token_usage")

@@ -99,13 +99,6 @@ export function ChatWindow({
         </button>
       </div>
 
-      {/* 残りトークン表示 */}
-      {tokenInfo && (
-        <div className="border-b px-4 py-2 text-sm text-gray-600 bg-white">
-          残りトークン: {tokenInfo.remaining.toLocaleString()} / {tokenInfo.tokenLimit.toLocaleString()}
-        </div>
-      )}
-
       {/* メッセージエリア */}
       <Conversation className="flex-1">
         <ConversationContent>
