@@ -12,4 +12,3 @@ export function logTokenUsage(totalUsage?: LanguageModelUsage | null) {
     })
   );
 }
-

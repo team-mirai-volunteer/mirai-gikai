@@ -4,6 +4,9 @@ import {
   streamText,
   type UIMessage,
 } from "ai";
+import { NextResponse } from "next/server";
+
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 import { logTokenUsage } from "@/features/chat/lib/token-usage";
@@ -49,6 +52,22 @@ async function _mockResponse(_req: Request) {
 }
 
 export async function POST(req: Request) {
+  const { supabase, applySessionCookies } = await createSupabaseServerClient();
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    const { data: authData, error } = await supabase.auth.signInAnonymously();
+
+    if (error || !authData.session) {
+      return new Response("Failed to initialize chat session", {
+        status: 500,
+      });
+    }
+  }
+
   const {
     messages,
   }: {
@@ -120,5 +139,12 @@ export async function POST(req: Request) {
     },
   });
 
-  return result.toUIMessageStreamResponse();
+  const response = result.toUIMessageStreamResponse();
+  const nextResponse = new NextResponse(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: response.headers,
+  });
+
+  return applySessionCookies(nextResponse);
 }
