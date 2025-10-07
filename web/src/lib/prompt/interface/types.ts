@@ -7,7 +7,7 @@ export interface PromptMetadata {
 }
 
 export interface PromptVariables {
-  [key: string]: string | number | boolean;
+  [key: string]: string;
 }
 
 export interface CompiledPrompt {

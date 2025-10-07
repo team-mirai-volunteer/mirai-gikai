@@ -6,7 +6,7 @@ import {
 } from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
-import { createPromptRepository, type CompiledPrompt } from "@/lib/llm";
+import { createPromptProvider, type CompiledPrompt } from "@/lib/prompt";
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
   const difficultyLevel = (messages[0]?.metadata?.difficultyLevel ||
     "normal") as DifficultyLevelEnum;
 
-  const promptRepo = createPromptRepository();
+  const promptProvider = createPromptProvider();
 
   // 難易度に応じたプロンプト名を決定
   const promptName = `bill-chat-system-${difficultyLevel}`;
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
   // Langfuseからプロンプト取得
   let promptResult: CompiledPrompt;
   try {
-    promptResult = await promptRepo.getPrompt(promptName, {
+    promptResult = await promptProvider.getPrompt(promptName, {
       billName: billContext?.name || "",
       billTitle: billContext?.bill_content?.title || "",
       billSummary: billContext?.bill_content?.summary || "",

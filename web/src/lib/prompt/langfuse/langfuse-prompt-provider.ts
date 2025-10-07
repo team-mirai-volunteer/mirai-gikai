@@ -1,8 +1,8 @@
 import type { Langfuse } from "langfuse";
-import type { PromptRepository } from "./repository";
-import type { CompiledPrompt, PromptVariables } from "../langfuse/types";
+import type { PromptProvider } from "../interface/prompt-provider";
+import type { CompiledPrompt, PromptVariables } from "../interface/types";
 
-export class LangfusePromptRepository implements PromptRepository {
+export class LangfusePromptProvider implements PromptProvider {
   constructor(private client: Langfuse) {}
 
   async getPrompt(
@@ -10,19 +10,15 @@ export class LangfusePromptRepository implements PromptRepository {
     variables?: PromptVariables
   ): Promise<CompiledPrompt> {
     try {
-      // Langfuseからプロンプトを取得
       const fetchedPrompt = await this.client.getPrompt(name);
 
-      // 変数があればコンパイル、なければそのまま使用
-      const content = variables
-        ? fetchedPrompt.compile(variables)
-        : fetchedPrompt.prompt;
+      const content = fetchedPrompt.compile(variables || {});
 
       // Vercel AI SDKのtelemetryに渡すメタデータを構築
       const metadata = {
         name: fetchedPrompt.name,
         version: fetchedPrompt.version,
-        config: fetchedPrompt.config,
+        config: (fetchedPrompt.config || {}) as Record<string, unknown>,
         labels: fetchedPrompt.labels || [],
         tags: fetchedPrompt.tags || [],
       };
