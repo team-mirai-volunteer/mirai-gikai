@@ -11,7 +11,10 @@ import { getJstCurrentDate } from "@/lib/utils/date";
 import { DAILY_TOKEN_LIMIT } from "@/features/chat/constants/token-limits";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
-import { logTokenUsage } from "@/features/chat/lib/token-usage";
+import {
+  applyChatUsageDelta,
+  ensureChatUsageRecord,
+} from "@/features/chat/lib/usage-tracker";
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);
@@ -90,32 +93,20 @@ export async function POST(req: Request) {
     userId = user.id;
   }
 
-  const { data: existingUsage, error: usageSelectError } = await supabase
-    .from("chat_users")
-    .select("token_used, token_remaining")
-    .eq("id", userId)
-    .eq("date", dateKey)
-    .maybeSingle();
+  let usageRecord;
 
-  if (usageSelectError) {
-    console.error("Failed to fetch chat usage", usageSelectError);
-    return new Response("Failed to fetch chat usage", { status: 500 });
-  }
-
-  if (!existingUsage) {
-    const { error: insertError } = await supabase.from("chat_users").insert({
-      id: userId,
-      date: dateKey,
-      token_used: 0,
-      token_remaining: DAILY_TOKEN_LIMIT,
+  try {
+    usageRecord = await ensureChatUsageRecord({
+      supabase,
+      userId,
+      dateKey,
     });
-
-    if (insertError) {
-      console.error("Failed to initialize usage tracking", insertError);
-      return new Response("Failed to initialize usage tracking", {
-        status: 500,
-      });
-    }
+  } catch (error) {
+    console.error(error);
+    return new Response(
+      error instanceof Error ? error.message : "Failed to ensure usage record",
+      { status: 500 }
+    );
   }
 
   const {
@@ -124,7 +115,7 @@ export async function POST(req: Request) {
     messages: UIMessage<{
       billContext: BillWithContent;
       difficultyLevel: string;
-    }>[];
+    }>;
   } = await req.json();
 
   // Extract bill context and difficulty level from the first user message data if available
@@ -184,8 +175,18 @@ export async function POST(req: Request) {
     // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
     system: systemPrompt,
     messages: convertToModelMessages(messages),
-    onFinish({ totalUsage }) {
-      logTokenUsage(totalUsage);
+    onFinish: async ({ totalUsage }) => {
+      try {
+        usageRecord = await applyChatUsageDelta({
+          supabase,
+          userId,
+          dateKey,
+          totalUsage,
+          currentUsage: usageRecord,
+        });
+      } catch (error) {
+        console.error(error);
+      }
     },
   });
 

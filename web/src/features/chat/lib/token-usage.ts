@@ -12,3 +12,17 @@ export function logTokenUsage(totalUsage?: LanguageModelUsage | null) {
     })
   );
 }
+
+export function getTokensUsed(totalUsage?: LanguageModelUsage | null) {
+  if (!totalUsage) return 0;
+
+  const totalTokens = totalUsage.totalTokens ?? 0;
+  const input = totalUsage.inputTokens ?? 0;
+  const output = totalUsage.outputTokens ?? 0;
+
+  if (totalTokens) return totalTokens;
+
+  const tokensUsed = input + output;
+
+  return Number.isFinite(tokensUsed) ? tokensUsed : 0;
+}
