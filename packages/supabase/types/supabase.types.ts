@@ -114,6 +114,33 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_users: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          token_remaining: number
+          token_used: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id: string
+          token_remaining?: number
+          token_used?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          token_remaining?: number
+          token_used?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       chats: {
         Row: {
           bill_id: string
