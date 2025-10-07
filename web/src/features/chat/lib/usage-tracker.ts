@@ -106,6 +106,14 @@ export async function applyChatUsageDelta({
   const tokensUsedNow = getTokensUsed(totalUsage);
 
   if (!tokensUsedNow) {
+    console.log(
+      JSON.stringify({
+        event: "ai-chat-usage-remaining",
+        userId,
+        dateKey,
+        tokenRemaining: currentUsage.tokenRemaining,
+      })
+    );
     return currentUsage;
   }
 
@@ -125,9 +133,20 @@ export async function applyChatUsageDelta({
     throw new Error(`Failed to update usage tracking: ${error.message}`);
   }
 
-  return {
+  const updatedRecord = {
     tokenUsed,
     tokenRemaining,
   };
+
+  console.log(
+    JSON.stringify({
+      event: "ai-chat-usage-remaining",
+      userId,
+      dateKey,
+      tokenRemaining,
+    })
+  );
+
+  return updatedRecord;
 }
 
