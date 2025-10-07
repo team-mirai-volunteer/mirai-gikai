@@ -1,13 +1,13 @@
 -- Create chat_users table to track anonymous chat usage
 
 CREATE TABLE chat_users (
-    id UUID PRIMARY KEY,
-    date DATE NOT NULL,
+    id UUID NOT NULL,
+    date DATE NOT NULL DEFAULT CURRENT_DATE,
     token_used INTEGER NOT NULL DEFAULT 0,
-    token_remaining INTEGER NOT NULL,
+    token_remaining INTEGER NOT NULL DEFAULT 10000,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    UNIQUE (id, date)
+    CONSTRAINT chat_users_pkey PRIMARY KEY (id, date)
 );
 
 COMMENT ON TABLE chat_users IS 'AIチャットの匿名ユーザーごとの日次利用状況を記録するテーブル';
@@ -21,7 +21,7 @@ ALTER TABLE chat_users
     FOREIGN KEY (id) REFERENCES auth.users (id)
     ON DELETE CASCADE;
 
-CREATE INDEX idx_chat_users_id_date ON chat_users (id, date);
+CREATE INDEX idx_chat_users_id ON chat_users (id);
 
 ALTER TABLE chat_users ENABLE ROW LEVEL SECURITY;
 
@@ -29,4 +29,15 @@ CREATE TRIGGER update_chat_users_updated_at
     BEFORE UPDATE ON chat_users
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
+
+CREATE POLICY "chat_users_select_self"
+    ON chat_users
+    FOR SELECT
+    USING (auth.uid() = id);
+
+CREATE POLICY "chat_users_update_self"
+    ON chat_users
+    FOR UPDATE
+    USING (auth.uid() = id)
+    WITH CHECK (auth.uid() = id);
 

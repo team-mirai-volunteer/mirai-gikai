@@ -7,6 +7,8 @@ import {
 import { NextResponse } from "next/server";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getJstCurrentDate } from "@/lib/utils/date";
+import { DAILY_TOKEN_LIMIT } from "@/features/chat/constants/token-limits";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 import { logTokenUsage } from "@/features/chat/lib/token-usage";
@@ -54,7 +56,7 @@ async function _mockResponse(_req: Request) {
 export async function POST(req: Request) {
   const { supabase, applySessionCookies } = await createSupabaseServerClient();
 
-  const {
+  let {
     data: { session },
   } = await supabase.auth.getSession();
 
@@ -63,6 +65,37 @@ export async function POST(req: Request) {
 
     if (error || !authData.session) {
       return new Response("Failed to initialize chat session", {
+        status: 500,
+      });
+    }
+
+    session = authData.session;
+  }
+
+  const dateKey = getJstCurrentDate();
+  const userId = session.user.id;
+
+  const { data: existingUsage, error: usageSelectError } = await supabase
+    .from("chat_users")
+    .select("token_used, token_remaining")
+    .eq("id", userId)
+    .eq("date", dateKey)
+    .maybeSingle();
+
+  if (usageSelectError) {
+    return new Response("Failed to fetch chat usage", { status: 500 });
+  }
+
+  if (!existingUsage) {
+    const { error: insertError } = await supabase.from("chat_users").insert({
+      id: userId,
+      date: dateKey,
+      token_used: 0,
+      token_remaining: DAILY_TOKEN_LIMIT,
+    });
+
+    if (insertError) {
+      return new Response("Failed to initialize usage tracking", {
         status: 500,
       });
     }
