@@ -1,0 +1,6 @@
+/* Rubyful V2 関連のスタイル */
+
+/* ルビボタンを非表示 */
+.ruby-button {
+  display: none;
+}
