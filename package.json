@@ -5,8 +5,10 @@
   "scripts": {
     "supabase:types:gen": "npx supabase gen types typescript --local > packages/supabase/types/supabase.types.ts",
     "supabase:migrate": "npx supabase migration up && pnpm run supabase:types:gen",
+    "supabase:reset": "npx supabase db reset && pnpm run supabase:types:gen",
     "dev": "dotenv -e .env -- pnpm -r --stream --parallel run dev",
     "seed": "dotenv -e .env -- pnpm --filter @mirai-gikai/seed seed",
+    "db:reset": "pnpm run supabase:reset && pnpm run seed",
     "test": "pnpm -r --parallel run test",
     "typecheck": "pnpm -r run typecheck",
     "lint": "biome format . && biome lint .",

@@ -38,16 +38,21 @@ export async function ensureAnonymousUser() {
   const supabase = await createSupabaseServerClient();
 
   const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
 
-  if (sessionError) {
-    throw new Error(`Failed to fetch Supabase session: ${sessionError.message}`);
+  if (
+    userError &&
+    userError.message &&
+    userError.status !== 401 &&
+    userError.status !== 400
+  ) {
+    throw new Error(`Failed to fetch Supabase user: ${userError.message}`);
   }
 
-  if (session?.user) {
-    return { userId: session.user.id, isNew: false } as const;
+  if (user) {
+    return { userId: user.id, isNew: false } as const;
   }
 
   const { data, error } = await supabase.auth.signInAnonymously();
