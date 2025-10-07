@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Enable instrumentation for OpenTelemetry
+  experimental: {
+    instrumentationHook: true,
+  },
   images: {
     remotePatterns: [
       {
