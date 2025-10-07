@@ -1,5 +1,6 @@
 import { LangfuseExporter } from "langfuse-vercel";
 import { NodeSDK } from "@opentelemetry/sdk-node";
+import { env } from "./src/lib/env";
 
 let isInitialized = false;
 
@@ -9,10 +10,7 @@ export async function registerNodeTelemetry() {
   }
 
   try {
-    const publicKey = process.env.LANGFUSE_PUBLIC_KEY;
-    const secretKey = process.env.LANGFUSE_SECRET_KEY;
-    const baseUrl =
-      process.env.LANGFUSE_BASE_URL || "https://cloud.langfuse.com";
+    const { publicKey, secretKey, baseUrl } = env.langfuse;
 
     if (!publicKey || !secretKey) {
       console.warn(
@@ -25,7 +23,6 @@ export async function registerNodeTelemetry() {
       publicKey,
       secretKey,
       baseUrl,
-      // VERCEL_ENVを環境として使用
       environment: process.env.VERCEL_ENV || "development",
     });
 
@@ -35,11 +32,7 @@ export async function registerNodeTelemetry() {
 
     sdk.start();
     isInitialized = true;
-
-    console.log("✅ Langfuse telemetry initialized");
-    console.log("   Environment:", process.env.VERCEL_ENV || "development");
-    console.log("   Base URL:", baseUrl);
   } catch (error) {
-    console.error("❌ Failed to initialize Langfuse telemetry:", error);
+    console.warn("⚠️ Failed to initialize Langfuse telemetry:", error);
   }
 }

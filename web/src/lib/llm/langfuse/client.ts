@@ -1,13 +1,11 @@
 import { Langfuse } from "langfuse";
+import { env } from "@/lib/env";
 
 let langfuseClient: Langfuse | null = null;
 
 export function getLangfuseClient(): Langfuse {
   if (!langfuseClient) {
-    const publicKey = process.env.LANGFUSE_PUBLIC_KEY;
-    const secretKey = process.env.LANGFUSE_SECRET_KEY;
-    const baseUrl =
-      process.env.LANGFUSE_BASE_URL || "https://cloud.langfuse.com";
+    const { publicKey, secretKey, baseUrl } = env.langfuse;
 
     if (!publicKey || !secretKey) {
       throw new Error(
