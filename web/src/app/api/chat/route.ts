@@ -6,7 +6,7 @@ import {
 } from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
-import { createPromptRepository } from "@/lib/llm";
+import { createPromptRepository, type CompiledPrompt } from "@/lib/llm";
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);
@@ -65,19 +65,31 @@ export async function POST(req: Request) {
 
   const promptRepo = createPromptRepository();
 
-  try {
-    // 難易度に応じたプロンプト名を決定
-    const promptName = `bill-chat-system-${difficultyLevel}`;
+  // 難易度に応じたプロンプト名を決定
+  const promptName = `bill-chat-system-${difficultyLevel}`;
 
-    // Langfuseからプロンプト取得
-    const promptResult = await promptRepo.getPrompt(promptName, {
+  // Langfuseからプロンプト取得
+  let promptResult: CompiledPrompt;
+  try {
+    promptResult = await promptRepo.getPrompt(promptName, {
       billName: billContext?.name || "",
       billTitle: billContext?.bill_content?.title || "",
       billSummary: billContext?.bill_content?.summary || "",
       billContent: billContext?.bill_content?.content || "",
     });
+  } catch (error) {
+    console.error("Prompt fetch error:", error);
+    return new Response(
+      JSON.stringify({
+        error: "プロンプトの取得に失敗しました",
+        details: error instanceof Error ? error.message : String(error),
+      }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
-    // Vercel AI SDKでストリーミング生成
+  // Vercel AI SDKでストリーミング生成
+  try {
     const result = streamText({
       model: "openai/gpt-4o-mini",
       // "openai/gpt-5-mini" Context 400K Input Tokens $0.25/M Output Tokens $2.00/M Cache Read Tokens $0.03/M
@@ -89,7 +101,7 @@ export async function POST(req: Request) {
         isEnabled: true,
         functionId: "bill-chat",
         metadata: {
-          langfusePrompt: JSON.stringify(promptResult.langfuseMetadata),
+          langfusePrompt: JSON.stringify(promptResult.metadata),
           billId: billContext?.id || "",
           difficultyLevel,
         },
@@ -98,10 +110,10 @@ export async function POST(req: Request) {
 
     return result.toUIMessageStreamResponse();
   } catch (error) {
-    console.error("Chat API error:", error);
+    console.error("LLM generation error:", error);
     return new Response(
       JSON.stringify({
-        error: "プロンプトの取得に失敗しました",
+        error: "応答の生成に失敗しました",
         details: error instanceof Error ? error.message : String(error),
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }

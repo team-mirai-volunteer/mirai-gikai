@@ -1,4 +1,4 @@
-import type { PromptVariables, PromptResult } from "../langfuse/types";
+import type { CompiledPrompt, PromptVariables } from "../langfuse/types";
 
 export interface PromptRepository {
   /**
@@ -7,5 +7,5 @@ export interface PromptRepository {
    * @param variables テンプレート変数
    * @throws Error プロンプト取得失敗時
    */
-  getPrompt(name: string, variables?: PromptVariables): Promise<PromptResult>;
+  getPrompt(name: string, variables?: PromptVariables): Promise<CompiledPrompt>;
 }

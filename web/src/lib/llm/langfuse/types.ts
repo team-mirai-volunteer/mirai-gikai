@@ -1,8 +1,8 @@
 /**
- * Langfuseプロンプトのメタデータ
- * Vercel AI SDKのexperimental_telemetry.metadata.langfusePromptに渡す
+ * プロンプトのメタデータ
+ * Vercel AI SDKのexperimental_telemetry.metadataに渡す
  */
-export interface LangfusePromptMetadata {
+export interface PromptMetadata {
   name: string;
   version: number;
   config: Record<string, unknown>;
@@ -18,11 +18,11 @@ export interface PromptVariables {
 }
 
 /**
- * プロンプト取得結果
+ * コンパイル済みプロンプト
  */
-export interface PromptResult {
+export interface CompiledPrompt {
   /** コンパイル済みプロンプト文字列 */
   content: string;
-  /** Langfuseメタデータ（telemetryに渡す） */
-  langfuseMetadata: LangfusePromptMetadata;
+  /** プロンプトメタデータ（telemetryに渡す） */
+  metadata: PromptMetadata;
 }

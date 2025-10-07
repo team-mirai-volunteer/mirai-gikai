@@ -13,8 +13,8 @@ export function createPromptRepository(): PromptRepository {
 }
 
 export type {
-  LangfusePromptMetadata,
-  PromptResult,
+  CompiledPrompt,
+  PromptMetadata,
   PromptVariables,
 } from "./langfuse/types";
 export type { PromptRepository } from "./prompt/repository";
