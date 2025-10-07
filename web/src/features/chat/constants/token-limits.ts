@@ -1,2 +1,2 @@
-export const DAILY_TOKEN_LIMIT = 2_000;
+export const DAILY_TOKEN_LIMIT = 100_000;
 
