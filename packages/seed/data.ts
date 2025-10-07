@@ -11,6 +11,7 @@ export const bills: BillInsert[] = [
     status: "in_originating_house",
     status_note: "衆議院で審議中",
     published_at: "2025-08-01T09:00:00+09:00",
+    publish_status: "published",
   },
   {
     name: "こども家庭庁予算大幅増額法案",
@@ -18,6 +19,7 @@ export const bills: BillInsert[] = [
     status: "in_receiving_house",
     status_note: "参議院で可決、衆議院へ送付",
     published_at: "2025-01-20T10:00:00+09:00",
+    publish_status: "published",
   },
   {
     name: "18歳選挙権完全実施法案",
@@ -25,6 +27,7 @@ export const bills: BillInsert[] = [
     status: "introduced",
     status_note: "衆議院に提出済み",
     published_at: "2025-02-01T09:00:00+09:00",
+    publish_status: "published",
   },
   {
     name: "学校給食無償化促進法案",
@@ -32,6 +35,7 @@ export const bills: BillInsert[] = [
     status: "enacted",
     status_note: "両院で可決、4月から実施",
     published_at: "2025-01-10T09:00:00+09:00",
+    publish_status: "published",
   },
   {
     name: "中学生・高校生向けプログラミング教育必修化法案",
@@ -39,6 +43,7 @@ export const bills: BillInsert[] = [
     status: "rejected",
     status_note: "衆議院本会議で否決",
     published_at: "2024-11-15T10:00:00+09:00",
+    publish_status: "published",
   },
 ];
 
