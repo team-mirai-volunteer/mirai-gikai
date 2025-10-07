@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Conversation,
   ConversationContent,
@@ -24,6 +24,7 @@ import {
 } from "@/components/ai-elements/reasoning";
 import { Response } from "@/components/ai-elements/response";
 import type { Bill } from "@/features/bills/types";
+import { RATE_LIMIT_ERROR_MESSAGE } from "../constants/token-limits";
 
 interface ChatWindowProps {
   billContext: Bill;
@@ -31,6 +32,7 @@ interface ChatWindowProps {
   chatState: ReturnType<typeof import("@ai-sdk/react").useChat>;
   isOpen: boolean;
   onClose: () => void;
+  isRateLimited?: boolean;
 }
 
 export function ChatWindow({
@@ -39,6 +41,7 @@ export function ChatWindow({
   chatState,
   isOpen,
   onClose,
+  isRateLimited = false,
 }: ChatWindowProps) {
   const [input, setInput] = useState("");
   const { messages, sendMessage, status, error } = chatState;
@@ -61,6 +64,7 @@ export function ChatWindow({
 
     // Reset form
     setInput("");
+
   };
 
   return (
@@ -154,15 +158,21 @@ export function ChatWindow({
               placeholder="質問を入力してください..."
               // min-w-0, wrap-anywhere が無いと長文で親幅を押し広げてしまう
               className={`min-h-8 min-w-0 wrap-anywhere`}
+              disabled={isRateLimited}
             />
           </PromptInputBody>
           <PromptInputSubmit
-            disabled={!input && !status}
+            disabled={(!input && !status) || isRateLimited}
             status={status}
             className="m-2"
           />
         </PromptInput>
         <PromptInputError status={status} error={error} />
+        {isRateLimited && (
+          <div className="mt-2 text-xs text-red-600">
+            {RATE_LIMIT_ERROR_MESSAGE}
+          </div>
+        )}
       </div>
     </div>
   );

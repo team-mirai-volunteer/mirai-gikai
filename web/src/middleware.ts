@@ -5,26 +5,29 @@ import {
   isPageSpeedInsights,
   validateBasicAuth,
 } from "./lib/basic-auth";
+import { updateSupabaseSession } from "@/features/chat/server/supabase-middleware";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  const supabaseResponse = await updateSupabaseSession(request);
+
   const authConfig = getBasicAuthConfig();
 
   // Basic認証の設定がない場合はスキップ
   if (!authConfig) {
-    return NextResponse.next();
+    return supabaseResponse;
   }
 
   // HTML ナビゲーションだけ認証（画像やJSON, css/js, fetch等は通す）
-  if (!_isHtmlRequest(request)) return NextResponse.next();
+  if (!_isHtmlRequest(request)) return supabaseResponse;
 
   // PageSpeed Insightsからのアクセスは認証をスキップ
   if (isPageSpeedInsights(request)) {
-    return NextResponse.next();
+    return supabaseResponse;
   }
 
   // Basic認証の検証
   if (validateBasicAuth(request, authConfig)) {
-    return NextResponse.next();
+    return supabaseResponse;
   }
 
   return createUnauthorizedResponse();

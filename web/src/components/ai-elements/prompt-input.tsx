@@ -518,15 +518,17 @@ export const PromptInputError = ({
     return null;
   }
 
+  const errorMessage = error?.message;
+
   return (
     <div
       className={cn("px-3 py-2 text-xs text-red-600 border-t", className)}
       {...props}
     >
-      <div>エラーが発生しました。数秒後に再送信してください。</div>
-      {error?.message && (
+      <div>{errorMessage ?? "エラーが発生しました。数秒後に再送信してください。"}</div>
+      {errorMessage && (
         <div className="mt-1 text-red-500 opacity-80">
-          詳細: {error.message}
+          詳細: {errorMessage}
         </div>
       )}
     </div>

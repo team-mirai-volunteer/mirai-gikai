@@ -6,6 +6,16 @@ import {
 } from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
+import {
+  ensureAnonymousUser,
+  markResponseStreaming,
+} from "@/features/chat/server/anonymous-auth";
+import {
+  checkTokenLimit,
+  ensureTokenUsageRecord,
+  updateTokenUsage,
+} from "@/features/chat/server/token-usage";
+import { RATE_LIMIT_ERROR_MESSAGE } from "@/features/chat/constants/token-limits";
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);
@@ -56,6 +66,42 @@ export async function POST(req: Request) {
       difficultyLevel: string;
     }>[];
   } = await req.json();
+
+  const { userId } = await ensureAnonymousUser();
+
+  const usageSnapshot = await ensureTokenUsageRecord(userId);
+
+  if (usageSnapshot.tokenRemaining <= 0) {
+    return new Response(
+      JSON.stringify({
+        error: RATE_LIMIT_ERROR_MESSAGE,
+        tokenLimit: usageSnapshot.tokenLimit,
+        tokenUsed: usageSnapshot.tokenUsed,
+      }),
+      {
+        status: 429,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
+  const {
+    usage: { tokenRemaining },
+  } = await checkTokenLimit(userId);
+
+  if (tokenRemaining <= 0) {
+    return new Response(
+      JSON.stringify({
+        error: RATE_LIMIT_ERROR_MESSAGE,
+        tokenLimit: usageSnapshot.tokenLimit,
+        tokenUsed: usageSnapshot.tokenUsed,
+      }),
+      {
+        status: 429,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
 
   // Extract bill context and difficulty level from the first user message data if available
   const billContext = messages[0]?.metadata?.billContext;
@@ -116,5 +162,25 @@ export async function POST(req: Request) {
     messages: convertToModelMessages(messages),
   });
 
-  return result.toUIMessageStreamResponse();
+  return result.toUIMessageStreamResponse({
+    onStart: async () => {
+      try {
+        await markResponseStreaming();
+      } catch (error) {
+        console.error("Failed to refresh Supabase session", error);
+      }
+    },
+    onFinish: async ({ usage }) => {
+      if (!usage) return;
+
+      try {
+        await updateTokenUsage(userId, {
+          inputTokens: usage.inputTokens ?? 0,
+          outputTokens: usage.outputTokens ?? 0,
+        });
+      } catch (error) {
+        console.error("Failed to update token usage", error);
+      }
+    },
+  });
 }
