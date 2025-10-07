@@ -16,11 +16,6 @@ COMMENT ON COLUMN chat_users.date IS '利用日（JST換算）';
 COMMENT ON COLUMN chat_users.token_used IS '当日利用したトークン数';
 COMMENT ON COLUMN chat_users.token_remaining IS '当日残り利用可能なトークン数';
 
-ALTER TABLE chat_users
-    ADD CONSTRAINT chat_users_auth_user_fk
-    FOREIGN KEY (id) REFERENCES auth.users (id)
-    ON DELETE CASCADE;
-
 CREATE INDEX idx_chat_users_id ON chat_users (id);
 
 ALTER TABLE chat_users ENABLE ROW LEVEL SECURITY;

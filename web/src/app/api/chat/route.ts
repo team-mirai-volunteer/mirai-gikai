@@ -73,18 +73,22 @@ export async function POST(req: Request) {
     session = authData.session;
   }
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    console.error("Failed to retrieve authenticated user", userError);
-    return new Response("Failed to fetch chat user", { status: 500 });
-  }
-
   const dateKey = getJstCurrentDate();
-  const userId = user.id;
+  let userId = session.user?.id;
+
+  if (!userId) {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("Failed to retrieve authenticated user", userError);
+      return new Response("Failed to fetch chat user", { status: 500 });
+    }
+
+    userId = user.id;
+  }
 
   const { data: existingUsage, error: usageSelectError } = await supabase
     .from("chat_users")
