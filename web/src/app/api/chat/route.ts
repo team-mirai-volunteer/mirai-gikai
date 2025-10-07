@@ -99,9 +99,9 @@ export async function POST(req: Request) {
       messages: convertToModelMessages(messages),
       experimental_telemetry: {
         isEnabled: true,
-        functionId: "bill-chat",
+        functionId: promptName,
         metadata: {
-          langfusePrompt: JSON.stringify(promptResult.metadata),
+          langfusePrompt: promptResult.metadata,
           billId: billContext?.id || "",
           difficultyLevel,
         },

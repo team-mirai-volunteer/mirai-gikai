@@ -30,9 +30,5 @@ export function createPromptProvider(): PromptProvider {
   }
 }
 
-export type {
-  CompiledPrompt,
-  PromptMetadata,
-  PromptVariables,
-} from "./interface/types";
+export type { CompiledPrompt, PromptVariables } from "./interface/types";
 export type { PromptProvider } from "./interface/prompt-provider";

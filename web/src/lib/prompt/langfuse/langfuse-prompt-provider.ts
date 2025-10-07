@@ -14,14 +14,8 @@ export class LangfusePromptProvider implements PromptProvider {
 
       const content = fetchedPrompt.compile(variables || {});
 
-      // Vercel AI SDKのtelemetryに渡すメタデータを構築
-      const metadata = {
-        name: fetchedPrompt.name,
-        version: fetchedPrompt.version,
-        config: (fetchedPrompt.config || {}) as Record<string, unknown>,
-        labels: fetchedPrompt.labels || [],
-        tags: fetchedPrompt.tags || [],
-      };
+      // Langfuse prompt linkingのためのJSON形式データ
+      const metadata = fetchedPrompt.toJSON();
 
       return {
         content,
