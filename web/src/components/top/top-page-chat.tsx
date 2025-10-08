@@ -2,11 +2,35 @@
 
 import { useChat } from "@ai-sdk/react";
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { ChatWindow } from "@/features/chat/components/chat-window";
 import type { BillWithContent } from "@/features/bills/types";
 
-export function TopPageChat({ bill }: { bill: BillWithContent }) {
+const DEFAULT_CONTEXT: BillWithContent = {
+  id: 0,
+  created_at: null,
+  updated_at: null,
+  name: "審議中の法案",
+  status: "published",
+  summary: null,
+  uri: null,
+  originating_house: null,
+  receiving_house: null,
+  published_at: null,
+  publish_status: "published",
+  bill_content: {
+    id: 0,
+    bill_id: 0,
+    title: "法案について何でも質問してください",
+    summary:
+      "国会で審議されている法案について、どなたでも自由に質問できます。疑問点や気になる点があればお気軽にどうぞ。",
+    content: null,
+    created_at: null,
+    updated_at: null,
+    difficulty_level: "normal",
+  },
+};
+
+export function TopPageChat({ bill }: { bill: BillWithContent | null }) {
   const chatState = useChat();
   const [isOpen, setIsOpen] = useState(false);
   const isAboveThresholdRef = useRef(false);
@@ -32,28 +56,13 @@ export function TopPageChat({ bill }: { bill: BillWithContent }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const context = bill ?? DEFAULT_CONTEXT;
+
   return (
     <>
-      {!isOpen && (
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className="hidden md:flex 2xl:hidden fixed bottom-6 right-6 z-50 w-15 h-15 rounded-full bg-mirai-gradient border border-black shadow-lg hover:opacity-90 transition-opacity items-center justify-center md:bottom-8 md:right-8"
-          aria-label="議案について質問する"
-        >
-          <Image
-            src="/icons/chat-icon.svg"
-            alt="チャット"
-            width={24}
-            height={22}
-            className="pointer-events-none"
-          />
-        </button>
-      )}
-
       <div className="hidden 2xl:block">
         <ChatWindow
-          billContext={bill}
+          billContext={context}
           difficultyLevel="normal"
           chatState={chatState}
           isOpen={isOpen}
