@@ -13,7 +13,7 @@ export default async function Home() {
       <Hero />
 
       {/* 議案一覧セクション */}
-      <Container>
+      <Container className="max-w-screen-sm">
         <div className="py-8">
           <main>
             <div className="mb-6">
