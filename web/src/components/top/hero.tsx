@@ -3,7 +3,7 @@ import { Container } from "@/components/layouts/container";
 
 export function Hero() {
   return (
-    <div className="-mt-20 relative w-full h-[80vh] min-h-[400px] md:h-[70vh] lg:h-[80vh]">
+    <div className="-mt-20 relative mx-auto w-full max-w-screen-sm h-[80vh] min-h-[400px] md:h-[70vh] lg:h-[80vh]">
       <Image
         src="/img/hero_background.png"
         alt="国会議事堂"
