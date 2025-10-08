@@ -15,7 +15,7 @@ export function TopPageChat({ bill }: { bill: BillWithContent }) {
   }, []);
 
   return (
-    <div className="hidden lg:block">
+    <div className="hidden xl:block">
       {!isOpen && (
         <button
           type="button"
