@@ -5,30 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChatWindow } from "@/features/chat/components/chat-window";
 import type { BillWithContent } from "@/features/bills/types";
 
-const DEFAULT_CONTEXT: BillWithContent = {
-  id: 0,
-  created_at: null,
-  updated_at: null,
-  name: "審議中の法案",
-  status: "published",
-  summary: null,
-  uri: null,
-  originating_house: null,
-  receiving_house: null,
-  published_at: null,
-  publish_status: "published",
-  bill_content: {
-    id: 0,
-    bill_id: 0,
-    title: "法案について何でも質問してください",
-    summary:
-      "国会で審議されている法案について、どなたでも自由に質問できます。疑問点や気になる点があればお気軽にどうぞ。",
-    content: null,
-    created_at: null,
-    updated_at: null,
-    difficulty_level: "normal",
-  },
-};
+const DEFAULT_CONTEXT: BillWithContent | null = null;
 
 export function TopPageChat({ bill }: { bill: BillWithContent | null }) {
   const chatState = useChat();
@@ -56,13 +33,15 @@ export function TopPageChat({ bill }: { bill: BillWithContent | null }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const context = bill ?? DEFAULT_CONTEXT;
+  if (!bill) {
+    return null;
+  }
 
   return (
     <>
       <div className="hidden 2xl:block">
         <ChatWindow
-          billContext={context}
+          billContext={bill}
           difficultyLevel="normal"
           chatState={chatState}
           isOpen={isOpen}

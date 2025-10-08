@@ -31,7 +31,7 @@ export default async function Home() {
 
       {/* みらい議会とは セクション */}
       <About />
-      {bills[0] && <TopPageChat bill={bills[0]} />}
+      <TopPageChat bill={bills[0] ?? null} />
       <Footer />
     </>
   );
