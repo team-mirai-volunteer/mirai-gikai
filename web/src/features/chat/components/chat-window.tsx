@@ -31,6 +31,7 @@ interface ChatWindowProps {
   chatState: ReturnType<typeof import("@ai-sdk/react").useChat>;
   isOpen: boolean;
   onClose: () => void;
+  showOverlay?: boolean;
 }
 
 export function ChatWindow({
@@ -39,6 +40,7 @@ export function ChatWindow({
   chatState,
   isOpen,
   onClose,
+  showOverlay = true,
 }: ChatWindowProps) {
   const [input, setInput] = useState("");
   const { messages, sendMessage, status, error } = chatState;
@@ -66,7 +68,7 @@ export function ChatWindow({
   return (
     <>
       {/* オーバーレイ */}
-      {isOpen && (
+      {isOpen && showOverlay && (
         <button
           type="button"
           className="fixed inset-0 z-40 bg-black/50 transition-opacity cursor-default"
@@ -77,8 +79,8 @@ export function ChatWindow({
 
       {/* チャットウィンドウ */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-50 h-[80vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[600px] md:w-[400px] md:rounded-lg rounded-t-lg flex flex-col border ${
-          isOpen ? "visible" : "invisible"
+        className={`fixed inset-x-0 bottom-0 z-50 h-[80vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[600px] md:w-[400px] md:rounded-lg rounded-t-lg flex flex-col border transition-transform duration-200 ${
+          isOpen ? "visible translate-y-0" : "invisible translate-y-full"
         }`}
       >
         {/* ヘッダー */}
