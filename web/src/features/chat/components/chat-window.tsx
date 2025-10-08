@@ -44,14 +44,11 @@ export function ChatWindow({
   const { messages, sendMessage, status, error } = chatState;
 
   const isResponding = status === "streaming" || status === "submitted";
-  const tokenLimitMessage = "No more tokens available for today";
-  const isTokenLimitReached =
-    error instanceof Error && error.message.includes(tokenLimitMessage);
 
   const handleSubmit = async (message: PromptInputMessage) => {
     const hasText = Boolean(message.text);
 
-    if (!hasText || isResponding || isTokenLimitReached) {
+    if (!hasText || isResponding) {
       return;
     }
 
@@ -168,24 +165,16 @@ export function ChatWindow({
                 value={input}
                 placeholder="質問を入力してください..."
                 // min-w-0, wrap-anywhere が無いと長文で親幅を押し広げてしまう
-                className={`min-h-8 min-w-0 wrap-anywhere ${
-                  isTokenLimitReached ? "cursor-not-allowed opacity-70" : ""
-                }`}
-                disabled={isTokenLimitReached}
+                className="min-h-8 min-w-0 wrap-anywhere"
               />
             </PromptInputBody>
             <PromptInputSubmit
-              disabled={isTokenLimitReached || (!input && !status)}
+              disabled={!input && !status}
               status={status}
               className="m-2"
             />
           </PromptInput>
           <PromptInputError status={status} error={error} />
-          {isTokenLimitReached && (
-            <p className="mt-2 text-sm text-red-600">
-              申し訳ありません、本日のトークン上限に達しました。
-            </p>
-          )}
         </div>
       </div>
     </>

@@ -7,14 +7,9 @@ import {
 import { NextResponse } from "next/server";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { getJstCurrentDate } from "@/lib/utils/date";
-import { DAILY_TOKEN_LIMIT } from "@/features/chat/constants/token-limits";
+import { ensureChatUser } from "@/features/chat/lib/chat-user";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
-import {
-  applyChatUsageDelta,
-  ensureChatUsageRecord,
-} from "@/features/chat/lib/usage-tracker";
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);
@@ -76,7 +71,6 @@ export async function POST(req: Request) {
     session = authData.session;
   }
 
-  const dateKey = getJstCurrentDate();
   let userId = session.user?.id;
 
   if (!userId) {
@@ -93,33 +87,17 @@ export async function POST(req: Request) {
     userId = user.id;
   }
 
-  let usageRecord;
-
   try {
-    usageRecord = await ensureChatUsageRecord({
+    await ensureChatUser({
       supabase,
       userId,
-      dateKey,
     });
   } catch (error) {
     console.error(error);
     return new Response(
-      error instanceof Error ? error.message : "Failed to ensure usage record",
+      error instanceof Error ? error.message : "Failed to ensure chat user",
       { status: 500 }
     );
-  }
-
-  if (usageRecord.tokenRemaining <= 0) {
-    console.warn(
-      JSON.stringify({
-        event: "ai-chat-usage-limit-reached",
-        userId,
-        dateKey,
-      })
-    );
-    return new Response("No more tokens available for today", {
-      status: 429,
-    });
   }
 
   const {
@@ -188,19 +166,6 @@ export async function POST(req: Request) {
     // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
     system: systemPrompt,
     messages: convertToModelMessages(messages),
-    onFinish: async ({ totalUsage }) => {
-      try {
-        usageRecord = await applyChatUsageDelta({
-          supabase,
-          userId,
-          dateKey,
-          totalUsage,
-          currentUsage: usageRecord,
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    },
   });
 
   const response = result.toUIMessageStreamResponse();
