@@ -12,29 +12,40 @@ interface HeaderClientProps {
 
 export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
   return (
-    <header className="px-3 mt-4 fixed top-0 left-0 right-0 z-10 md:hidden">
-      <div className="rounded-2xl bg-white shadow-md max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo / Site Title */}
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <Image
-                src="/img/logo.svg"
-                alt="みらい議会"
-                width={42}
-                height={36}
-              />
-              <div className="text-xl font-bold">みらい議会</div>
-            </Link>
-          </div>
+    <>
+      <header className="px-3 mt-4 fixed top-0 left-0 right-0 z-10 md:hidden">
+        <div className="rounded-2xl bg-white shadow-md max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo / Site Title */}
+            <div className="flex items-center">
+              <Link href="/" className="flex items-center space-x-2">
+                <Image
+                  src="/img/logo.svg"
+                  alt="みらい議会"
+                  width={42}
+                  height={36}
+                />
+                <div className="text-xl font-bold">みらい議会</div>
+              </Link>
+            </div>
 
-          {/* Navigation */}
-          <nav className="flex items-center space-x-2">
-            <DifficultySelector currentLevel={difficultyLevel} />
-            <HamburgerMenu />
-          </nav>
+            {/* Navigation */}
+            <nav className="flex items-center space-x-2">
+              <DifficultySelector currentLevel={difficultyLevel} />
+              <HamburgerMenu />
+            </nav>
+          </div>
         </div>
+      </header>
+
+      <div className="hidden md:block fixed top-6 left-6 z-20">
+        <Link href="/" className="flex items-center space-x-3">
+          <Image src="/img/logo.svg" alt="みらい議会" width={48} height={42} />
+          <span className="text-2xl font-bold tracking-wide text-gray-900">
+            みらい議会
+          </span>
+        </Link>
       </div>
-    </header>
+    </>
   );
 }
