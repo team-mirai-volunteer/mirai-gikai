@@ -4,6 +4,7 @@ import { Hero } from "@/components/top/hero";
 import { getBills } from "@/features/bills/api/get-bills";
 import { BillList } from "@/features/bills/components/bill-list/bill-list";
 import { TopPageChat } from "@/components/top/top-page-chat";
+import { Footer } from "@/components/top/footer";
 
 export default async function Home() {
   const bills = await getBills();
@@ -13,7 +14,7 @@ export default async function Home() {
       <Hero />
 
       {/* 議案一覧セクション */}
-      <Container className="max-w-screen-sm">
+      <Container>
         <div className="py-8">
           <main>
             <div className="mb-6">
@@ -31,6 +32,7 @@ export default async function Home() {
       {/* みらい議会とは セクション */}
       <About />
       {bills[0] && <TopPageChat bill={bills[0]} />}
+      <Footer />
     </>
   );
 }
