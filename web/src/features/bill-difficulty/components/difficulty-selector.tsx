@@ -7,9 +7,13 @@ import type { DifficultyLevelEnum } from "../types";
 
 interface DifficultySelectorProps {
   currentLevel: DifficultyLevelEnum;
+  label?: string;
 }
 
-export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
+export function DifficultySelector({
+  currentLevel,
+  label = "より詳しく",
+}: DifficultySelectorProps) {
   const [selectedLevel, setSelectedLevel] =
     useState<DifficultyLevelEnum>(currentLevel);
   const uniqueId = useId();
@@ -35,7 +39,7 @@ export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
   return (
     <div className="flex items-center gap-3">
       <div className="flex items-center gap-2">
-        <span className="text-sm text-gray-600 font-bold">より詳しく</span>
+        <span className="text-sm text-gray-600 font-bold">{label}</span>
         <Switch
           id={`${uniqueId}-difficulty-toggle`}
           checked={selectedLevel === "hard"}

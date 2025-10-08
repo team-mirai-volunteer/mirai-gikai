@@ -46,6 +46,15 @@ export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
           </span>
         </Link>
       </div>
+
+      <div className="hidden md:block fixed top-6 right-6 z-20">
+        <div className="rounded-full bg-white shadow-md px-6 py-3">
+          <DifficultySelector
+            currentLevel={difficultyLevel}
+            label="説明をもっと詳しく"
+          />
+        </div>
+      </div>
     </>
   );
 }
