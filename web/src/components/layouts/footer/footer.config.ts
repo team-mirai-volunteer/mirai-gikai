@@ -18,21 +18,21 @@ export type FooterPolicyLink = {
 
 export const primaryLinks: FooterLink[] = [
   {
-    label: "みらい議会について",
+    label: "TOP",
+    href: "/",
+  },
+  {
+    label: "みらい議会とは",
     href: "/about",
   },
   {
-    label: "公開中の議案",
-    href: "/bills",
-  },
-  {
-    label: "お問い合わせ",
-    href: "https://team-mir.ai/contact",
+    label: "チームみらいについて",
+    href: "https://team-mir.ai/about",
     external: true,
   },
   {
-    label: "参加・サポーター募集",
-    href: "https://team-mir.ai/support",
+    label: "寄附で応援する",
+    href: "https://team-mir.ai/support/donation",
     external: true,
   },
 ];
@@ -77,4 +77,3 @@ export const policyLinks: FooterPolicyLink[] = [
     external: true,
   },
 ];
-
