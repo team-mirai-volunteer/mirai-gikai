@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Lexend_Giga, Noto_Sans_JP } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import { Header } from "@/components/header";
+import { Footer } from "@/components/layouts/footer/footer";
 import { RubyfulInitializer } from "@/lib/rubyful";
 
 const notoSansJP = Noto_Sans_JP({
@@ -38,6 +39,7 @@ export default function RootLayout({
         <main className="min-h-screen mt-20">{children}</main>
         <SpeedInsights />
         <RubyfulInitializer />
+        <Footer />
       </body>
     </html>
   );
