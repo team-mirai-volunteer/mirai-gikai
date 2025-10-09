@@ -38,14 +38,14 @@ function FooterLogoSection() {
 function FooterPrimaryLinks() {
   return (
     <nav aria-label="主要リンク" className="w-full max-w-[309px]">
-      <ul className="flex flex-col items-center gap-3">
+      <ul className="flex flex-col items-center gap-3 text-[14px] font-semibold text-slate-800">
         {primaryLinks.map((link) => (
-          <li key={link.label} className="w-full">
+          <li key={link.label}>
             <Link
               href={link.href}
               target={link.external ? "_blank" : undefined}
               rel={link.external ? "noreferrer" : undefined}
-              className="block rounded-full border border-white/70 bg-white/85 px-6 py-3 text-[14px] font-semibold text-slate-800 shadow-sm transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
+              className="transition-colors hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
             >
               {link.label}
             </Link>
