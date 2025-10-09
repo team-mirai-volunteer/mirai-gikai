@@ -95,29 +95,23 @@ export async function initializeChatUserSession(): Promise<InitializeChatUserRes
     session = authData.session;
   }
 
-  let userId = session.user?.id;
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
 
-  if (!userId) {
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      console.error("Failed to retrieve authenticated user", userError);
-      return {
-        ok: false,
-        response: new Response("Failed to fetch chat user", { status: 500 }),
-      };
-    }
-
-    userId = user.id;
+  if (userError || !user) {
+    console.error("Failed to retrieve authenticated user", userError);
+    return {
+      ok: false,
+      response: new Response("Failed to fetch chat user", { status: 500 }),
+    };
   }
 
   try {
     await ensureChatUser({
       supabase,
-      userId,
+      userId: user.id,
     });
   } catch (error) {
     console.error(error);
@@ -132,7 +126,7 @@ export async function initializeChatUserSession(): Promise<InitializeChatUserRes
 
   return {
     ok: true,
-    userId,
+    userId: user.id,
     ...supabaseClient,
   };
 }
