@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { footerIcons } from "./footer-icons";
 import { policyLinks, primaryLinks, socialLinks } from "./footer.config";
 
 export function Footer() {
@@ -85,40 +84,46 @@ function FooterSocialIcons() {
   return (
     <div className="flex flex-col items-center">
       <ul className="grid grid-cols-4 gap-4">
-        {firstRow.map((social) => {
-          const Icon = footerIcons[social.iconId];
-          return (
-            <li key={social.name}>
-              <Link
-                href={social.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={social.name}
-                className="flex items-center justify-center"
-              >
-                <Icon />
-              </Link>
-            </li>
-          );
-        })}
+        {firstRow.map((social) => (
+          <li key={social.name}>
+            <Link
+              href={social.href}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={social.name}
+              className="flex items-center justify-center"
+            >
+              <Image
+                src={social.iconPath}
+                alt={social.name}
+                width={48}
+                height={48}
+                className="h-12 w-12"
+              />
+            </Link>
+          </li>
+        ))}
       </ul>
       <ul className="mt-4 flex items-center justify-center gap-4">
-        {secondRow.map((social) => {
-          const Icon = footerIcons[social.iconId];
-          return (
-            <li key={social.name}>
-              <Link
-                href={social.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={social.name}
-                className="flex items-center justify-center"
-              >
-                <Icon />
-              </Link>
-            </li>
-          );
-        })}
+        {secondRow.map((social) => (
+          <li key={social.name}>
+            <Link
+              href={social.href}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={social.name}
+              className="flex items-center justify-center"
+            >
+              <Image
+                src={social.iconPath}
+                alt={social.name}
+                width={48}
+                height={48}
+                className="h-12 w-12"
+              />
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );

@@ -1,20 +1,10 @@
+import type { SocialLink } from "@/lib/social-links";
+import { SOCIAL_LINKS } from "@/lib/social-links";
+
 export type FooterLink = {
   label: string;
   href: string;
   external?: boolean;
-};
-
-export type FooterSocialLink = {
-  name: "X" | "Facebook" | "YouTube" | "Instagram" | "LINE" | "note" | "TikTok";
-  href: string;
-  iconId:
-    | "x"
-    | "facebook"
-    | "youtube"
-    | "instagram"
-    | "line"
-    | "note"
-    | "tiktok";
 };
 
 export type FooterPolicyLink = {
@@ -44,42 +34,18 @@ export const primaryLinks: FooterLink[] = [
   },
 ];
 
+export type FooterSocialLink = {
+  key: keyof typeof SOCIAL_LINKS;
+} & SocialLink;
+
 export const socialLinks: FooterSocialLink[] = [
-  {
-    name: "note",
-    href: "https://note.com/team_mirai",
-    iconId: "note",
-  },
-  {
-    name: "YouTube",
-    href: "https://www.youtube.com/@team_mirai",
-    iconId: "youtube",
-  },
-  {
-    name: "LINE",
-    href: "https://line.me/R/ti/p/@team_mirai",
-    iconId: "line",
-  },
-  {
-    name: "X",
-    href: "https://x.com/team_mirai_jp",
-    iconId: "x",
-  },
-  {
-    name: "Instagram",
-    href: "https://www.instagram.com/team_mirai/",
-    iconId: "instagram",
-  },
-  {
-    name: "Facebook",
-    href: "https://www.facebook.com/teammirai",
-    iconId: "facebook",
-  },
-  {
-    name: "TikTok",
-    href: "https://www.tiktok.com/@team_mirai",
-    iconId: "tiktok",
-  },
+  { key: "note", ...SOCIAL_LINKS.note },
+  { key: "youtube", ...SOCIAL_LINKS.youtube },
+  { key: "line", ...SOCIAL_LINKS.line },
+  { key: "x", ...SOCIAL_LINKS.x },
+  { key: "instagram", ...SOCIAL_LINKS.instagram },
+  { key: "facebook", ...SOCIAL_LINKS.facebook },
+  { key: "tiktok", ...SOCIAL_LINKS.tiktok },
 ];
 
 export const policyLinks: FooterPolicyLink[] = [
