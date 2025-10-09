@@ -57,8 +57,8 @@ export const socialLinks: FooterSocialLink[] = [
 
 export const policyLinks: FooterPolicyLink[] = [
   {
-    label: "プライバシーポリシー",
-    href: "https://team-mir.ai/privacy",
+    label: "よくある質問",
+    href: "https://team-mir.ai/faq",
     external: true,
   },
   {
@@ -67,13 +67,8 @@ export const policyLinks: FooterPolicyLink[] = [
     external: true,
   },
   {
-    label: "特定商取引法に基づく表記",
-    href: "https://team-mir.ai/policies/tokutei",
-    external: true,
-  },
-  {
-    label: "党員規約",
-    href: "https://team-mir.ai/policies/member",
+    label: "プライバシーポリシー",
+    href: "https://team-mir.ai/privacy",
     external: true,
   },
 ];
