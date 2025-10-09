@@ -114,6 +114,7 @@ export async function POST(req: Request) {
           langfusePrompt: promptResult.metadata,
           billId: billContext?.id || "",
           difficultyLevel,
+          userId: chatSessionResult.userId,
         },
       },
     });
