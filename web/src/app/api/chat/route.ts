@@ -6,6 +6,7 @@ import {
 } from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
+import { createPromptProvider, type CompiledPrompt } from "@/lib/prompt";
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);
@@ -62,59 +63,60 @@ export async function POST(req: Request) {
   const difficultyLevel = (messages[0]?.metadata?.difficultyLevel ||
     "normal") as DifficultyLevelEnum;
 
-  // 難易度に応じたシステムプロンプトの設定
-  const getDifficultyInstructions = (level: DifficultyLevelEnum) => {
-    switch (level) {
-      case "hard":
-        return `
-        回答の難易度：難しい（専門用語を含む詳細な内容）
-        - 専門用語を正確に使用し、詳細で網羅的な説明をしてください
-        - 法律的な背景や制度的な文脈も含めて説明してください
-        - 複数の観点から議案を分析し、深い考察を提供してください
-        - 関連する法令や制度についても言及してください
-        `;
-      default: // "normal"
-        return `
-        回答の難易度：ふつう（中学生レベルの内容）
-        - 中学生が理解できる程度の語彙と表現を使用してください
-        - 専門用語は使用してもよいが、必ず説明を併記してください
-        - 適度に詳しく、かつ分かりやすい説明を心がけてください
-        - 具体例を交えて説明してください
-        `;
-    }
-  };
+  const promptProvider = createPromptProvider();
 
-  const systemPrompt = `
-    あなたは日本の議案について説明する専門的なアシスタントです。
+  // 難易度に応じたプロンプト名を決定
+  const promptName = `bill-chat-system-${difficultyLevel}`;
 
-    議案情報：
-    - 名称: ${billContext?.name}
-    - タイトル: ${billContext?.bill_content?.title || ""}
-    - 要約: ${billContext?.bill_content?.summary || ""}
-    - 詳細: ${billContext?.bill_content?.content || ""}
+  // Langfuseからプロンプト取得
+  let promptResult: CompiledPrompt;
+  try {
+    promptResult = await promptProvider.getPrompt(promptName, {
+      billName: billContext?.name || "",
+      billTitle: billContext?.bill_content?.title || "",
+      billSummary: billContext?.bill_content?.summary || "",
+      billContent: billContext?.bill_content?.content || "",
+    });
+  } catch (error) {
+    console.error("Prompt fetch error:", error);
+    return new Response(
+      JSON.stringify({
+        error: "プロンプトの取得に失敗しました",
+        details: error instanceof Error ? error.message : String(error),
+      }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
-    ${getDifficultyInstructions(difficultyLevel)}
+  // Vercel AI SDKでストリーミング生成
+  try {
+    const result = streamText({
+      model: "openai/gpt-4o-mini",
+      // "openai/gpt-5-mini" Context 400K Input Tokens $0.25/M Output Tokens $2.00/M Cache Read Tokens $0.03/M
+      // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M Cache Read Tokens $0.07/M
+      // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
+      system: promptResult.content,
+      messages: convertToModelMessages(messages),
+      experimental_telemetry: {
+        isEnabled: true,
+        functionId: promptName,
+        metadata: {
+          langfusePrompt: promptResult.metadata,
+          billId: billContext?.id || "",
+          difficultyLevel,
+        },
+      },
+    });
 
-    ルール：
-    1. この議案に関する質問にのみ回答する
-    2. 上記の難易度設定に従って説明する
-    3. 正確で客観的な情報を提供する
-    4. 政治的に中立な立場を保つ
-    5. 回答は600文字以下を目安にしつつ、フレンドリーかつサポーティブな口調で行う
-    6. 回答が難しい場合は、その旨を丁寧に伝える
-    7. メッセージのおわりは、会話の深堀りをサポートするような文章で締めくくる
-    7. ただし、毎回質問で終わると、不自然になるので、適宜調整する
-  `;
-
-  // Vercel AI Gatewayを通じて直接モデルを指定
-  const result = streamText({
-    model: "openai/gpt-4o-mini",
-    // "openai/gpt-5-mini" Context 400K Input Tokens $0.25/M Output Tokens $2.00/M Cache Read Tokens $0.03/M
-    // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M Cache Read Tokens $0.07/M
-    // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
-    system: systemPrompt,
-    messages: convertToModelMessages(messages),
-  });
-
-  return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse();
+  } catch (error) {
+    console.error("LLM generation error:", error);
+    return new Response(
+      JSON.stringify({
+        error: "応答の生成に失敗しました",
+        details: error instanceof Error ? error.message : String(error),
+      }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
 }

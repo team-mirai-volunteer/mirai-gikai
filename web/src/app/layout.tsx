@@ -1,9 +1,11 @@
+import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Lexend_Giga, Noto_Sans_JP } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Header } from "@/components/header";
-import "./globals.css";
+import { Footer } from "@/components/layouts/footer/footer";
+import { RubyfulInitializer } from "@/lib/rubyful";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-sans-jp",
@@ -36,6 +38,8 @@ export default function RootLayout({
         <Header />
         <main className="min-h-screen mt-20">{children}</main>
         <SpeedInsights />
+        <RubyfulInitializer />
+        <Footer />
       </body>
     </html>
   );

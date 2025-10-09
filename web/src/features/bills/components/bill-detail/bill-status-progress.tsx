@@ -88,7 +88,7 @@ function ProgressStep({
       {/* ラベル */}
       <div className="mt-2">
         <span
-          className={`flex text-sm leading-6 whitespace-pre-line text-center ${
+          className={`flex flex-col text-sm leading-6 whitespace-pre-line text-center ${
             isActive && !isPreparing ? "text-black" : "text-gray-300"
           } font-normal`}
         >
