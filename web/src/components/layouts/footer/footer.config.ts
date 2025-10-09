@@ -5,9 +5,16 @@ export type FooterLink = {
 };
 
 export type FooterSocialLink = {
-  name: "X" | "Facebook" | "YouTube" | "Instagram";
+  name: "X" | "Facebook" | "YouTube" | "Instagram" | "LINE" | "note" | "TikTok";
   href: string;
-  iconId: "x" | "facebook" | "youtube" | "instagram";
+  iconId:
+    | "x"
+    | "facebook"
+    | "youtube"
+    | "instagram"
+    | "line"
+    | "note"
+    | "tiktok";
 };
 
 export type FooterPolicyLink = {
@@ -39,9 +46,29 @@ export const primaryLinks: FooterLink[] = [
 
 export const socialLinks: FooterSocialLink[] = [
   {
+    name: "note",
+    href: "https://note.com/team_mirai",
+    iconId: "note",
+  },
+  {
+    name: "YouTube",
+    href: "https://www.youtube.com/@team_mirai",
+    iconId: "youtube",
+  },
+  {
+    name: "LINE",
+    href: "https://line.me/R/ti/p/@team_mirai",
+    iconId: "line",
+  },
+  {
     name: "X",
     href: "https://x.com/team_mirai_jp",
     iconId: "x",
+  },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/team_mirai/",
+    iconId: "instagram",
   },
   {
     name: "Facebook",
@@ -49,9 +76,9 @@ export const socialLinks: FooterSocialLink[] = [
     iconId: "facebook",
   },
   {
-    name: "YouTube",
-    href: "https://www.youtube.com/@team_mirai",
-    iconId: "youtube",
+    name: "TikTok",
+    href: "https://www.tiktok.com/@team_mirai",
+    iconId: "tiktok",
   },
 ];
 

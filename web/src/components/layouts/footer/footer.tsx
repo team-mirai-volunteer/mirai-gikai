@@ -79,10 +79,13 @@ function FooterPolicies() {
 }
 
 function FooterSocialIcons() {
+  const firstRow = socialLinks.slice(0, 4);
+  const secondRow = socialLinks.slice(4);
+
   return (
     <div className="flex flex-col items-center">
-      <ul className="flex flex-wrap justify-center gap-4">
-        {socialLinks.map((social) => {
+      <ul className="grid grid-cols-4 gap-4">
+        {firstRow.map((social) => {
           const Icon = footerIcons[social.iconId];
           return (
             <li key={social.name}>
@@ -91,9 +94,27 @@ function FooterSocialIcons() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label={social.name}
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-800 shadow-sm transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
+                className="flex items-center justify-center"
               >
-                <Icon className="h-6 w-6" aria-hidden />
+                <Icon />
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      <ul className="mt-4 flex items-center justify-center gap-4">
+        {secondRow.map((social) => {
+          const Icon = footerIcons[social.iconId];
+          return (
+            <li key={social.name}>
+              <Link
+                href={social.href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={social.name}
+                className="flex items-center justify-center"
+              >
+                <Icon />
               </Link>
             </li>
           );
