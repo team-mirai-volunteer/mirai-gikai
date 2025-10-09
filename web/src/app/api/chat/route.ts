@@ -6,10 +6,10 @@ import {
 } from "ai";
 import { NextResponse } from "next/server";
 
-import { ensureChatUser } from "@/features/chat/lib/chat-user";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
-import { createPromptProvider, type CompiledPrompt } from "@/lib/prompt";
+import { ensureChatUser } from "@/features/chat/lib/chat-user";
+import { type CompiledPrompt, createPromptProvider } from "@/lib/prompt";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 async function _mockResponse(_req: Request) {
@@ -52,8 +52,17 @@ async function _mockResponse(_req: Request) {
   );
 }
 
-export async function POST(req: Request) {
-  const { supabase, applySessionCookies } = await createSupabaseServerClient();
+type SupabaseServerClient = Awaited<
+  ReturnType<typeof createSupabaseServerClient>
+>;
+
+type InitializeChatUserResult =
+  | ({ ok: true; userId: string } & SupabaseServerClient)
+  | { ok: false; response: Response };
+
+async function initializeChatUserSession(): Promise<InitializeChatUserResult> {
+  const supabaseClient = await createSupabaseServerClient();
+  const { supabase } = supabaseClient;
 
   let {
     data: { session },
@@ -64,9 +73,12 @@ export async function POST(req: Request) {
 
     if (error || !authData.session) {
       console.error("Failed to initialize anonymous Supabase session", error);
-      return new Response("Failed to initialize chat session", {
-        status: 500,
-      });
+      return {
+        ok: false,
+        response: new Response("Failed to initialize chat session", {
+          status: 500,
+        }),
+      };
     }
 
     session = authData.session;
@@ -82,7 +94,10 @@ export async function POST(req: Request) {
 
     if (userError || !user) {
       console.error("Failed to retrieve authenticated user", userError);
-      return new Response("Failed to fetch chat user", { status: 500 });
+      return {
+        ok: false,
+        response: new Response("Failed to fetch chat user", { status: 500 }),
+      };
     }
 
     userId = user.id;
@@ -95,11 +110,30 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error(error);
-    return new Response(
-      error instanceof Error ? error.message : "Failed to ensure chat user",
-      { status: 500 }
-    );
+    return {
+      ok: false,
+      response: new Response(
+        error instanceof Error ? error.message : "Failed to ensure chat user",
+        { status: 500 }
+      ),
+    };
   }
+
+  return {
+    ok: true,
+    userId,
+    ...supabaseClient,
+  };
+}
+
+export async function POST(req: Request) {
+  const chatSessionResult = await initializeChatUserSession();
+
+  if (!chatSessionResult.ok) {
+    return chatSessionResult.response;
+  }
+
+  const { applySessionCookies } = chatSessionResult;
 
   const {
     messages,
