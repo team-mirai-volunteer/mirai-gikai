@@ -87,7 +87,7 @@ function FooterSocialIcons() {
         {firstRow.map((social) => (
           <li key={social.name}>
             <Link
-              href={social.href}
+              href={social.url}
               target="_blank"
               rel="noreferrer"
               aria-label={social.name}
@@ -108,7 +108,7 @@ function FooterSocialIcons() {
         {secondRow.map((social) => (
           <li key={social.name}>
             <Link
-              href={social.href}
+              href={social.url}
               target="_blank"
               rel="noreferrer"
               aria-label={social.name}
