@@ -50,7 +50,7 @@ export function ChatWindow({
   const handleSubmit = async (message: PromptInputMessage) => {
     const hasText = Boolean(message.text);
 
-    if (!hasText || isResponding || !userId) {
+    if (!hasText || isResponding) {
       return;
     }
 
