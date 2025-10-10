@@ -21,7 +21,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
     const [isOpen, setIsOpen] = useState(false);
 
     // Ensure anonymous user is created before using chat
-    const userId = useAnonymousSupabaseUser();
+    useAnonymousSupabaseUser();
 
     // Chat state をここで管理することで、モーダルが閉じても状態が保持される
     const chatState = useChat();
