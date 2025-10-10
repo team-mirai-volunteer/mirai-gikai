@@ -52,7 +52,7 @@ export function ChatWindow({
       return;
     }
 
-    // Send message with bill context and difficulty level in data
+    // Send message with bill context and difficulty level in metadata
     // By default, this sends a HTTP POST request to the /api/chat endpoint.
     sendMessage({
       text: message.text ?? "",

@@ -4,6 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import Image from "next/image";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import type { Bill } from "@/features/bills/types";
+import { useAnonymousSupabaseUser } from "../hooks/use-anonymous-supabase-user";
 import { ChatWindow } from "./chat-window";
 
 interface ChatButtonProps {
@@ -18,6 +19,9 @@ export interface ChatButtonRef {
 export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
   ({ billContext, difficultyLevel }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
+
+    // Ensure anonymous user is created before using chat
+    useAnonymousSupabaseUser();
 
     // Chat state をここで管理することで、モーダルが閉じても状態が保持される
     const chatState = useChat();
