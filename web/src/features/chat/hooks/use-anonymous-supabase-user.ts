@@ -17,12 +17,10 @@ export function useAnonymousSupabaseUser() {
     const ensureAnonUser = async () => {
       try {
         // Check if user already exists
-        const {
-          data: { user: existingUser },
-        } = await supabase.auth.getUser();
+        const { data: { user } } = await supabase.auth.getUser();
 
-        if (existingUser) {
-          setUserId(existingUser.id);
+        if (user) {
+          setUserId(user.id);
           return;
         }
 
