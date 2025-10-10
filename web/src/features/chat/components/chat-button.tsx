@@ -4,6 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import Image from "next/image";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import type { Bill } from "@/features/bills/types";
+import { useAnonymousSupabaseUser } from "../hooks/use-anonymous-supabase-user";
 import { ChatWindow } from "./chat-window";
 
 interface ChatButtonProps {
@@ -19,11 +20,19 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
   ({ billContext, difficultyLevel }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
 
+    // Ensure anonymous user is created before using chat
+    const { user, isLoading: isUserLoading } = useAnonymousSupabaseUser();
+
     // Chat state をここで管理することで、モーダルが閉じても状態が保持される
-    const chatState = useChat();
+    const chatState = useChat({
+      body: {
+        userId: user?.id,
+      },
+    });
 
     useImperativeHandle(ref, () => ({
       openWithText: (selectedText: string) => {
+        if (!user) return; // Don't send if user is not ready
         const questionText = `「${selectedText}」について教えてください。`;
         setIsOpen(true);
         chatState.sendMessage({
@@ -38,7 +47,8 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-15 h-15 rounded-full bg-mirai-gradient border border-black shadow-lg hover:opacity-90 transition-opacity flex items-center justify-center md:bottom-8 md:right-8"
+          disabled={isUserLoading || !user}
+          className="fixed bottom-6 right-6 z-50 w-15 h-15 rounded-full bg-mirai-gradient border border-black shadow-lg hover:opacity-90 transition-opacity flex items-center justify-center md:bottom-8 md:right-8 disabled:opacity-50"
           aria-label="議案について質問する"
         >
           <Image
@@ -56,6 +66,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
           chatState={chatState}
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
+          userId={user?.id}
         />
       </>
     );

@@ -51,17 +51,22 @@ async function _mockResponse(_req: Request) {
 export async function POST(req: Request) {
   const {
     messages,
+    userId,
   }: {
     messages: UIMessage<{
       billContext: BillWithContent;
       difficultyLevel: string;
+      userId?: string;
     }>[];
+    userId?: string;
   } = await req.json();
 
-  // Extract bill context and difficulty level from the first user message data if available
+  // Extract bill context, difficulty level, and userId from the first user message data if available
   const billContext = messages[0]?.metadata?.billContext;
   const difficultyLevel = (messages[0]?.metadata?.difficultyLevel ||
     "normal") as DifficultyLevelEnum;
+  // Use userId from body or from message metadata
+  const userIdForTelemetry = userId || messages[0]?.metadata?.userId;
 
   const promptProvider = createPromptProvider();
 
@@ -104,6 +109,7 @@ export async function POST(req: Request) {
           langfusePrompt: promptResult.metadata,
           billId: billContext?.id || "",
           difficultyLevel,
+          userId: userIdForTelemetry,
         },
       },
     });

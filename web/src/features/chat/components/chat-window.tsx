@@ -31,6 +31,7 @@ interface ChatWindowProps {
   chatState: ReturnType<typeof import("@ai-sdk/react").useChat>;
   isOpen: boolean;
   onClose: () => void;
+  userId?: string;
 }
 
 export function ChatWindow({
@@ -39,6 +40,7 @@ export function ChatWindow({
   chatState,
   isOpen,
   onClose,
+  userId,
 }: ChatWindowProps) {
   const [input, setInput] = useState("");
   const { messages, sendMessage, status, error } = chatState;
@@ -48,15 +50,15 @@ export function ChatWindow({
   const handleSubmit = async (message: PromptInputMessage) => {
     const hasText = Boolean(message.text);
 
-    if (!hasText || isResponding) {
+    if (!hasText || isResponding || !userId) {
       return;
     }
 
-    // Send message with bill context and difficulty level in data
+    // Send message with bill context, difficulty level and userId in metadata
     // By default, this sends a HTTP POST request to the /api/chat endpoint.
     sendMessage({
       text: message.text ?? "",
-      metadata: { billContext, difficultyLevel },
+      metadata: { billContext, difficultyLevel, userId },
     });
 
     // Reset form
