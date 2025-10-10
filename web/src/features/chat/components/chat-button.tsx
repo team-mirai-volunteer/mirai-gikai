@@ -24,11 +24,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
     const userId = useAnonymousSupabaseUser();
 
     // Chat state をここで管理することで、モーダルが閉じても状態が保持される
-    const chatState = useChat({
-      body: {
-        userId,
-      },
-    });
+    const chatState = useChat();
 
     useImperativeHandle(ref, () => ({
       openWithText: (selectedText: string) => {
@@ -64,7 +60,6 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
           chatState={chatState}
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
-          userId={userId}
         />
       </>
     );

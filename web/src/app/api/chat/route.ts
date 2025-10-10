@@ -73,7 +73,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // Extract bill context, difficulty level, and userId from the first user message data if available
+  // Extract bill context and difficulty level from the first user message data if available
   const billContext = messages[0]?.metadata?.billContext;
   const difficultyLevel = (messages[0]?.metadata?.difficultyLevel ||
     "normal") as DifficultyLevelEnum;
