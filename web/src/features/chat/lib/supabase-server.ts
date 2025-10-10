@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
 import { env } from "@/lib/env";
 
 export async function createChatSupabaseServerClient() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
 
   return createServerClient<Database>(env.supabaseUrl, env.supabaseAnonKey, {
     cookies: {
