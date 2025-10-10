@@ -1,5 +1,4 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import {
   createUnauthorizedResponse,
   getBasicAuthConfig,
@@ -7,7 +6,7 @@ import {
   validateBasicAuth,
 } from "./lib/basic-auth";
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const authConfig = getBasicAuthConfig();
 
   // Basic認証の設定がない場合はスキップ

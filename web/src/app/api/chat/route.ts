@@ -4,7 +4,6 @@ import {
   streamText,
   type UIMessage,
 } from "ai";
-import { NextResponse } from "next/server";
 
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
@@ -71,11 +70,13 @@ export async function POST(req: Request) {
     }>[];
   } = await req.json();
 
+  // Extract bill context and difficulty level from the first user message data if available
   const billContext = messages[0]?.metadata?.billContext;
   const difficultyLevel = (messages[0]?.metadata?.difficultyLevel ||
     "normal") as DifficultyLevelEnum;
 
   const promptProvider = createPromptProvider();
+  // 難易度に応じたプロンプト名を決定
   const promptName = `bill-chat-system-${difficultyLevel}`;
 
   let promptResult: CompiledPrompt;
@@ -98,6 +99,7 @@ export async function POST(req: Request) {
   }
 
   try {
+    // Vercel AI SDKでストリーミング生成
     const result = streamText({
       model: "openai/gpt-4o-mini",
       // "openai/gpt-5-mini" Context 400K Input Tokens $0.25/M Output Tokens $2.00/M Cache Read Tokens $0.03/M
@@ -117,12 +119,7 @@ export async function POST(req: Request) {
       },
     });
 
-    const response = result.toUIMessageStreamResponse();
-    return new NextResponse(response.body, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers,
-    });
+    return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error("LLM generation error:", error);
     return new Response(
