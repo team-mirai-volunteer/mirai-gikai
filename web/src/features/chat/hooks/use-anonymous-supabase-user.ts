@@ -17,7 +17,9 @@ export function useAnonymousSupabaseUser() {
     const ensureAnonUser = async () => {
       try {
         // Check if user already exists
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
         if (user) {
           setUserId(user.id);
@@ -25,7 +27,8 @@ export function useAnonymousSupabaseUser() {
         }
 
         // No valid session -> sign in anonymously
-        const { data, error: signInError } = await supabase.auth.signInAnonymously();
+        const { data, error: signInError } =
+          await supabase.auth.signInAnonymously();
 
         if (signInError) {
           console.error("Error creating anonymous user:", signInError);

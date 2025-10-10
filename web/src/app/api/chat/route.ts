@@ -7,6 +7,7 @@ import {
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 import { createPromptProvider, type CompiledPrompt } from "@/lib/prompt";
+import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);
@@ -51,23 +52,31 @@ async function _mockResponse(_req: Request) {
 export async function POST(req: Request) {
   const {
     messages,
-    userId,
   }: {
     messages: UIMessage<{
       billContext: BillWithContent;
       difficultyLevel: string;
-      userId?: string;
     }>[];
-    userId?: string;
   } = await req.json();
+
+  const {
+    data: { user },
+    error: getUserError,
+  } = await getChatSupabaseUser();
+
+  if (getUserError || !user) {
+    return new Response(
+      JSON.stringify({
+        error: "Anonymous session required",
+      }),
+      { status: 401, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
   // Extract bill context, difficulty level, and userId from the first user message data if available
   const billContext = messages[0]?.metadata?.billContext;
   const difficultyLevel = (messages[0]?.metadata?.difficultyLevel ||
     "normal") as DifficultyLevelEnum;
-  // Use userId from body or from message metadata
-  const userIdForTelemetry = userId || messages[0]?.metadata?.userId;
-
   const promptProvider = createPromptProvider();
 
   // 難易度に応じたプロンプト名を決定
@@ -109,7 +118,7 @@ export async function POST(req: Request) {
           langfusePrompt: promptResult.metadata,
           billId: billContext?.id || "",
           difficultyLevel,
-          userId: userIdForTelemetry,
+          userId: user.id,
         },
       },
     });
