@@ -16,9 +16,7 @@ export async function initializeChatUserSession(): Promise<InitializeChatUserRes
     data: { session },
   } = await supabase.auth.getSession();
   // NOTE: Calling getSession() here ensures Supabase refreshes the access/refresh
-  // tokens if they are close to expiring. The refreshed tokens land in the
-  // cookie jar that gets copied out later via applySessionCookies, so downstream
-  // requests continue with an up-to-date anonymous session.
+  // tokens if they are close to expiring.
 
   if (!session) {
     const { data: authData, error } = await supabase.auth.signInAnonymously();

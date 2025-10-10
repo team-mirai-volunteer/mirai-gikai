@@ -62,8 +62,6 @@ export async function POST(req: Request) {
     return chatSessionResult.response;
   }
 
-  const { applySessionCookies } = chatSessionResult;
-
   const {
     messages,
   }: {
@@ -120,13 +118,11 @@ export async function POST(req: Request) {
     });
 
     const response = result.toUIMessageStreamResponse();
-    const nextResponse = new NextResponse(response.body, {
+    return new NextResponse(response.body, {
       status: response.status,
       statusText: response.statusText,
       headers: response.headers,
     });
-
-    return applySessionCookies(nextResponse);
   } catch (error) {
     console.error("LLM generation error:", error);
     return new Response(
