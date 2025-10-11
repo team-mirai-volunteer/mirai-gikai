@@ -14,5 +14,10 @@ export type CreateTagInput = {
 };
 
 export type UpdateTagInput = {
+  id: string;
   label: string;
+};
+
+export type DeleteTagInput = {
+  id: string;
 };

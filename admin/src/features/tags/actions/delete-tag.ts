@@ -3,14 +3,15 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
+import type { DeleteTagInput } from "../types";
 
-export async function deleteTag(id: string) {
+export async function deleteTag(input: DeleteTagInput) {
   try {
     await requireAdmin();
 
     const supabase = createAdminClient();
 
-    const { error } = await supabase.from("tags").delete().eq("id", id);
+    const { error } = await supabase.from("tags").delete().eq("id", input.id);
 
     if (error) {
       // レコードが見つからない

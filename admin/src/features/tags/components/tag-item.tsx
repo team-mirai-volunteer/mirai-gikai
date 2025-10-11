@@ -42,7 +42,7 @@ export function TagItem({ tag }: TagItemProps) {
     setIsSubmitting(true);
 
     try {
-      const result = await updateTag(tag.id, { label: editLabel });
+      const result = await updateTag({ id: tag.id, label: editLabel });
 
       if (result.error) {
         toast.error(result.error);
@@ -62,7 +62,7 @@ export function TagItem({ tag }: TagItemProps) {
     setIsSubmitting(true);
 
     try {
-      const result = await deleteTag(tag.id);
+      const result = await deleteTag({ id: tag.id });
 
       if (result.error) {
         toast.error(result.error);
