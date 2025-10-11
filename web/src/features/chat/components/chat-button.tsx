@@ -9,9 +9,9 @@ import { ChatWindow } from "./chat-window";
 // アニメーション定数
 const ANIMATION_DURATION = {
   SIZE_TRANSITION: 300, // ボタンサイズ変更のアニメーション時間（ms）
-  OPACITY_TRANSITION: 300, // テキストopacityのトランジション時間（ms）
-  TEXT_CHANGE_DELAY: 300, // テキスト内容変更までの待機時間（opacity完全に0になるまで）
-  TEXT_FADE_IN: 300, // テキストフェードイン待機時間（ms）
+  TEXT_FADE_OUT: 150, // テキストフェードアウト時間（ms）
+  TEXT_FADE_IN: 200, // テキストフェードイン時間（ms）
+  TEXT_CHANGE_DELAY: 250, // テキスト内容変更までの待機時間（サイズアニメーション終了間際）
 } as const;
 
 interface ChatButtonProps {
@@ -52,20 +52,28 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
         // 下方向にスクロール
         if (currentScrollY > lastScrollY && currentScrollY > 0) {
           if (!isCompact) {
+            // ①スクロール検知
+            // ②即座にサイズアニメーション開始
+            setIsCompact(true);
+            // ③即座に文字は消える
             setShowText(false);
+            // ④サイズアニメーションの終了間際まで待機し新しい文字が出現
             setTimeout(() => {
-              setIsCompact(true);
-              setTimeout(() => setShowText(true), ANIMATION_DURATION.TEXT_FADE_IN);
+              setShowText(true);
             }, ANIMATION_DURATION.TEXT_CHANGE_DELAY);
           }
         }
         // 上方向にスクロール
         else if (currentScrollY < lastScrollY) {
           if (isCompact) {
+            // ①スクロール検知
+            // ②即座にサイズアニメーション開始
+            setIsCompact(false);
+            // ③即座に文字は消える
             setShowText(false);
+            // ④サイズアニメーションの終了間際まで待機し新しい文字が出現
             setTimeout(() => {
-              setIsCompact(false);
-              setTimeout(() => setShowText(true), ANIMATION_DURATION.TEXT_FADE_IN);
+              setShowText(true);
             }, ANIMATION_DURATION.TEXT_CHANGE_DELAY);
           }
         }
@@ -84,24 +92,34 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
       <>
         <div className="fixed bottom-2 left-6 right-6 z-50 md:bottom-8 md:left-8 md:right-8 flex justify-center">
           <div
-            className={`relative rounded-[50px] bg-gradient-to-tr from-[#64D8C6] to-[#BCECD3] p-[2px] shadow-[2px_2px_2px_0px_rgba(0,0,0,0.25)] origin-center flex transition-all duration-300 ease-in-out ${
-              isCompact ? "basis-[120px]" : "basis-[340px]"
-            }`}
+            className="relative rounded-[50px] bg-gradient-to-tr from-[#64D8C6] to-[#BCECD3] p-[2px] shadow-[2px_2px_2px_0px_rgba(0,0,0,0.25)] origin-center flex transition-[flex-basis] duration-300 ease-in-out"
+            style={{
+              flexBasis: isCompact ? "120px" : "340px",
+            }}
           >
             <button
               type="button"
               onClick={() => setIsOpen(true)}
-              className={`relative bg-white rounded-[50px] hover:opacity-90 flex items-center w-full py-2 transition-all duration-300 ease-in-out ${
+              className={`relative bg-white rounded-[50px] hover:opacity-90 flex items-center w-full transition-all duration-300 ease-in-out ${
                 isCompact
-                  ? "h-[35px] px-4 justify-center gap-2.5"
-                  : "h-14 justify-end pr-4 pl-6 gap-2.5"
+                  ? "px-4 justify-center gap-2.5"
+                  : "justify-end pr-4 pl-6 gap-2.5"
               }`}
+              style={{
+                height: isCompact ? "35px" : "56px",
+                paddingTop: "8px",
+                paddingBottom: "8px",
+              }}
               aria-label="議案について質問する"
             >
               <span
-                className={`text-[#AEAEB2] text-sm font-medium leading-[1.5em] tracking-[0.01em] transition-opacity duration-300 ease-in-out ${
+                className={`text-[#AEAEB2] text-sm font-medium leading-[1.5em] tracking-[0.01em] ${
                   isCompact ? "text-center" : "flex-1 text-left"
-                } ${showText ? "opacity-100" : "opacity-0"}`}
+                } ${
+                  showText
+                    ? "opacity-100 transition-opacity duration-200 ease-in-out"
+                    : "opacity-0"
+                }`}
               >
                 {isCompact ? "AIに質問" : "わからないことをAIに質問する"}
               </span>
