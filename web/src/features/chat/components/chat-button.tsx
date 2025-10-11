@@ -35,20 +35,29 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
 
     return (
       <>
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-15 h-15 rounded-full bg-mirai-gradient border border-black shadow-lg hover:opacity-90 transition-opacity flex items-center justify-center md:bottom-8 md:right-8"
-          aria-label="議案について質問する"
-        >
-          <Image
-            src="/icons/chat-icon.svg"
-            alt="チャット"
-            width={24}
-            height={22}
-            className="pointer-events-none"
-          />
-        </button>
+        <div className="fixed bottom-6 left-6 right-6 z-50 md:bottom-8 md:left-8 md:right-8">
+          <div className="relative rounded-[50px] bg-gradient-to-tr from-[#64D8C6] to-[#BCECD3] p-[2px] shadow-[2px_2px_2px_0px_rgba(0,0,0,0.25)]">
+            <button
+              type="button"
+              onClick={() => setIsOpen(true)}
+              className="relative w-full bg-white rounded-[50px] hover:opacity-90 transition-opacity flex items-center justify-end gap-2.5 py-2 pr-4 pl-6"
+              aria-label="議案について質問する"
+            >
+              <span className="flex-1 text-[#AEAEB2] text-sm font-medium leading-[1.5em] tracking-[0.01em] text-left">
+                わからないことをAIに質問する
+              </span>
+              <div className="relative w-10 h-10 rounded-[20px] bg-mirai-gradient flex items-center justify-center flex-shrink-0">
+                <Image
+                  src="/icons/chat-button-icon.svg"
+                  alt="チャット"
+                  width={40}
+                  height={40}
+                  className="pointer-events-none"
+                />
+              </div>
+            </button>
+          </div>
+        </div>
 
         <ChatWindow
           billContext={billContext}
