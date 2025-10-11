@@ -13,6 +13,20 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
   );
 }
 
+const chatRateLimitTokensRaw = process.env.CHAT_RATE_LIMIT_TOKENS;
+
+if (!chatRateLimitTokensRaw) {
+  throw new Error("環境変数 CHAT_RATE_LIMIT_TOKENS が設定されていません");
+}
+
+const chatRateLimitTokens = Number(chatRateLimitTokensRaw);
+
+if (Number.isNaN(chatRateLimitTokens)) {
+  throw new Error(
+    "環境変数 CHAT_RATE_LIMIT_TOKENS は数値で指定してください"
+  );
+}
+
 export const env = {
   adminUrl: process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3001",
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -22,6 +36,9 @@ export const env = {
     publicKey: process.env.LANGFUSE_PUBLIC_KEY,
     secretKey: process.env.LANGFUSE_SECRET_KEY,
     baseUrl: process.env.LANGFUSE_BASE_URL || "https://cloud.langfuse.com",
+  },
+  chat: {
+    rateLimitTokens: chatRateLimitTokens,
   },
 } as const;
 
