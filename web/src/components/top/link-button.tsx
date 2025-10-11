@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 
 interface LinkButtonProps {
   href: string;
@@ -22,27 +23,28 @@ export function LinkButton({
   rel = "noopener noreferrer",
 }: LinkButtonProps) {
   return (
-    <a
-      href={href}
-      target={target}
-      rel={rel}
-      className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-black rounded-full hover:bg-gray-50 transition-colors w-fit"
+    <Button
+      asChild
+      variant="outline"
+      className="w-fit rounded-full px-6 py-3 h-auto"
     >
-      <Image
-        src={icon.src}
-        alt={icon.alt}
-        width={icon.width}
-        height={icon.height}
-        className="flex-shrink-0"
-      />
-      <span className="text-[15px] font-bold">{children}</span>
-      <Image
-        src="/icons/arrow-right.svg"
-        alt=""
-        width={16}
-        height={15}
-        className="flex-shrink-0"
-      />
-    </a>
+      <a href={href} target={target} rel={rel}>
+        <Image
+          src={icon.src}
+          alt={icon.alt}
+          width={icon.width}
+          height={icon.height}
+          className="flex-shrink-0"
+        />
+        <span className="text-[15px] font-bold">{children}</span>
+        <Image
+          src="/icons/arrow-right.svg"
+          alt=""
+          width={16}
+          height={15}
+          className="flex-shrink-0"
+        />
+      </a>
+    </Button>
   );
 }
