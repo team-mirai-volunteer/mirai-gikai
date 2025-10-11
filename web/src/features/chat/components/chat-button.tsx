@@ -51,7 +51,8 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
 
       const handleScroll = () => {
         const currentScrollY = window.scrollY;
-        const shouldCompact = currentScrollY > lastScrollY && currentScrollY > 0 && !isCompact;
+        const shouldCompact =
+          currentScrollY > lastScrollY && currentScrollY > 0 && !isCompact;
         const shouldExpand = currentScrollY < lastScrollY && isCompact;
 
         if (shouldCompact || shouldExpand) {
@@ -105,7 +106,9 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
                 }`}
                 style={
                   showText
-                    ? { transitionDuration: `${ANIMATION_DURATION.TEXT_FADE_IN}ms` }
+                    ? {
+                        transitionDuration: `${ANIMATION_DURATION.TEXT_FADE_IN}ms`,
+                      }
                     : undefined
                 }
               >
