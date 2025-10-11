@@ -80,16 +80,14 @@ export function ChatWindow({
           isOpen ? "visible" : "invisible"
         }`}
       >
-        {/* コンテンツラッパー: Figmaのpadding: 4px 24px 8px に対応 */}
-        <div className="flex flex-col gap-6 pt-1 px-6 pb-2 flex-1">
-          {/* ヘッダー - ハンドル */}
-          <div className="flex items-center justify-center">
-            <div className="w-[135px] h-2 bg-[#D9D9D9] rounded-full" />
-          </div>
+        {/* ヘッダー - ハンドル */}
+        <div className="flex items-center justify-center pt-1 px-6">
+          <div className="w-[135px] h-2 bg-[#D9D9D9] rounded-full" />
+        </div>
 
-          {/* メッセージエリア */}
-          <Conversation className="flex-1">
-          <ConversationContent className="p-0 flex flex-col gap-3">
+        {/* メッセージエリア（スクロール可能） */}
+        <Conversation className="flex-1 min-h-0 px-6">
+          <ConversationContent className="p-0 flex flex-col gap-3 pt-6">
             <div className="flex flex-col gap-4">
               {/* 初期メッセージ */}
               <div className="flex flex-col gap-1">
@@ -177,8 +175,8 @@ export function ChatWindow({
           <ConversationScrollButton />
         </Conversation>
 
-        {/* 入力エリア */}
-        <div>
+        {/* 入力エリア（固定下部） */}
+        <div className="px-6 pb-2 pt-2 bg-white border-t border-gray-100">
           <PromptInput
             onSubmit={handleSubmit}
             className="flex items-end gap-2.5 py-2 pl-6 pr-4 bg-white rounded-[50px] border-2 border-transparent bg-clip-padding divide-y-0"
@@ -213,7 +211,6 @@ export function ChatWindow({
             </button>
           </PromptInput>
           <PromptInputError status={status} error={error} />
-        </div>
         </div>
       </div>
     </>
