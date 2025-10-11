@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   type BillStatus,
   HOUSE_LABELS,
@@ -180,6 +181,27 @@ export function BillFormFields({ control, billId }: BillFormFieldsProps) {
               議案のサムネイル画像を設定してください（任意）
             </FormDescription>
             <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name="is_featured"
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+            <FormControl>
+              <Checkbox
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <div className="space-y-1 leading-none">
+              <FormLabel>注目の議案</FormLabel>
+              <FormDescription>
+                トップページなどで優先的に表示されます
+              </FormDescription>
+            </div>
           </FormItem>
         )}
       />
