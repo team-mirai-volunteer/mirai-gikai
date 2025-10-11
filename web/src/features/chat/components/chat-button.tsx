@@ -8,10 +8,10 @@ import { ChatWindow } from "./chat-window";
 
 // アニメーション定数
 const ANIMATION_DURATION = {
-  SIZE_TRANSITION: 50, // ボタンサイズ変更のアニメーション時間（ms）
+  SIZE_TRANSITION: 300, // ボタンサイズ変更のアニメーション時間（ms）
   OPACITY_TRANSITION: 300, // テキストopacityのトランジション時間（ms）
   TEXT_CHANGE_DELAY: 300, // テキスト内容変更までの待機時間（opacity完全に0になるまで）
-  TEXT_FADE_IN: 50, // テキストフェードイン待機時間（ms）
+  TEXT_FADE_IN: 300, // テキストフェードイン待機時間（ms）
 } as const;
 
 interface ChatButtonProps {
@@ -84,35 +84,24 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
       <>
         <div className="fixed bottom-2 left-6 right-6 z-50 md:bottom-8 md:left-8 md:right-8 flex justify-center">
           <div
-            className={`relative rounded-[50px] bg-gradient-to-tr from-[#64D8C6] to-[#BCECD3] p-[2px] shadow-[2px_2px_2px_0px_rgba(0,0,0,0.25)] origin-center flex`}
-            style={{
-              flexBasis: isCompact ? "120px" : "340px",
-              transition: `flex-basis ${ANIMATION_DURATION.SIZE_TRANSITION}ms ease-in-out, box-shadow ${ANIMATION_DURATION.SIZE_TRANSITION}ms ease-in-out`,
-            }}
+            className={`relative rounded-[50px] bg-gradient-to-tr from-[#64D8C6] to-[#BCECD3] p-[2px] shadow-[2px_2px_2px_0px_rgba(0,0,0,0.25)] origin-center flex transition-all duration-300 ease-in-out ${
+              isCompact ? "basis-[120px]" : "basis-[340px]"
+            }`}
           >
             <button
               type="button"
               onClick={() => setIsOpen(true)}
-              className={`relative bg-white rounded-[50px] hover:opacity-90 flex items-center w-full ${
+              className={`relative bg-white rounded-[50px] hover:opacity-90 flex items-center w-full py-2 transition-all duration-300 ease-in-out ${
                 isCompact
-                  ? "px-4 justify-center gap-2.5"
-                  : "justify-end pr-4 pl-6 gap-2.5"
+                  ? "h-[35px] px-4 justify-center gap-2.5"
+                  : "h-14 justify-end pr-4 pl-6 gap-2.5"
               }`}
-              style={{
-                height: isCompact ? "35px" : "56px",
-                paddingTop: isCompact ? "8px" : "8px",
-                paddingBottom: isCompact ? "8px" : "8px",
-                transition: `all ${ANIMATION_DURATION.SIZE_TRANSITION}ms ease-in-out`,
-              }}
               aria-label="議案について質問する"
             >
               <span
-                className={`text-[#AEAEB2] text-sm font-medium leading-[1.5em] tracking-[0.01em] ${
+                className={`text-[#AEAEB2] text-sm font-medium leading-[1.5em] tracking-[0.01em] transition-opacity duration-300 ease-in-out ${
                   isCompact ? "text-center" : "flex-1 text-left"
                 } ${showText ? "opacity-100" : "opacity-0"}`}
-                style={{
-                  transition: `opacity ${ANIMATION_DURATION.OPACITY_TRANSITION}ms ease-in-out`,
-                }}
               >
                 {isCompact ? "AIに質問" : "わからないことをAIに質問する"}
               </span>
