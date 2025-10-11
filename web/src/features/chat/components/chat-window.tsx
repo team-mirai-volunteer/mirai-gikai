@@ -44,6 +44,16 @@ export function ChatWindow({
 
   const isResponding = status === "streaming" || status === "submitted";
 
+  // Auto-resize textarea based on content
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+
+    // Auto-resize
+    const textarea = e.target;
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
+
   const handleSubmit = async (message: PromptInputMessage) => {
     const hasText = Boolean(message.text);
 
@@ -189,11 +199,12 @@ export function ChatWindow({
           >
             <PromptInputBody className="flex-1">
               <PromptInputTextarea
-                onChange={(e) => setInput(e.target.value)}
+                onChange={handleInputChange}
                 value={input}
                 placeholder="わからないことをAIに質問する"
+                rows={1}
                 // min-w-0, wrap-anywhere が無いと長文で親幅を押し広げてしまう
-                className={`min-h-8 min-w-0 wrap-anywhere text-sm placeholder:text-[#AEAEB2] placeholder:no-underline border-none focus:ring-0 bg-transparent shadow-none`}
+                className={`!min-h-0 min-w-0 wrap-anywhere text-sm placeholder:text-[#AEAEB2] placeholder:no-underline border-none focus:ring-0 bg-transparent shadow-none !py-2 !px-0`}
               />
             </PromptInputBody>
             <button

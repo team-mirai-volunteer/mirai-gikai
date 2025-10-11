@@ -469,17 +469,9 @@ export const PromptInputTextarea = ({
         return;
       }
 
-      if (e.shiftKey) {
-        // Allow newline
-        return;
-      }
-
-      // Submit on Enter (without Shift)
-      e.preventDefault();
-      const form = e.currentTarget.form;
-      if (form) {
-        form.requestSubmit();
-      }
+      // Always allow newline on Enter key (including on mobile)
+      // Submission is only done via UI button click
+      return;
     }
   };
 
@@ -488,7 +480,7 @@ export const PromptInputTextarea = ({
       className={cn(
         "w-full resize-none rounded-none border-none p-3 shadow-none outline-none ring-0",
         "field-sizing-content bg-transparent dark:bg-transparent",
-        "max-h-48 min-h-16",
+        "max-h-48",
         "focus-visible:ring-0",
         className
       )}
