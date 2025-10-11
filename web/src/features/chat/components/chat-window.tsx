@@ -205,7 +205,7 @@ export function ChatWindow({
                 placeholder="わからないことをAIに質問する"
                 rows={1}
                 // min-w-0, wrap-anywhere が無いと長文で親幅を押し広げてしまう
-                className={`!min-h-0 min-w-0 wrap-anywhere text-sm placeholder:text-[#AEAEB2] placeholder:no-underline border-none focus:ring-0 bg-transparent shadow-none !py-2 !px-0`}
+                className={`!min-h-0 min-w-0 wrap-anywhere text-sm font-medium leading-[1.5em] tracking-[0.01em] placeholder:text-[#AEAEB2] placeholder:font-medium placeholder:leading-[1.5em] placeholder:tracking-[0.01em] placeholder:no-underline border-none focus:ring-0 bg-transparent shadow-none !py-2 !px-0`}
               />
             </PromptInputBody>
             <button
