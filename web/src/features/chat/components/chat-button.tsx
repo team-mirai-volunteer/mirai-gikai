@@ -10,7 +10,6 @@ import { ChatWindow } from "./chat-window";
 // アニメーション定数
 const ANIMATION_DURATION = {
   SIZE_TRANSITION: 300, // ボタンサイズ変更のアニメーション時間（ms）
-  TEXT_FADE_OUT: 150, // テキストフェードアウト時間（ms）
   TEXT_FADE_IN: 200, // テキストフェードイン時間（ms）
   TEXT_CHANGE_DELAY: 250, // テキスト内容変更までの待機時間（サイズアニメーション終了間際）
 } as const;
@@ -77,19 +76,23 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
       <>
         <div className="fixed bottom-4 left-6 right-6 z-50 md:bottom-8 md:left-8 md:right-8 flex justify-center">
           <div
-            className="relative rounded-[50px] bg-gradient-to-tr from-[#64D8C6] to-[#BCECD3] p-[2px] shadow-[2px_2px_2px_0px_rgba(0,0,0,0.25)] origin-center flex transition-[flex-basis] duration-300 ease-in-out"
+            className="relative rounded-[50px] bg-gradient-to-tr from-[#64D8C6] to-[#BCECD3] p-[2px] shadow-[2px_2px_2px_0px_rgba(0,0,0,0.25)] origin-center flex transition-[flex-basis] ease-in-out"
             style={{
-              flexBasis: isCompact ? "120px" : "340px",
+              flexBasis: isCompact ? "120px" : "100%",
+              transitionDuration: `${ANIMATION_DURATION.SIZE_TRANSITION}ms`,
             }}
           >
             <button
               type="button"
               onClick={() => setIsOpen(true)}
-              className={`relative bg-white rounded-[50px] hover:opacity-90 flex items-center w-full py-2 transition-all duration-300 ease-in-out ${
+              className={`relative bg-white rounded-[50px] hover:opacity-90 flex items-center w-full py-2 transition-all ease-in-out ${
                 isCompact
                   ? "h-[35px] px-4 justify-center gap-2.5"
                   : "h-14 justify-end pr-4 pl-6 gap-2.5"
               }`}
+              style={{
+                transitionDuration: `${ANIMATION_DURATION.SIZE_TRANSITION}ms`,
+              }}
               aria-label="議案について質問する"
             >
               <span
@@ -97,9 +100,14 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
                   isCompact ? "text-center" : "flex-1 text-left"
                 } ${
                   showText
-                    ? "opacity-100 transition-opacity duration-200 ease-in-out"
+                    ? "opacity-100 transition-opacity ease-in-out"
                     : "opacity-0"
                 }`}
+                style={
+                  showText
+                    ? { transitionDuration: `${ANIMATION_DURATION.TEXT_FADE_IN}ms` }
+                    : undefined
+                }
               >
                 {isCompact ? "AIに質問" : "わからないことをAIに質問する"}
               </span>
