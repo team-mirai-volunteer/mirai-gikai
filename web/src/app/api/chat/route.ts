@@ -7,6 +7,8 @@ import {
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 import { createPromptProvider, type CompiledPrompt } from "@/lib/prompt";
+import { DAILY_CHAT_TOKEN_LIMIT } from "@/features/chat/constants";
+import { getDailyLangfuseTokenUsage } from "@/features/chat/lib/langfuse-usage";
 import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
 
 async function _mockResponse(_req: Request) {
@@ -56,7 +58,7 @@ export async function POST(req: Request) {
     messages: UIMessage<{
       billContext: BillWithContent;
       difficultyLevel: string;
-    }>[];
+    }>;
   } = await req.json();
 
   const {
@@ -69,7 +71,21 @@ export async function POST(req: Request) {
       JSON.stringify({
         error: "Anonymous session required",
       }),
-      { status: 401, headers: { "Content-Type": "application/json" } }
+      { status: 401, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
+  const usage = await getDailyLangfuseTokenUsage(user.id);
+
+  if (usage.isLimitReached) {
+    return new Response(
+      JSON.stringify({
+        error: "Token limit reached",
+        totalTokens: usage.totalTokens,
+        remainingTokens: usage.remainingTokens,
+        tokenLimit: DAILY_CHAT_TOKEN_LIMIT,
+      }),
+      { status: 429, headers: { "Content-Type": "application/json" } },
     );
   }
 
@@ -131,7 +147,7 @@ export async function POST(req: Request) {
         error: "応答の生成に失敗しました",
         details: error instanceof Error ? error.message : String(error),
       }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json" } },
     );
   }
 }
