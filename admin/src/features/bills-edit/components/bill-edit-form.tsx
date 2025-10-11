@@ -28,6 +28,7 @@ export function BillEditForm({ bill }: BillEditFormProps) {
       status_note: bill.status_note,
       published_at: new Date(bill.published_at).toISOString().slice(0, 16),
       thumbnail_url: bill.thumbnail_url,
+      is_featured: bill.is_featured,
     },
   });
 
