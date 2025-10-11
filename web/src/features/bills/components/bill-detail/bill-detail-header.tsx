@@ -31,7 +31,7 @@ export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
           <h1 className="text-2xl font-bold mb-4">{displayTitle}</h1>
         )}
 
-        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3">
           <time dateTime={bill.published_at}>
             {formatDate(bill.published_at)}
           </time>
@@ -42,6 +42,20 @@ export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
         {displaySummary && (
           <p className="mb-4 leading-relaxed">{displaySummary}</p>
         )}
+
+        {/* タグ表示 */}
+        <div className="flex flex-wrap gap-3 mb-4">
+          <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-medium text-black bg-[#E8E8E8] rounded-full">
+            デジタル化
+          </span>
+          <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-medium text-black bg-[#E8E8E8] rounded-full">
+            国際貿易
+          </span>
+          <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-medium text-black bg-[#E8E8E8] rounded-full">
+            法務委員会
+          </span>
+        </div>
+
         <p className="text-xs text-muted-foreground font-medium">{bill.name}</p>
       </CardContent>
     </Card>
