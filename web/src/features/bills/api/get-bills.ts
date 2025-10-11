@@ -42,6 +42,28 @@ const _getCachedBills = unstable_cache(
       throw new Error(`Failed to fetch bills: ${error.message}`);
     }
 
+    // すべての議案のタグを一度に取得（N+1回避）
+    const billIds = data.map((item) => item.id);
+    const { data: allBillTags } = await supabase
+      .from("bills_tags")
+      .select("bill_id, tags(id, label)")
+      .in("bill_id", billIds);
+
+    // bill_id ごとにタグをグループ化
+    const tagsByBillId = new Map<
+      string,
+      Array<{ id: string; label: string }>
+    >();
+    allBillTags?.forEach((bt) => {
+      if (bt.tags) {
+        const existing = tagsByBillId.get(bt.bill_id) || [];
+        tagsByBillId.set(bt.bill_id, [
+          ...existing,
+          bt.tags as { id: string; label: string },
+        ]);
+      }
+    });
+
     // データ構造を整形
     const billsWithContent: BillWithContent[] = data.map((item) => {
       const { bill_contents, ...bill } = item;
@@ -50,6 +72,7 @@ const _getCachedBills = unstable_cache(
         bill_content: Array.isArray(bill_contents)
           ? bill_contents[0]
           : undefined,
+        tags: tagsByBillId.get(item.id) || [],
       };
     });
 

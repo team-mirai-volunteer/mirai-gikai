@@ -40,6 +40,19 @@ export function BillCard({ bill }: BillCardProps) {
               {displaySummary && (
                 <p className="text-sm line-clamp-2 mt-1">{displaySummary}</p>
               )}
+              {/* タグ表示 */}
+              {bill.tags && bill.tags.length > 0 && (
+                <div className="flex flex-wrap gap-3 mt-2">
+                  {bill.tags.map((tag) => (
+                    <span
+                      key={tag.id}
+                      className="inline-flex items-center justify-center px-3 py-1 text-xs font-medium text-black bg-[#E8E8E8] rounded-full"
+                    >
+                      {tag.label}
+                    </span>
+                  ))}
+                </div>
+              )}
               <p className="text-sm font-medium text-muted-foreground">
                 {bill.name}
               </p>
