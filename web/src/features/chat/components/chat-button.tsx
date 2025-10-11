@@ -19,6 +19,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
   ({ billContext, difficultyLevel }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isCompact, setIsCompact] = useState(false);
+    const [showText, setShowText] = useState(true);
 
     // Chat state をここで管理することで、モーダルが閉じても状態が保持される
     const chatState = useChat();
@@ -42,11 +43,23 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
 
         // 下方向にスクロール
         if (currentScrollY > lastScrollY && currentScrollY > 0) {
-          setIsCompact(true);
+          if (!isCompact) {
+            setShowText(false);
+            setTimeout(() => {
+              setIsCompact(true);
+              setTimeout(() => setShowText(true), 200);
+            }, 100);
+          }
         }
         // 上方向にスクロール
         else if (currentScrollY < lastScrollY) {
-          setIsCompact(false);
+          if (isCompact) {
+            setShowText(false);
+            setTimeout(() => {
+              setIsCompact(false);
+              setTimeout(() => setShowText(true), 200);
+            }, 100);
+          }
         }
 
         lastScrollY = currentScrollY;
@@ -57,32 +70,38 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
       return () => {
         window.removeEventListener("scroll", handleScroll);
       };
-    }, []);
+    }, [isCompact]);
 
     return (
       <>
-        <div className="fixed bottom-6 left-6 right-6 z-50 md:bottom-8 md:left-8 md:right-8 flex justify-center">
+        <div className="fixed bottom-2 left-6 right-6 z-50 md:bottom-8 md:left-8 md:right-8 flex justify-center">
           <div
-            className={`relative rounded-[50px] bg-gradient-to-tr from-[#64D8C6] to-[#BCECD3] p-[2px] transition-all duration-300 ${
-              isCompact
-                ? "shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] w-auto"
-                : "shadow-[2px_2px_2px_0px_rgba(0,0,0,0.25)] w-full"
-            }`}
+            className={`relative rounded-[50px] bg-gradient-to-tr from-[#64D8C6] to-[#BCECD3] p-[2px] shadow-[2px_2px_2px_0px_rgba(0,0,0,0.25)] origin-center flex`}
+            style={{
+              flexBasis: isCompact ? "120px" : "340px",
+              transition: "flex-basis 50ms ease-out, box-shadow 50ms ease-out",
+            }}
           >
             <button
               type="button"
               onClick={() => setIsOpen(true)}
-              className={`relative bg-white rounded-[50px] hover:opacity-90 transition-all duration-300 flex items-center gap-2.5 ${
+              className={`relative bg-white rounded-[50px] hover:opacity-90 flex items-center w-full ${
                 isCompact
-                  ? "h-[35px] px-4 justify-center"
-                  : "w-full justify-end py-2 pr-4 pl-6"
+                  ? "px-4 justify-center gap-2.5"
+                  : "justify-end pr-4 pl-6 gap-2.5"
               }`}
+              style={{
+                height: isCompact ? "35px" : "56px",
+                paddingTop: isCompact ? "8px" : "8px",
+                paddingBottom: isCompact ? "8px" : "8px",
+                transition: "all 50ms ease-out",
+              }}
               aria-label="議案について質問する"
             >
               <span
-                className={`text-[#AEAEB2] text-sm font-medium leading-[1.5em] tracking-[0.01em] transition-all duration-300 ${
+                className={`text-[#AEAEB2] text-sm font-medium leading-[1.5em] tracking-[0.01em] transition-opacity duration-300 ${
                   isCompact ? "text-center" : "flex-1 text-left"
-                }`}
+                } ${showText ? "opacity-100" : "opacity-0"}`}
               >
                 {isCompact ? "AIに質問" : "わからないことをAIに質問する"}
               </span>
