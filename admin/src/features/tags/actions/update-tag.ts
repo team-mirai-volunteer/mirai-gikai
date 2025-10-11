@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
 import type { UpdateTagInput } from "../types";
 
-export async function updateTag(id: string, input: UpdateTagInput) {
+export async function updateTag(input: UpdateTagInput) {
   try {
     await requireAdmin();
 
@@ -19,7 +19,7 @@ export async function updateTag(id: string, input: UpdateTagInput) {
     const { data, error } = await supabase
       .from("tags")
       .update({ label: input.label.trim() })
-      .eq("id", id)
+      .eq("id", input.id)
       .select()
       .single();
 

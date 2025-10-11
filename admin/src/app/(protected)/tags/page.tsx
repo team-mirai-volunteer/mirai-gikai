@@ -1,9 +1,9 @@
-import { getTags } from "@/features/tags/api/get-tags";
 import { TagForm } from "@/features/tags/components/tag-form";
 import { TagList } from "@/features/tags/components/tag-list";
+import { loadTags } from "@/features/tags/loaders/load-tags";
 
 export default async function TagsPage() {
-  const tags = await getTags();
+  const tags = await loadTags();
 
   return (
     <div className="container mx-auto py-8">

@@ -1,7 +1,7 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
 import type { TagWithBillCount } from "../types";
 
-export async function getTags(): Promise<TagWithBillCount[]> {
+export async function loadTags(): Promise<TagWithBillCount[]> {
   const supabase = createAdminClient();
 
   // Supabase クエリで議案数をカウント
