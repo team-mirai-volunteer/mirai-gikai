@@ -18,10 +18,7 @@ export async function BillShareButtons({
 
   return (
     <div className={`flex flex-col gap-3 ${className || ""}`}>
-      <BillShareButtonsClient
-        shareMessage={shareMessage}
-        shareUrl={shareUrl}
-      />
+      <BillShareButtonsClient shareMessage={shareMessage} shareUrl={shareUrl} />
     </div>
   );
 }
