@@ -203,6 +203,9 @@ importers:
       '@radix-ui/react-use-controllable-state':
         specifier: ^1.2.2
         version: 1.2.2(@types/react@19.2.2)(react@19.1.0)
+      '@supabase/ssr':
+        specifier: ^0.5.2
+        version: 0.5.2(@supabase/supabase-js@2.74.0)
       '@types/react-syntax-highlighter':
         specifier: ^15.5.13
         version: 15.5.13
