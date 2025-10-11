@@ -12,7 +12,6 @@
     "typecheck": "pnpm -r run typecheck",
     "lint": "biome format . && biome lint .",
     "lint:fix": "biome format --write . && biome lint --write .",
-    "format": "biome format --write .",
     "postinstall": "npx simple-git-hooks"
   },
   "devDependencies": {
@@ -25,6 +24,6 @@
     "pre-commit": "npx lint-staged"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "pnpm run format"
+    "*.{js,jsx,ts,tsx}": "pnpm run lint:fix"
   }
 }
