@@ -112,7 +112,7 @@ export function BillShareModal({
         <button
           type="button"
           onClick={onClose}
-          className="w-[287px] max-w-full rounded-full px-6 py-3 font-bold text-base bg-gradient-to-br from-[#BCEDD3] to-[#64D8C6] text-gray-800 border border-gray-800"
+          className="w-[287px] max-w-full rounded-full px-6 py-3 font-bold text-base bg-mirai-gradient text-gray-800 border border-gray-800"
         >
           このまま閉じる
         </button>
