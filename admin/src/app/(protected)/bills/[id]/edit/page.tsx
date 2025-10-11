@@ -3,9 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { getBillById } from "@/features/bills-edit/api/get-bill-by-id";
+import { getBillTagIds } from "@/features/bills-edit/api/get-bill-tag-ids";
 import { BillEditForm } from "@/features/bills-edit/components/bill-edit-form";
+import { BillTagsForm } from "@/features/bills-edit/components/bill-tags-form";
 import { getStanceByBillId } from "@/features/mirai-stance/api/get-stance-by-bill-id";
 import { StanceForm } from "@/features/mirai-stance/components/stance-form";
+import { loadTags } from "@/features/tags/loaders/load-tags";
 
 interface BillEditPageProps {
   params: Promise<{
@@ -15,9 +18,11 @@ interface BillEditPageProps {
 
 export default async function BillEditPage({ params }: BillEditPageProps) {
   const { id } = await params;
-  const [bill, stance] = await Promise.all([
+  const [bill, stance, allTags, selectedTagIds] = await Promise.all([
     getBillById(id),
     getStanceByBillId(id),
+    loadTags(),
+    getBillTagIds(id),
   ]);
 
   if (!bill) {
@@ -44,6 +49,11 @@ export default async function BillEditPage({ params }: BillEditPageProps) {
       <div className="space-y-6">
         <BillEditForm bill={bill} />
         <StanceForm billId={bill.id} stance={stance} billStatus={bill.status} />
+        <BillTagsForm
+          billId={bill.id}
+          allTags={allTags}
+          selectedTagIds={selectedTagIds}
+        />
       </div>
     </div>
   );
