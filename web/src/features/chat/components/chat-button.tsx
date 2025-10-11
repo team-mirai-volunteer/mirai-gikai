@@ -6,6 +6,14 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import type { Bill } from "@/features/bills/types";
 import { ChatWindow } from "./chat-window";
 
+// アニメーション定数
+const ANIMATION_DURATION = {
+  SIZE_TRANSITION: 50, // ボタンサイズ変更のアニメーション時間（ms）
+  OPACITY_TRANSITION: 300, // テキストopacityのトランジション時間（ms）
+  TEXT_CHANGE_DELAY: 300, // テキスト内容変更までの待機時間（opacity完全に0になるまで）
+  TEXT_FADE_IN: 50, // テキストフェードイン待機時間（ms）
+} as const;
+
 interface ChatButtonProps {
   billContext: Bill;
   difficultyLevel: string;
@@ -47,8 +55,8 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
             setShowText(false);
             setTimeout(() => {
               setIsCompact(true);
-              setTimeout(() => setShowText(true), 200);
-            }, 100);
+              setTimeout(() => setShowText(true), ANIMATION_DURATION.TEXT_FADE_IN);
+            }, ANIMATION_DURATION.TEXT_CHANGE_DELAY);
           }
         }
         // 上方向にスクロール
@@ -57,8 +65,8 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
             setShowText(false);
             setTimeout(() => {
               setIsCompact(false);
-              setTimeout(() => setShowText(true), 200);
-            }, 100);
+              setTimeout(() => setShowText(true), ANIMATION_DURATION.TEXT_FADE_IN);
+            }, ANIMATION_DURATION.TEXT_CHANGE_DELAY);
           }
         }
 
@@ -79,7 +87,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
             className={`relative rounded-[50px] bg-gradient-to-tr from-[#64D8C6] to-[#BCECD3] p-[2px] shadow-[2px_2px_2px_0px_rgba(0,0,0,0.25)] origin-center flex`}
             style={{
               flexBasis: isCompact ? "120px" : "340px",
-              transition: "flex-basis 50ms ease-out, box-shadow 50ms ease-out",
+              transition: `flex-basis ${ANIMATION_DURATION.SIZE_TRANSITION}ms ease-in-out, box-shadow ${ANIMATION_DURATION.SIZE_TRANSITION}ms ease-in-out`,
             }}
           >
             <button
@@ -94,14 +102,17 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
                 height: isCompact ? "35px" : "56px",
                 paddingTop: isCompact ? "8px" : "8px",
                 paddingBottom: isCompact ? "8px" : "8px",
-                transition: "all 50ms ease-out",
+                transition: `all ${ANIMATION_DURATION.SIZE_TRANSITION}ms ease-in-out`,
               }}
               aria-label="議案について質問する"
             >
               <span
-                className={`text-[#AEAEB2] text-sm font-medium leading-[1.5em] tracking-[0.01em] transition-opacity duration-300 ${
+                className={`text-[#AEAEB2] text-sm font-medium leading-[1.5em] tracking-[0.01em] ${
                   isCompact ? "text-center" : "flex-1 text-left"
                 } ${showText ? "opacity-100" : "opacity-0"}`}
+                style={{
+                  transition: `opacity ${ANIMATION_DURATION.OPACITY_TRANSITION}ms ease-in-out`,
+                }}
               >
                 {isCompact ? "AIに質問" : "わからないことをAIに質問する"}
               </span>
