@@ -48,34 +48,15 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
 
       const handleScroll = () => {
         const currentScrollY = window.scrollY;
+        const shouldCompact = currentScrollY > lastScrollY && currentScrollY > 0 && !isCompact;
+        const shouldExpand = currentScrollY < lastScrollY && isCompact;
 
-        // 下方向にスクロール
-        if (currentScrollY > lastScrollY && currentScrollY > 0) {
-          if (!isCompact) {
-            // ①スクロール検知
-            // ②即座にサイズアニメーション開始
-            setIsCompact(true);
-            // ③即座に文字は消える
-            setShowText(false);
-            // ④サイズアニメーションの終了間際まで待機し新しい文字が出現
-            setTimeout(() => {
-              setShowText(true);
-            }, ANIMATION_DURATION.TEXT_CHANGE_DELAY);
-          }
-        }
-        // 上方向にスクロール
-        else if (currentScrollY < lastScrollY) {
-          if (isCompact) {
-            // ①スクロール検知
-            // ②即座にサイズアニメーション開始
-            setIsCompact(false);
-            // ③即座に文字は消える
-            setShowText(false);
-            // ④サイズアニメーションの終了間際まで待機し新しい文字が出現
-            setTimeout(() => {
-              setShowText(true);
-            }, ANIMATION_DURATION.TEXT_CHANGE_DELAY);
-          }
+        if (shouldCompact || shouldExpand) {
+          setIsCompact(shouldCompact);
+          setShowText(false);
+          setTimeout(() => {
+            setShowText(true);
+          }, ANIMATION_DURATION.TEXT_CHANGE_DELAY);
         }
 
         lastScrollY = currentScrollY;
@@ -90,7 +71,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
 
     return (
       <>
-        <div className="fixed bottom-2 left-6 right-6 z-50 md:bottom-8 md:left-8 md:right-8 flex justify-center">
+        <div className="fixed bottom-4 left-6 right-6 z-50 md:bottom-8 md:left-8 md:right-8 flex justify-center">
           <div
             className="relative rounded-[50px] bg-gradient-to-tr from-[#64D8C6] to-[#BCECD3] p-[2px] shadow-[2px_2px_2px_0px_rgba(0,0,0,0.25)] origin-center flex transition-[flex-basis] duration-300 ease-in-out"
             style={{
@@ -100,16 +81,11 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
             <button
               type="button"
               onClick={() => setIsOpen(true)}
-              className={`relative bg-white rounded-[50px] hover:opacity-90 flex items-center w-full transition-all duration-300 ease-in-out ${
+              className={`relative bg-white rounded-[50px] hover:opacity-90 flex items-center w-full py-2 transition-all duration-300 ease-in-out ${
                 isCompact
-                  ? "px-4 justify-center gap-2.5"
-                  : "justify-end pr-4 pl-6 gap-2.5"
+                  ? "h-[35px] px-4 justify-center gap-2.5"
+                  : "h-14 justify-end pr-4 pl-6 gap-2.5"
               }`}
-              style={{
-                height: isCompact ? "35px" : "56px",
-                paddingTop: "8px",
-                paddingBottom: "8px",
-              }}
               aria-label="議案について質問する"
             >
               <span
