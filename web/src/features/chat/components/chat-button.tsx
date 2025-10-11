@@ -40,8 +40,8 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
       const handleScroll = () => {
         const currentScrollY = window.scrollY;
 
-        // 下方向にスクロール（かつ100px以上スクロールしている）
-        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // 下方向にスクロール
+        if (currentScrollY > lastScrollY && currentScrollY > 0) {
           setIsCompact(true);
         }
         // 上方向にスクロール
