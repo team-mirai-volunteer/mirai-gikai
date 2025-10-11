@@ -135,7 +135,7 @@ export function ChatWindow({
                   variant="flat"
                   className={
                     message.role === "user"
-                      ? "max-w-fit rounded-[16px] text-sm font-medium leading-[2] text-[#000000]"
+                      ? "max-w-fit text-sm font-medium leading-[2] text-[#000000]"
                       : "text-sm font-medium leading-[1.8] text-[#1F2937]"
                   }
                   style={
@@ -143,6 +143,7 @@ export function ChatWindow({
                       ? {
                           padding: "4px 16px",
                           background: "linear-gradient(-45deg, rgba(188, 236, 211, 1) 0%, rgba(100, 216, 198, 1) 100%)",
+                          borderRadius: "16px",
                         }
                       : undefined
                   }
@@ -186,7 +187,7 @@ export function ChatWindow({
         </Conversation>
 
         {/* 入力エリア（固定下部） */}
-        <div className="px-6 pb-2 pt-2 bg-white border-t border-gray-100">
+        <div className="px-6 pb-2 pt-2 bg-white">
           <PromptInput
             onSubmit={handleSubmit}
             className="flex items-end gap-2.5 py-2 pl-6 pr-4 bg-white rounded-[50px] border-2 border-transparent bg-clip-padding divide-y-0"
