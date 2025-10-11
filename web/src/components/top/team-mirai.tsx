@@ -6,31 +6,37 @@ const SNS_LINKS = [
     name: "YouTube",
     url: "https://youtube.com/channel/UC72A_x2FKHkJ8Nc2eIzqj8Q?si=vfLWFp0hyzEqlzTu",
     icon: "/icons/sns/icon_youtube.png",
+    hasBorder: false,
   },
   {
     name: "X",
     url: "https://x.com/team_mirai_jp",
     icon: "/icons/sns/icon_x.png",
+    hasBorder: false,
   },
   {
     name: "LINE",
     url: "https://lin.ee/aVvgk9jN",
     icon: "/icons/sns/icon_line.png",
+    hasBorder: false,
   },
   {
     name: "Instagram",
     url: "https://www.instagram.com/team_mirai_jp/",
     icon: "/icons/sns/icon_instagram.png",
+    hasBorder: true,
   },
   {
     name: "Facebook",
     url: "https://www.facebook.com/teammirai.official",
     icon: "/icons/sns/icon_facebook.png",
+    hasBorder: false,
   },
   {
     name: "TikTok",
     url: "https://www.tiktok.com/@annotakahiro2024",
     icon: "/icons/sns/icon_tiktok.png",
+    hasBorder: true,
   },
 ] as const;
 
@@ -126,7 +132,17 @@ export function TeamMirai() {
                   rel="noopener noreferrer"
                   className="hover:opacity-70 transition-opacity"
                 >
-                  <Image src={sns.icon} alt={sns.name} width={48} height={48} />
+                  <Image
+                    src={sns.icon}
+                    alt={sns.name}
+                    width={48}
+                    height={48}
+                    className={
+                      sns.hasBorder
+                        ? "rounded-full border border-[#B1B1B1]"
+                        : ""
+                    }
+                  />
                 </a>
               ))}
             </div>
