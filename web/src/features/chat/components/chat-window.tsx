@@ -129,7 +129,11 @@ export function ChatWindow({
               <Message
                 key={message.id}
                 from={message.role}
-                className={message.role === "user" ? "justify-end py-0" : "justify-start py-0"}
+                className={
+                  message.role === "user"
+                    ? "justify-end py-0"
+                    : "justify-start py-0"
+                }
               >
                 <MessageContent
                   variant="flat"
@@ -142,7 +146,8 @@ export function ChatWindow({
                     message.role === "user"
                       ? {
                           padding: "4px 16px",
-                          background: "linear-gradient(-45deg, rgba(188, 236, 211, 1) 0%, rgba(100, 216, 198, 1) 100%)",
+                          background:
+                            "linear-gradient(-45deg, rgba(188, 236, 211, 1) 0%, rgba(100, 216, 198, 1) 100%)",
                           borderRadius: "16px",
                         }
                       : undefined
