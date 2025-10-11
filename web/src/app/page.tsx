@@ -1,6 +1,7 @@
 import { Container } from "@/components/layouts/container";
 import { About } from "@/components/top/about";
 import { Hero } from "@/components/top/hero";
+import { TeamMirai } from "@/components/top/team-mirai";
 import { getBills } from "@/features/bills/api/get-bills";
 import { BillList } from "@/features/bills/components/bill-list/bill-list";
 
@@ -29,6 +30,9 @@ export default async function Home() {
 
       {/* みらい議会とは セクション */}
       <About />
+
+      {/* チームみらいについて セクション */}
+      <TeamMirai />
     </>
   );
 }

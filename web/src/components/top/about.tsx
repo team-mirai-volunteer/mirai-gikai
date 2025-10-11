@@ -7,8 +7,16 @@ export function About() {
       <Container>
         <div className="flex flex-col gap-4">
           {/* ヘッダー */}
-          <div className="flex flex-col gap-2">
-            <h2 className="font-lexend text-5xl">About</h2>
+          <div className="flex flex-col gap-4">
+            <h2>
+              <Image
+                src="/icons/about-typography.svg"
+                alt="About"
+                width={143}
+                height={36}
+                priority
+              />
+            </h2>
             <p className="text-sm font-bold text-primary-accent">
               みらい議会とは
             </p>
@@ -17,21 +25,18 @@ export function About() {
           {/* コンテンツ */}
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-3">
-              <h3 className="text-2xl font-bold leading-[48px]">
+              <h3 className="text-2xl font-bold leading-[43.2px]">
                 国会での議論を
                 <br />
                 できる限りわかりやすく
-                <br />
-                オープンにする
               </h3>
               <p className="text-[15px] leading-[28px] text-black">
-                みらい議会は、国会の議案情報をAIを活用して紐解いて整理・解説したメディアです。国会の議論を国民に開いていくことを目指して、今後継続的にアップデートしていきます。
+                みらい議会は、国会で今どんな法案が検討されているか、わかりやすく伝えるプラットフォームです。国民の意見を政治に届けることを目指して、継続的にアップデートしていきます。
               </p>
             </div>
 
             {/* もっと詳しく知るボタン */}
             <a
-              // TODO: リンク差し替え
               href="https://note.com/interests/%E3%83%81%E3%83%BC%E3%83%A0%E3%81%BF%E3%82%89%E3%81%84"
               target="_blank"
               rel="noopener noreferrer"
@@ -44,7 +49,7 @@ export function About() {
                 height={25}
                 className="flex-shrink-0"
               />
-              <span className="text-[15px] font-bold">もっと詳しく知る</span>
+              <span className="text-[15px] font-bold">みらい議会とは</span>
               <Image
                 src="/icons/arrow-right.svg"
                 alt=""
