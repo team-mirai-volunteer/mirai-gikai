@@ -25,7 +25,7 @@ export function LinkButton({
   return (
     <Button
       asChild
-      variant="outline-dark"
+      variant="outline"
       className="w-fit rounded-full px-6 py-3 h-auto"
     >
       <a href={href} target={target} rel={rel}>
