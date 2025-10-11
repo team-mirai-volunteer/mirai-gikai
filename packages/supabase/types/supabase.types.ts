@@ -79,6 +79,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          is_featured: boolean
           name: string
           originating_house: Database["public"]["Enums"]["house_enum"]
           publish_status: Database["public"]["Enums"]["bill_publish_status"]
@@ -91,6 +92,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          is_featured?: boolean
           name: string
           originating_house: Database["public"]["Enums"]["house_enum"]
           publish_status?: Database["public"]["Enums"]["bill_publish_status"]
@@ -103,6 +105,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          is_featured?: boolean
           name?: string
           originating_house?: Database["public"]["Enums"]["house_enum"]
           publish_status?: Database["public"]["Enums"]["bill_publish_status"]
