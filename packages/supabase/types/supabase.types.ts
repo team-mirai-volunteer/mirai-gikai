@@ -114,6 +114,39 @@ export type Database = {
         }
         Relationships: []
       }
+      bills_tags: {
+        Row: {
+          bill_id: string
+          created_at: string
+          tag_id: string
+        }
+        Insert: {
+          bill_id: string
+          created_at?: string
+          tag_id: string
+        }
+        Update: {
+          bill_id?: string
+          created_at?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bills_tags_bill_id_fkey"
+            columns: ["bill_id"]
+            isOneToOne: false
+            referencedRelation: "bills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bills_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chats: {
         Row: {
           bill_id: string
@@ -221,6 +254,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tags: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
