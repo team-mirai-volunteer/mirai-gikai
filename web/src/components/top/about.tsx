@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Container } from "@/components/layouts/container";
+import { LinkButton } from "./link-button";
 
 export function About() {
   return (
@@ -36,28 +37,17 @@ export function About() {
             </div>
 
             {/* もっと詳しく知るボタン */}
-            <a
+            <LinkButton
               href="https://note.com/interests/%E3%83%81%E3%83%BC%E3%83%A0%E3%81%BF%E3%82%89%E3%81%84"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-black rounded-full hover:bg-gray-50 transition-colors w-fit"
+              icon={{
+                src: "/icons/note-icon.png",
+                alt: "note",
+                width: 25,
+                height: 25,
+              }}
             >
-              <Image
-                src="/icons/note-icon.png"
-                alt="note"
-                width={25}
-                height={25}
-                className="flex-shrink-0"
-              />
-              <span className="text-[15px] font-bold">みらい議会とは</span>
-              <Image
-                src="/icons/arrow-right.svg"
-                alt=""
-                width={16}
-                height={16}
-                className="flex-shrink-0"
-              />
-            </a>
+              みらい議会とは
+            </LinkButton>
           </div>
         </div>
       </Container>
