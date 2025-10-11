@@ -26,9 +26,15 @@ export type BillWithStance = Bill & {
   mirai_stance?: MiraiStance;
 };
 
+export type BillTag = {
+  id: string;
+  label: string;
+};
+
 export type BillWithContent = Bill & {
   bill_content?: BillContent;
   mirai_stance?: MiraiStance;
+  tags?: BillTag[];
 };
 
 // House display mapping

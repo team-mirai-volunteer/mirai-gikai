@@ -44,17 +44,18 @@ export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
         )}
 
         {/* タグ表示 */}
-        <div className="flex flex-wrap gap-3 mb-4">
-          <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-medium text-black bg-[#E8E8E8] rounded-full">
-            デジタル化
-          </span>
-          <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-medium text-black bg-[#E8E8E8] rounded-full">
-            国際貿易
-          </span>
-          <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-medium text-black bg-[#E8E8E8] rounded-full">
-            法務委員会
-          </span>
-        </div>
+        {bill.tags && bill.tags.length > 0 && (
+          <div className="flex flex-wrap gap-3 mb-4">
+            {bill.tags.map((tag) => (
+              <span
+                key={tag.id}
+                className="inline-flex items-center justify-center px-3 py-1 text-xs font-medium text-black bg-[#E8E8E8] rounded-full"
+              >
+                {tag.label}
+              </span>
+            ))}
+          </div>
+        )}
 
         <p className="text-xs text-muted-foreground font-medium">{bill.name}</p>
       </CardContent>
