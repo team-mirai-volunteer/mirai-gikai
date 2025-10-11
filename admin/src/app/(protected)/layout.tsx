@@ -1,11 +1,7 @@
-import { FileText, Home, Tag, User } from "lucide-react";
+import { Home, User } from "lucide-react";
+import { NavigationLinks } from "@/components/navigation-links";
 import { LogoutButton } from "@/features/auth/components/logout-button";
 import { getCurrentAdmin } from "@/features/auth/lib/auth-server";
-
-const navigationLinks = [
-  { href: "/bills", label: "議案管理", icon: FileText },
-  { href: "/tags", label: "タグ管理", icon: Tag },
-];
 
 export default async function MainLayout({
   children,
@@ -16,7 +12,7 @@ export default async function MainLayout({
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
@@ -38,29 +34,13 @@ export default async function MainLayout({
               <LogoutButton />
             </div>
           </div>
+
+          {/* Navigation */}
+          <NavigationLinks />
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
-        {/* Navigation */}
-        <nav className="mb-6 md:mb-8">
-          <div className="flex space-x-4 md:space-x-8">
-            {navigationLinks.map((link) => {
-              const Icon = link.icon;
-              return (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-gray-700"
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{link.label}</span>
-                </a>
-              );
-            })}
-          </div>
-        </nav>
-
         {/* Main content */}
         <main>{children}</main>
       </div>
