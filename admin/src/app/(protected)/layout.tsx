@@ -1,6 +1,11 @@
-import { FileText, Home, User } from "lucide-react";
+import { FileText, Home, Tag, User } from "lucide-react";
 import { LogoutButton } from "@/features/auth/components/logout-button";
 import { getCurrentAdmin } from "@/features/auth/lib/auth-server";
+
+const navigationLinks = [
+  { href: "/bills", label: "議案管理", icon: FileText },
+  { href: "/tags", label: "タグ管理", icon: Tag },
+];
 
 export default async function MainLayout({
   children,
@@ -40,13 +45,19 @@ export default async function MainLayout({
         {/* Navigation */}
         <nav className="mb-6 md:mb-8">
           <div className="flex space-x-4 md:space-x-8">
-            <a
-              href="/bills"
-              className="flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-gray-700"
-            >
-              <FileText className="h-4 w-4" />
-              <span>議案管理</span>
-            </a>
+            {navigationLinks.map((link) => {
+              const Icon = link.icon;
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-gray-700"
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{link.label}</span>
+                </a>
+              );
+            })}
           </div>
         </nav>
 
