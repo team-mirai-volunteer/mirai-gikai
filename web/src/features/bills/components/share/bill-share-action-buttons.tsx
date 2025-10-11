@@ -1,6 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  shareNative,
+  shareOnFacebook,
+  shareOnLine,
+  shareOnTwitter,
+} from "@/features/bills/utils/share-handlers";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -9,37 +15,45 @@ interface BillShareActionButtonsProps {
   shareUrl: string;
 }
 
-const SHARE_ICONS = [
-  {
-    name: "X (Twitter)",
-    iconPath: "/icons/sns/icon_x.png",
-    width: 48,
-    height: 48,
-  },
-  {
-    name: "LINE",
-    iconPath: "/icons/sns/icon_line.png",
-    width: 48,
-    height: 48,
-  },
-  {
-    name: "Facebook",
-    iconPath: "/icons/sns/icon_facebook.png",
-    width: 48,
-    height: 48,
-  },
-  {
-    name: "共有",
-    iconPath: "/icons/ios-share.svg",
-    width: 28,
-    height: 28,
-  },
-] as const;
-
 export function BillShareActionButtons({
+  shareMessage,
   shareUrl,
 }: BillShareActionButtonsProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 共有ボタンの設定
+  const shareButtons = [
+    {
+      name: "X (Twitter)",
+      iconPath: "/icons/sns/icon_x.png",
+      width: 48,
+      height: 48,
+      onClick: () => shareOnTwitter(shareMessage, shareUrl),
+    },
+    {
+      name: "Facebook",
+      iconPath: "/icons/sns/icon_facebook.png",
+      width: 48,
+      height: 48,
+      onClick: () => shareOnFacebook(shareUrl),
+    },
+    {
+      name: "LINE",
+      iconPath: "/icons/sns/icon_line.png",
+      width: 48,
+      height: 48,
+      onClick: () => shareOnLine(shareMessage, shareUrl),
+      className: "md:hidden",
+    },
+    {
+      name: "共有",
+      iconPath: "/icons/ios-share.svg",
+      width: 28,
+      height: 28,
+      onClick: () => shareNative(shareMessage, shareUrl),
+      className: "md:hidden",
+    },
+  ];
 
   const handleShare = () => {
     setIsModalOpen(true);
@@ -133,18 +147,19 @@ export function BillShareActionButtons({
 
               {/* SNSアイコン */}
               <div className="flex flex-wrap items-center justify-center gap-4">
-                {SHARE_ICONS.map((icon) => (
+                {shareButtons.map((button) => (
                   <button
-                    key={icon.name}
+                    key={button.name}
                     type="button"
-                    className="w-12 h-12 flex items-center justify-center"
+                    onClick={button.onClick}
+                    className={`w-12 h-12 flex items-center justify-center ${button.className || ""}`}
                   >
                     <Image
-                      src={icon.iconPath}
-                      alt={icon.name}
-                      width={icon.width}
-                      height={icon.height}
-                      className={icon.width === 48 ? "w-12 h-12" : "w-7 h-7"}
+                      src={button.iconPath}
+                      alt={button.name}
+                      width={button.width}
+                      height={button.height}
+                      className={button.width === 48 ? "w-12 h-12" : "w-7 h-7"}
                     />
                   </button>
                 ))}
