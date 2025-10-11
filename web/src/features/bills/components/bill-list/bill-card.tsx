@@ -13,9 +13,17 @@ export function BillCard({ bill }: BillCardProps) {
   const displaySummary = bill.bill_content?.summary;
 
   return (
-    <Card className="hover:bg-muted/50 transition-colors">
+    <Card className="hover:bg-muted/50 transition-colors relative">
+      {/* 注目バッジ（サムネイル画像の有無に関わらず表示） */}
+      {bill.is_featured && (
+        <div className="absolute top-3 left-3 z-10">
+          <span className="inline-flex items-center justify-center px-3 py-0.5 text-xs font-medium text-[#1F2937] bg-[#F4FF5F] rounded-[20px]">
+            注目🔥
+          </span>
+        </div>
+      )}
       <div className="flex flex-col md:flex-row">
-        {bill.thumbnail_url && (
+        {bill.thumbnail_url ? (
           <div className="relative w-full h-48 md:w-64 md:h-auto md:self-stretch flex-shrink-0">
             <Image
               src={bill.thumbnail_url}
@@ -25,6 +33,10 @@ export function BillCard({ bill }: BillCardProps) {
               sizes="(max-width: 768px) 100vw, 256px"
             />
           </div>
+        ) : (
+          bill.is_featured && (
+            <div className="w-full h-5 bg-white rounded-t-lg" />
+          )
         )}
         <div className="flex-1">
           <CardHeader className="pb-3">
