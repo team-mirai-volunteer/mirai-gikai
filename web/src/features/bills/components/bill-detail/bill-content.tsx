@@ -1,5 +1,6 @@
-import { parseMarkdown } from "@/lib/markdown";
+import { parseMarkdownSections } from "@/lib/markdown";
 import type { BillWithContent } from "../../types";
+import { LongPressSection } from "./long-press-section";
 
 interface BillContentProps {
   bill: BillWithContent;
@@ -12,7 +13,10 @@ export async function BillContent({ bill }: BillContentProps) {
     return null;
   }
 
-  const htmlContent = await parseMarkdown(markdownContent);
+  const htmlSections = await parseMarkdownSections(markdownContent);
+
+  const beforeSections = htmlSections.slice(0, 2);
+  const afterSections = htmlSections.slice(2);
 
   return (
     <div
@@ -38,7 +42,22 @@ export async function BillContent({ bill }: BillContentProps) {
             [&_iframe.youtube-embed]:w-full [&_iframe.youtube-embed]:aspect-video [&_iframe.youtube-embed]:mb-4
             [&_iframe.youtube-embed]:rounded-lg [&_iframe.youtube-embed]:shadow-md
           "
-      dangerouslySetInnerHTML={{ __html: htmlContent }}
-    />
+    >
+      {beforeSections.map((html) => (
+        <div
+          key={html.slice(0, 50)}
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      ))}
+
+      <LongPressSection bill={bill} />
+
+      {afterSections.map((html) => (
+        <div
+          key={html.slice(0, 50)}
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      ))}
+    </div>
   );
 }
