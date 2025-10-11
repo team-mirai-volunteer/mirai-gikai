@@ -84,14 +84,76 @@ export function BillShareActionButtons({
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3"
           onClick={handleBackgroundClick}
           onKeyDown={handleBackgroundKeyDown}
           tabIndex={-1}
         >
-          <div className="bg-white rounded-2xl p-7 w-[370px] max-w-[90vw] max-h-[90vh] overflow-auto">
-            {/* モーダルの中身はここに実装予定 */}
-            <p className="text-center text-gray-800">モーダルの内容</p>
+          <div className="bg-white rounded-2xl p-7 w-[370px] max-w-full flex flex-col items-center gap-9">
+            {/* タイトル */}
+            <h2 className="text-xl font-bold text-gray-800 text-center w-full">
+              記事を共有する
+            </h2>
+
+            {/* プレースホルダー画像エリア */}
+            <div className="w-full h-[181px] bg-gray-300 rounded" />
+
+            {/* シェアセクション */}
+            <div className="flex flex-col items-center gap-4 w-full">
+              <p className="text-base font-bold text-gray-800 text-center">
+                シェアして国会議論をオープンに
+              </p>
+
+              {/* SNSアイコン */}
+              <div className="flex flex-wrap items-end justify-center gap-4">
+                {/* X (Twitter) アイコン */}
+                <button
+                  type="button"
+                  className="w-12 h-12 rounded-full bg-white border-[0.5px] border-gray-400 flex items-center justify-center text-black text-xl"
+                >
+                  􀈂
+                </button>
+
+                {/* 画像アイコンのプレースホルダー */}
+                <div className="w-12 h-12 bg-gray-300 rounded" />
+
+                {/* Facebook アイコン */}
+                <button
+                  type="button"
+                  className="w-12 h-12 rounded-full bg-[#0866FF] flex items-center justify-center"
+                >
+                  <svg
+                    width="22"
+                    height="40"
+                    viewBox="0 0 22 40"
+                    fill="none"
+                    className="text-white"
+                  >
+                    <path
+                      d="M13.25 8.88h7.88V0h-7.88c-6.23 0-11.31 5.08-11.31 11.31v5.57H0v8.88h1.94V40h8.88V25.76h7.88l1.57-8.88h-9.45v-5.57c0-1.46 1.19-2.43 2.43-2.43z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
+
+                {/* その他アイコン */}
+                <button
+                  type="button"
+                  className="w-12 h-12 rounded-full bg-white border-[0.5px] border-gray-400 flex items-center justify-center text-black text-xl"
+                >
+                  􀈂
+                </button>
+              </div>
+            </div>
+
+            {/* 閉じるボタン */}
+            <button
+              type="button"
+              onClick={handleCloseModal}
+              className="w-[287px] max-w-full rounded-full px-6 py-3 font-bold text-base bg-gradient-to-br from-[#BCEDD3] to-[#64D8C6] text-gray-800 border border-gray-800"
+            >
+              このまま閉じる
+            </button>
           </div>
         </div>
       )}
