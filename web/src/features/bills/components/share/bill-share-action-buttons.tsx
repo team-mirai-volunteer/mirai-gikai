@@ -9,6 +9,33 @@ interface BillShareActionButtonsProps {
   shareUrl: string;
 }
 
+const SHARE_ICONS = [
+  {
+    name: "X (Twitter)",
+    iconPath: "/icons/sns/icon_x.png",
+    width: 48,
+    height: 48,
+  },
+  {
+    name: "LINE",
+    iconPath: "/icons/sns/icon_line.png",
+    width: 48,
+    height: 48,
+  },
+  {
+    name: "Facebook",
+    iconPath: "/icons/sns/icon_facebook.png",
+    width: 48,
+    height: 48,
+  },
+  {
+    name: "共有",
+    iconPath: "/icons/ios-share.svg",
+    width: 28,
+    height: 28,
+  },
+] as const;
+
 export function BillShareActionButtons({
   shareUrl,
 }: BillShareActionButtonsProps) {
@@ -105,44 +132,22 @@ export function BillShareActionButtons({
               </p>
 
               {/* SNSアイコン */}
-              <div className="flex flex-wrap items-end justify-center gap-4">
-                {/* X (Twitter) アイコン */}
-                <button
-                  type="button"
-                  className="w-12 h-12 rounded-full bg-white border-[0.5px] border-gray-400 flex items-center justify-center text-black text-xl"
-                >
-                  􀈂
-                </button>
-
-                {/* 画像アイコンのプレースホルダー */}
-                <div className="w-12 h-12 bg-gray-300 rounded" />
-
-                {/* Facebook アイコン */}
-                <button
-                  type="button"
-                  className="w-12 h-12 rounded-full bg-[#0866FF] flex items-center justify-center"
-                >
-                  <svg
-                    width="22"
-                    height="40"
-                    viewBox="0 0 22 40"
-                    fill="none"
-                    className="text-white"
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                {SHARE_ICONS.map((icon) => (
+                  <button
+                    key={icon.name}
+                    type="button"
+                    className="w-12 h-12 flex items-center justify-center"
                   >
-                    <path
-                      d="M13.25 8.88h7.88V0h-7.88c-6.23 0-11.31 5.08-11.31 11.31v5.57H0v8.88h1.94V40h8.88V25.76h7.88l1.57-8.88h-9.45v-5.57c0-1.46 1.19-2.43 2.43-2.43z"
-                      fill="currentColor"
+                    <Image
+                      src={icon.iconPath}
+                      alt={icon.name}
+                      width={icon.width}
+                      height={icon.height}
+                      className={icon.width === 48 ? "w-12 h-12" : "w-7 h-7"}
                     />
-                  </svg>
-                </button>
-
-                {/* その他アイコン */}
-                <button
-                  type="button"
-                  className="w-12 h-12 rounded-full bg-white border-[0.5px] border-gray-400 flex items-center justify-center text-black text-xl"
-                >
-                  􀈂
-                </button>
+                  </button>
+                ))}
               </div>
             </div>
 
