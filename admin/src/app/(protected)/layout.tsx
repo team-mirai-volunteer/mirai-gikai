@@ -1,7 +1,7 @@
 import { Home, User } from "lucide-react";
-import { NavigationLinks } from "@/components/navigation-links";
 import { LogoutButton } from "@/features/auth/components/logout-button";
 import { getCurrentAdmin } from "@/features/auth/lib/auth-server";
+import { NavigationLinks } from "./layout/navigation-links";
 
 export default async function MainLayout({
   children,
