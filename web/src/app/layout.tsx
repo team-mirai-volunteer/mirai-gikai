@@ -44,7 +44,7 @@ export default function RootLayout({
         <SpeedInsights />
         <RubyfulInitializer />
 
-        <div className="relative max-w-[600px] mx-auto pc:mr-[500px] sm:shadow-lg">
+        <div className="relative max-w-[700px] mx-auto pc:mr-[500px] sm:shadow-lg">
           <Header />
           <main className="min-h-screen">{children}</main>
           <Footer />
