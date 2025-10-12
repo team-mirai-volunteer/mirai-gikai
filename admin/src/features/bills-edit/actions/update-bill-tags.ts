@@ -1,13 +1,16 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/features/auth/lib/auth-server";
+import { invalidateBillCache } from "@/lib/utils/cache-invalidation";
 
 /**
  * 議案のタグを更新する
  * 既存のタグと新しいタグを比較して、差分のみを更新する
  */
 export async function updateBillTags(billId: string, tagIds: string[]) {
+  await requireAdmin();
+
   const supabase = createAdminClient();
 
   try {
@@ -69,8 +72,7 @@ export async function updateBillTags(billId: string, tagIds: string[]) {
     }
 
     // キャッシュを更新
-    revalidatePath(`/bills/${billId}/edit`);
-    revalidatePath("/bills");
+    await invalidateBillCache();
 
     return { success: true };
   } catch (error) {
