@@ -42,29 +42,14 @@ const _getCachedBills = unstable_cache(
       throw new Error(`Failed to fetch bills: ${error.message}`);
     }
 
-    // すべての議案のタグを一度に取得（N+1回避）
     const billIds = data.map((item) => item.id);
     const { data: allBillTags } = await supabase
       .from("bills_tags")
       .select("bill_id, tags(id, label)")
       .in("bill_id", billIds);
 
-    // bill_id ごとにタグをグループ化
-    const tagsByBillId = new Map<
-      string,
-      Array<{ id: string; label: string }>
-    >();
-    allBillTags?.forEach((bt) => {
-      if (bt.tags) {
-        const existing = tagsByBillId.get(bt.bill_id) || [];
-        tagsByBillId.set(bt.bill_id, [
-          ...existing,
-          bt.tags as { id: string; label: string },
-        ]);
-      }
-    });
+    const tagsByBillId = groupTagsByBillId(allBillTags ?? []);
 
-    // データ構造を整形
     const billsWithContent: BillWithContent[] = data.map((item) => {
       const { bill_contents, ...bill } = item;
       return {
@@ -72,7 +57,7 @@ const _getCachedBills = unstable_cache(
         bill_content: Array.isArray(bill_contents)
           ? bill_contents[0]
           : undefined,
-        tags: tagsByBillId.get(item.id) || [],
+        tags: tagsByBillId.get(item.id) ?? [],
       };
     });
 
@@ -84,3 +69,18 @@ const _getCachedBills = unstable_cache(
     tags: [CACHE_TAGS.BILLS],
   }
 );
+
+function groupTagsByBillId(
+  billTags: Array<{
+    bill_id: string;
+    tags: { id: string; label: string } | null;
+  }>
+): Map<string, Array<{ id: string; label: string }>> {
+  return billTags.reduce((acc, bt) => {
+    if (bt.tags) {
+      const existing = acc.get(bt.bill_id) ?? [];
+      acc.set(bt.bill_id, [...existing, bt.tags]);
+    }
+    return acc;
+  }, new Map<string, Array<{ id: string; label: string }>>());
+}
