@@ -34,7 +34,7 @@ export type BillTag = {
 export type BillWithContent = Bill & {
   bill_content?: BillContent;
   mirai_stance?: MiraiStance;
-  tags?: BillTag[];
+  tags: BillTag[];
 };
 
 // House display mapping
