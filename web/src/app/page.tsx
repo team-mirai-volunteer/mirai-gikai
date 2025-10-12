@@ -3,6 +3,7 @@ import { About } from "@/components/top/about";
 import { Hero } from "@/components/top/hero";
 import { getBills } from "@/features/bills/api/get-bills";
 import { BillList } from "@/features/bills/components/bill-list/bill-list";
+import { CurrentDietSession } from "@/features/diet-sessions/components/current-diet-session";
 
 export default async function Home() {
   const bills = await getBills();
@@ -10,6 +11,9 @@ export default async function Home() {
   return (
     <>
       <Hero />
+
+      {/* 本日の国会セクション */}
+      <CurrentDietSession />
 
       {/* 議案一覧セクション */}
       <Container>
