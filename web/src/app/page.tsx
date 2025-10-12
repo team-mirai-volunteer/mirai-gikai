@@ -5,10 +5,13 @@ import { getBills } from "@/features/bills/api/get-bills";
 import { BillList } from "@/features/bills/components/bill-list/bill-list";
 import { getCurrentDietSession } from "@/features/diet-sessions/api/get-current-diet-session";
 import { CurrentDietSession } from "@/features/diet-sessions/components/current-diet-session";
+import { getJapanTime } from "@/lib/utils/date";
 
 export default async function Home() {
   const bills = await getBills();
-  const currentSession = await getCurrentDietSession();
+
+  // ゆくゆくタグ機能がマージされたらBFFに統合する
+  const currentSession = await getCurrentDietSession(getJapanTime());
 
   return (
     <>

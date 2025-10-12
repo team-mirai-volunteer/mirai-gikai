@@ -1,3 +1,4 @@
+import { formatDateWithDots } from "@/lib/utils/date";
 import type { DietSession } from "../types";
 
 type CurrentDietSessionProps = {
@@ -8,14 +9,6 @@ export function CurrentDietSession({ session }: CurrentDietSessionProps) {
   if (!session) {
     return null;
   }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("ja-JP", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-  };
 
   return (
     <div className="w-full bg-[#EAE6DD] px-6 py-6">
@@ -30,7 +23,7 @@ export function CurrentDietSession({ session }: CurrentDietSessionProps) {
         </div>
         <div className="text-sm leading-[1.5] shrink-0">
           <div>{session.name}</div>
-          <div>{formatDate(session.start_date)}〜</div>
+          <div>{formatDateWithDots(session.start_date)}〜</div>
         </div>
       </div>
     </div>

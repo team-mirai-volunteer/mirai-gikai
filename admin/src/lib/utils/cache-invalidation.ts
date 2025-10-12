@@ -36,3 +36,8 @@ export async function invalidateBillCache(): Promise<void> {
   // All bills use the same "bills" tag, so we always invalidate all
   await invalidateWebCache();
 }
+
+export async function invalidateDietSessionCache(): Promise<void> {
+  // All diet sessions use the same "diet-sessions" tag
+  await invalidateWebCache();
+}
