@@ -1,4 +1,22 @@
-export function CurrentDietSession() {
+import type { DietSession } from "../types";
+
+type CurrentDietSessionProps = {
+  session: DietSession | null;
+};
+
+export function CurrentDietSession({ session }: CurrentDietSessionProps) {
+  if (!session) {
+    return null;
+  }
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("ja-JP", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
+
   return (
     <div className="w-full bg-[#EAE6DD] px-6 py-6">
       <div className="flex items-center gap-5">
@@ -11,8 +29,8 @@ export function CurrentDietSession() {
           </div>
         </div>
         <div className="text-sm leading-[1.5] shrink-0">
-          <div>第218回 臨時国会</div>
-          <div>2025.10.01〜</div>
+          <div>{session.name}</div>
+          <div>{formatDate(session.start_date)}〜</div>
         </div>
       </div>
     </div>

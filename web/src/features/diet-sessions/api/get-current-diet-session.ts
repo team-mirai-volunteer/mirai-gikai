@@ -1,4 +1,4 @@
-import { createServerClient } from "@mirai-gikai/supabase/server";
+import { createAdminClient } from "@mirai-gikai/supabase";
 import type { DietSession } from "../types";
 
 /**
@@ -6,15 +6,15 @@ import type { DietSession } from "../types";
  * 現在日付が開始日と終了日の範囲内にある会期を返す
  */
 export async function getCurrentDietSession(): Promise<DietSession | null> {
-  const supabase = await createServerClient();
+  const supabase = createAdminClient();
 
   const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD形式
 
   const { data, error } = await supabase
     .from("diet_sessions")
     .select("*")
-    .lte("start_date", today)
-    .gte("end_date", today)
+    .lte("start_date", today) // start_date <= today
+    .gte("end_date", today) // end_date >= today
     .order("start_date", { ascending: false })
     .limit(1)
     .maybeSingle();
