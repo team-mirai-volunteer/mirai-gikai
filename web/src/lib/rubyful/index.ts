@@ -34,33 +34,6 @@ class RubyfulClient {
   /**
    * 新しく追加されたルビ要素を処理
    */
-  private processNewRubyElements(): void {
-    const action = this.isEnabled ? "remove" : "add";
-
-    document
-      .querySelectorAll(SELECTORS.RUBYFUL_RT_UNPROCESSED)
-      .forEach((element) => {
-        element.classList[action](CLASSES.HIDDEN);
-        element.classList.add(CLASSES.RUBYFUL_PROCESSED);
-      });
-  }
-
-  /**
-   * Rubyfulを初期化
-   */
-  init() {
-    if (typeof window === "undefined") return;
-
-    // LocalStorageから設定を復元
-    this.isEnabled = getRubyEnabledFromStorage();
-
-    // 初期状態を適用
-    if (this.isEnabled) {
-      this.show();
-    } else {
-      this.hide();
-    }
-  }
 
   /**
    * ルビを表示
@@ -108,18 +81,6 @@ class RubyfulClient {
   /**
    * DOM変更を監視してルビの表示状態を維持
    */
-  observeChanges() {
-    if (typeof window === "undefined") return;
-
-    const observer = new MutationObserver(() => {
-      this.processNewRubyElements();
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-  }
 }
 
 // シングルトンインスタンスをexport

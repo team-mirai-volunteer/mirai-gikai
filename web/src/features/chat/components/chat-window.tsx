@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Conversation,
   ConversationContent,
@@ -21,11 +22,15 @@ import { SystemMessage } from "./system-message";
 import { UserMessage } from "./user-message";
 
 interface ChatWindowProps {
-  billContext: Bill;
+  billContext?: Bill;
   difficultyLevel: string;
   chatState: ReturnType<typeof import("@ai-sdk/react").useChat>;
   isOpen: boolean;
   onClose: () => void;
+  pageContext?: {
+    type: "home" | "bill";
+    bills?: Array<{ id: string; name: string; summary?: string }>;
+  };
 }
 
 export function ChatWindow({
@@ -34,12 +39,18 @@ export function ChatWindow({
   chatState,
   isOpen,
   onClose,
+  pageContext,
 }: ChatWindowProps) {
   const [input, setInput] = useState("");
+  const [isMounted, setIsMounted] = useState(false);
   const { messages, sendMessage, status, error } = chatState;
   const isDesktop = useIsDesktop();
 
   const isResponding = status === "streaming" || status === "submitted";
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Auto-resize textarea based on content
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -58,18 +69,22 @@ export function ChatWindow({
       return;
     }
 
-    // Send message with bill context and difficulty level in metadata
+    // Send message with context and difficulty level in metadata
     // By default, this sends a HTTP POST request to the /api/chat endpoint.
     sendMessage({
       text: message.text ?? "",
-      metadata: { billContext, difficultyLevel },
+      metadata: {
+        billContext,
+        difficultyLevel,
+        pageContext,
+      },
     });
 
     // Reset form
     setInput("");
   };
 
-  return (
+  const chatContent = (
     <>
       {/* オーバーレイ（1400px未満でのみ表示） */}
       {isOpen && (
@@ -88,11 +103,6 @@ export function ChatWindow({
 					${isOpen ? "visible opacity-100" : "invisible opacity-0 pc:visible pc:opacity-100"}
 				`}
       >
-        {/* ヘッダー - ハンドル */}
-        <div className="flex items-center justify-center pt-1 px-6">
-          <div className="w-[135px] h-2 bg-[#D9D9D9] rounded-full" />
-        </div>
-
         {/* メッセージエリア（スクロール可能） */}
         <Conversation className="flex-1 min-h-0 px-6">
           <ConversationContent className="p-0 flex flex-col gap-3 pt-6">
@@ -102,26 +112,45 @@ export function ChatWindow({
                 <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
                   なんでも質問してください。
                 </p>
-                <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
-                  本文中のテキストを選択すると簡単にAIに質問できます
-                </p>
+                {billContext && (
+                  <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
+                    本文中のテキストを選択すると簡単にAIに質問できます
+                  </p>
+                )}
               </div>
 
               {/* サンプル質問チップ */}
-              <ul className="flex flex-wrap gap-3">
-                {["みらい議会って何？", "国会って何をするところ？"].map(
-                  (question) => (
-                    <li key={question}>
-                      <button
-                        type="button"
-                        className="px-3 py-1 text-xs leading-[2] text-[#0F8472] border border-[#2AA693] rounded-2xl hover:bg-gray-50"
-                      >
-                        {question}
-                      </button>
-                    </li>
-                  )
-                )}
-              </ul>
+              <div className="flex flex-wrap gap-3">
+                {(billContext
+                  ? [
+                      `「${billContext.name}」について教えて`,
+                      "この法案の目的は？",
+                    ]
+                  : [
+                      "みらい議会って何？",
+                      "国会って何をするところ？",
+                      "注目の法案について教えて",
+                    ]
+                ).map((question) => (
+                  <button
+                    key={question}
+                    type="button"
+                    className="px-3 py-1 text-xs leading-[2] text-[#0F8472] border border-[#2AA693] rounded-2xl hover:bg-gray-50"
+                    onClick={() => {
+                      sendMessage({
+                        text: question,
+                        metadata: {
+                          billContext,
+                          difficultyLevel,
+                          pageContext,
+                        },
+                      });
+                    }}
+                  >
+                    {question}
+                  </button>
+                ))}
+              </div>
             </div>
             {messages.map((message) => {
               const isStreaming =
@@ -184,4 +213,12 @@ export function ChatWindow({
       </div>
     </>
   );
+
+  // body直下にPortalでマウント（クライアントサイドのみ）
+  if (!isMounted) {
+    return null;
+  }
+
+  // チャットのストリーミング表示がルビ機能と競合して表示がおかしくなるため、body直下に移動してルビ機能の影響を受けないようにする
+  return createPortal(chatContent, document.body);
 }
