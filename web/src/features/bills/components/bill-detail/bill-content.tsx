@@ -12,7 +12,7 @@ export async function BillContent({ bill }: BillContentProps) {
     return null;
   }
 
-  const htmlContent = await parseMarkdown(markdownContent);
+  const content = await parseMarkdown(markdownContent);
 
   return (
     <div
@@ -38,7 +38,8 @@ export async function BillContent({ bill }: BillContentProps) {
             [&_iframe.youtube-embed]:w-full [&_iframe.youtube-embed]:aspect-video [&_iframe.youtube-embed]:mb-4
             [&_iframe.youtube-embed]:rounded-lg [&_iframe.youtube-embed]:shadow-md
           "
-      dangerouslySetInnerHTML={{ __html: htmlContent }}
-    />
+    >
+      {content}
+    </div>
   );
 }
