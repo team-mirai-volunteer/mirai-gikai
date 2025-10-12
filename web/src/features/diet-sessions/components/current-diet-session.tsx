@@ -17,7 +17,7 @@ export function CurrentDietSession({ session }: CurrentDietSessionProps) {
           <h2 className="text-xl font-bold text-gray-800 leading-[0.9] flex-1">
             本日の国会
           </h2>
-          <div className="inline-flex items-center justify-center px-5 py-1.5 rounded-[50px] bg-gradient-to-br from-[#BCECD3] to-[#64D8C6] shrink-0">
+          <div className="inline-flex items-center justify-center px-5 py-1.5 rounded-[50px] bg-mirai-gradient shrink-0">
             <span className="text-base font-bold leading-[1.48]">会期中</span>
           </div>
         </div>
