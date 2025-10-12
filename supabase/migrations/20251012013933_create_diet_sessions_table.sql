@@ -15,17 +15,6 @@ ALTER TABLE diet_sessions ENABLE ROW LEVEL SECURITY;
 -- Create index for date range queries
 CREATE INDEX idx_diet_sessions_date_range ON diet_sessions (start_date, end_date);
 
--- SELECT policy: all users can read
-CREATE POLICY "diet_sessions_select_policy" ON diet_sessions
-  FOR SELECT
-  USING (true);
-
--- INSERT/UPDATE/DELETE policy: authenticated users only
-CREATE POLICY "diet_sessions_write_policy" ON diet_sessions
-  FOR ALL
-  USING (auth.uid() IS NOT NULL)
-  WITH CHECK (auth.uid() IS NOT NULL);
-
 -- Auto-update updated_at trigger
 CREATE TRIGGER set_updated_at
   BEFORE UPDATE ON diet_sessions
