@@ -1,5 +1,6 @@
 "use client";
 
+import { X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -98,14 +99,22 @@ export function ChatWindow({
 
       {/* チャットウィンドウ */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-50 h-[80vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[600px] md:w-[450px] md:rounded-lg rounded-t-2xl flex flex-col
+        className={`fixed inset-x-0 bottom-0 z-50 h-[80vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[60vh] md:w-[450px] md:rounded-2xl rounded-t-2xl flex flex-col
 					pc:visible pc:opacity-100
 					${isOpen ? "visible opacity-100" : "invisible opacity-0 pc:visible pc:opacity-100"}
 				`}
       >
+        <button
+          type="button"
+          className="pc:hidden self-end p-2 m-2 hover:bg-gray-100 rounded-full"
+          onClick={onClose}
+          aria-label="モーダルを閉じる"
+        >
+          <X className="h-5 w-5" />
+        </button>
         {/* メッセージエリア（スクロール可能） */}
         <Conversation className="flex-1 min-h-0 px-6">
-          <ConversationContent className="p-0 flex flex-col gap-3 pt-6">
+          <ConversationContent className="p-0 flex flex-col gap-2 pc:pt-6 pb-2">
             <div className="flex flex-col gap-4">
               {/* 初期メッセージ */}
               <div className="flex flex-col gap-1">
@@ -172,7 +181,7 @@ export function ChatWindow({
         </Conversation>
 
         {/* 入力エリア（固定下部） */}
-        <div className="px-6 pb-2 pt-2 bg-white">
+        <div className="px-6 pb-4 pt-2">
           <PromptInput
             onSubmit={handleSubmit}
             className="flex items-end gap-2.5 py-2 pl-6 pr-4 bg-white rounded-[50px] border-2 border-transparent bg-clip-padding divide-y-0"
