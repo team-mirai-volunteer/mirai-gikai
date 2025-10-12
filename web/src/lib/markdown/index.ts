@@ -38,33 +38,35 @@ export async function parseMarkdownSections(
  * @returns セクション配列
  */
 export function splitByH2(nodes: unknown[]): Section[] {
-  const sections: Section[] = [];
-  let currentSection: Section = {
-    type: "root",
-    children: [],
-  };
+  // h2のインデックスを収集
+  const h2Indices = nodes
+    .map((node, index) => {
+      const mdNode = node as MarkdownNode;
+      return mdNode.type === "heading" && mdNode.depth === 2 ? index : -1;
+    })
+    .filter((index) => index !== -1);
 
-  for (const node of nodes) {
-    const mdNode = node as MarkdownNode;
-    if (mdNode.type === "heading" && mdNode.depth === 2) {
-      // 既存のセクションを保存（空でない場合）
-      if (currentSection.children.length > 0) {
-        sections.push(currentSection);
-      }
-      // 新しいセクションを開始（h2を含む）
-      currentSection = { type: "root", children: [node] };
-    } else {
-      // 現在のセクションにノードを追加
-      currentSection.children.push(node);
-    }
+  // h2が存在しない場合は全体を1つのセクションとして返す
+  if (h2Indices.length === 0) {
+    return nodes.length > 0 ? [{ type: "root", children: nodes }] : [];
   }
 
-  // 最後のセクションを追加（空でない場合）
-  if (currentSection.children.length > 0) {
-    sections.push(currentSection);
-  }
+  // インデックス範囲の配列を構築
+  const ranges: Array<{ start: number; end: number | undefined }> = [
+    // 最初のh2より前のコンテンツ（存在する場合）
+    ...(h2Indices[0] > 0 ? [{ start: 0, end: h2Indices[0] }] : []),
+    // 各h2セクション
+    ...h2Indices.map((start, i) => ({
+      start,
+      end: h2Indices[i + 1],
+    })),
+  ];
 
-  return sections;
+  // 範囲に基づいてセクションを生成
+  return ranges.map((range) => ({
+    type: "root" as const,
+    children: nodes.slice(range.start, range.end),
+  }));
 }
 
 // ============================================================================

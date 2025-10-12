@@ -14,9 +14,8 @@ export async function BillContent({ bill }: BillContentProps) {
   }
 
   const htmlSections = await parseMarkdownSections(markdownContent);
-
-  const beforeSections = htmlSections.slice(0, 2);
-  const afterSections = htmlSections.slice(2);
+  const beforeSections = htmlSections.slice(0, 3);
+  const afterSections = htmlSections.slice(3);
 
   return (
     <div

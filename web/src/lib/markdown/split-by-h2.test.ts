@@ -75,4 +75,24 @@ describe("splitByH2", () => {
     expect(sections[1].children).toHaveLength(2); // h2 + h3
     expect(sections[2].children).toHaveLength(1); // h2のみ
   });
+
+  it("最後のh2の後のコンテンツを含める", () => {
+    const markdown = `
+## セクション1
+
+内容1
+
+## セクション2
+
+内容2
+
+最後の段落
+`;
+    const mdast = unified().use(remarkParse).parse(markdown);
+    const sections = splitByH2(mdast.children);
+
+    expect(sections).toHaveLength(2);
+    expect(sections[0].children).toHaveLength(2); // h2 + paragraph
+    expect(sections[1].children).toHaveLength(3); // h2 + paragraph + paragraph (最後の段落)
+  });
 });
