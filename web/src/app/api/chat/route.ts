@@ -6,8 +6,8 @@ import {
 } from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
-import { createPromptProvider, type CompiledPrompt } from "@/lib/prompt";
 import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
+import { type CompiledPrompt, createPromptProvider } from "@/lib/prompt";
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);

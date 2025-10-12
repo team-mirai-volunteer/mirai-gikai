@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export function LongPressSection() {
   return (
-    <section className="relative bg-white rounded-2xl !px-3 !py-12 overflow-hidden">
+    <section className="relative bg-white rounded-2xl !px-3 !py-10 overflow-hidden">
       {/* コンテンツエリア */}
       <div className="relative h-full flex items-center justify-between px-3 gap-6">
         {/* 左側：テキストコンテンツ */}
@@ -10,12 +10,9 @@ export function LongPressSection() {
           {/* 1行目 */}
           <p className="text-[#1F2937] text-base font-medium leading-[1.2] font-noto-sans !mt-0 !mb-0">
             <span className="inline-block px-1">わからない言葉を</span>
-          </p>
-
-          {/* 2行目 */}
-          <p className="text-[#1F2937] text-base font-medium leading-[1.2] font-noto-sans !mt-0 !mb-0">
+            <br className="pc:hidden" />
             <span className="inline-block bg-[#B2D3E8] px-1">
-              長押しで選択する
+              <span className="pc:hidden">長押しで</span>選択する
             </span>
             と
           </p>
@@ -43,7 +40,7 @@ export function LongPressSection() {
         {/* 右側：イラスト */}
         <div className="absolute bottom-[-54px] right-3 flex-shrink-0">
           <Image
-            src="/illustrations/inspiration-simple-green.png"
+            src="/illustrations/inspiration-simple-green.svg"
             alt="電球のイラスト"
             width={122}
             height={157}
