@@ -1,6 +1,6 @@
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Lexend_Giga, Noto_Sans_JP } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import { Header } from "@/components/header";
@@ -22,6 +22,12 @@ const lexendGiga = Lexend_Giga({
 export const metadata: Metadata = {
   title: "みらい議会",
   description: "議案をわかりやすく解説するプラットフォーム",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
