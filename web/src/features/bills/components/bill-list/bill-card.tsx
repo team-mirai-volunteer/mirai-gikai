@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils/date";
 import { type BillWithContent, HOUSE_LABELS } from "../../types";
 import { BillStatusBadge } from "./bill-status-badge";
+import { BillTag } from "./bill-tag";
 
 interface BillCardProps {
   bill: BillWithContent;
@@ -51,6 +52,14 @@ export function BillCard({ bill }: BillCardProps) {
               </CardTitle>
               {displaySummary && (
                 <p className="text-sm line-clamp-2 mt-1">{displaySummary}</p>
+              )}
+              {/* タグ表示 */}
+              {bill.tags && bill.tags.length > 0 && (
+                <div className="flex flex-wrap gap-3 mt-2">
+                  {bill.tags.map((tag) => (
+                    <BillTag key={tag.id} tag={tag} />
+                  ))}
+                </div>
               )}
               <p className="text-sm font-medium text-muted-foreground">
                 {bill.name}

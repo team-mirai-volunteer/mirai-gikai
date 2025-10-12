@@ -5,14 +5,24 @@ import { TeamMirai } from "@/components/top/team-mirai";
 import { BillListSection } from "@/features/bills/components/bill-list-section";
 import { FeaturedBillSection } from "@/features/bills/components/featured-bill-section";
 import { loadHomeData } from "@/features/bills/loaders/load-home-data";
+import { getCurrentDietSession } from "@/features/diet-sessions/api/get-current-diet-session";
+import { CurrentDietSession } from "@/features/diet-sessions/components/current-diet-session";
+import { getJapanTime } from "@/lib/utils/date";
 
 export default async function Home() {
   const { bills, featuredBills } = await loadHomeData();
+
+  // ゆくゆくタグ機能がマージされたらBFFに統合する
+  const currentSession = await getCurrentDietSession(getJapanTime());
 
   return (
     <>
       <Hero />
 
+      {/* 本日の国会セクション */}
+      <CurrentDietSession session={currentSession} />
+
+      {/* 議案一覧セクション */}
       <Container>
         <div className="py-8">
           <main className="flex flex-col gap-16">

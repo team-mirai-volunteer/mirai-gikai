@@ -75,7 +75,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
 
     return (
       <>
-        <div className="fixed bottom-4 left-6 right-6 z-50 md:bottom-8 md:left-8 md:right-8 flex justify-center">
+        <div className="fixed max-w-[460px] mx-auto left-6 right-6 bottom-4 z-50 md:bottom-8 flex justify-center pc:hidden">
           <div
             className="relative rounded-[50px] bg-gradient-to-tr from-[#64D8C6] to-[#BCECD3] p-[2px] shadow-[2px_2px_2px_0px_rgba(0,0,0,0.25)] origin-center flex transition-[flex-basis] ease-in-out"
             style={{
