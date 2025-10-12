@@ -14,6 +14,7 @@ import {
   PromptInput,
   PromptInputBody,
   PromptInputError,
+  PromptInputHint,
   type PromptInputMessage,
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
@@ -134,8 +135,8 @@ export function ChatWindow({
           <X className="h-5 w-5" />
         </button>
         {/* メッセージエリア（スクロール可能） */}
-        <Conversation className="flex-1 min-h-0 px-6">
-          <ConversationContent className="p-0 flex flex-col gap-2 pc:pt-6 pb-2">
+        <Conversation className="flex-1 min-h-0">
+          <ConversationContent className="p-0 flex flex-col gap-3 pc:pt-6 pb-2 px-6">
             <div className="flex flex-col gap-4">
               {/* 初期メッセージ */}
               <div className="flex flex-col gap-1">
@@ -240,6 +241,7 @@ export function ChatWindow({
             </button>
           </PromptInput>
           <PromptInputError status={status} error={error} />
+          {messages.length > 0 && <PromptInputHint />}
         </div>
       </div>
     </>
