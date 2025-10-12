@@ -1,5 +1,8 @@
 import { env } from "../env";
 
+/**
+ * Invalidate all caches in the web application
+ */
 export async function invalidateWebCache(): Promise<void> {
   if (!env.webUrl || !env.revalidateSecret) {
     console.warn(
@@ -30,9 +33,4 @@ export async function invalidateWebCache(): Promise<void> {
     console.error("Failed to invalidate web cache:", error);
     // Don't throw error to prevent breaking the main operation
   }
-}
-
-export async function invalidateBillCache(): Promise<void> {
-  // All bills use the same "bills" tag, so we always invalidate all
-  await invalidateWebCache();
 }

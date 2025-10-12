@@ -2,7 +2,7 @@
 
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
-import { invalidateBillCache } from "@/lib/utils/cache-invalidation";
+import { invalidateWebCache } from "@/lib/utils/cache-invalidation";
 import {
   type BillContentsUpdateInput,
   billContentsUpdateSchema,
@@ -62,7 +62,7 @@ export async function updateBillContents(
     await Promise.all(upsertPromises);
 
     // web側のキャッシュを無効化
-    await invalidateBillCache();
+    await invalidateWebCache();
 
     return { success: true };
   } catch (error) {

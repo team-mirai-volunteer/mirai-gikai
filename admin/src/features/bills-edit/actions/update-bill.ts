@@ -2,7 +2,7 @@
 
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
-import { invalidateBillCache } from "@/lib/utils/cache-invalidation";
+import { invalidateWebCache } from "@/lib/utils/cache-invalidation";
 import { type BillUpdateInput, billUpdateSchema } from "../types";
 
 export async function updateBill(id: string, input: BillUpdateInput) {
@@ -28,7 +28,7 @@ export async function updateBill(id: string, input: BillUpdateInput) {
     }
 
     // web側のキャッシュを無効化
-    await invalidateBillCache();
+    await invalidateWebCache();
   } catch (error) {
     console.error("Update bill error:", error);
     if (error instanceof Error) {

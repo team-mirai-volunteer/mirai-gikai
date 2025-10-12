@@ -19,7 +19,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Revalidate all cache tags
     revalidateTag(CACHE_TAGS.BILLS);
+    revalidateTag(CACHE_TAGS.DIET_SESSIONS);
 
     return NextResponse.json({
       success: true,

@@ -9,11 +9,11 @@ CREATE TABLE diet_sessions (
   CONSTRAINT end_date_after_start_date CHECK (end_date >= start_date)
 );
 
+-- Enable Row Level Security
+ALTER TABLE diet_sessions ENABLE ROW LEVEL SECURITY;
+
 -- Create index for date range queries
 CREATE INDEX idx_diet_sessions_date_range ON diet_sessions (start_date, end_date);
-
--- Enable RLS
-ALTER TABLE diet_sessions ENABLE ROW LEVEL SECURITY;
 
 -- SELECT policy: all users can read
 CREATE POLICY "diet_sessions_select_policy" ON diet_sessions

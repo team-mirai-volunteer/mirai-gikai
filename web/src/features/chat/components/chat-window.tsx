@@ -71,11 +71,11 @@ export function ChatWindow({
 
   return (
     <>
-      {/* オーバーレイ */}
+      {/* オーバーレイ（1400px未満でのみ表示） */}
       {isOpen && (
         <button
           type="button"
-          className="fixed inset-0 z-40 bg-black/50 transition-opacity cursor-default"
+          className="fixed inset-0 z-40 bg-black/50 transition-opacity cursor-default pc:hidden"
           onClick={onClose}
           aria-label="モーダルを閉じる"
         />
@@ -83,9 +83,10 @@ export function ChatWindow({
 
       {/* チャットウィンドウ */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-50 h-[80vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[600px] md:w-[400px] md:rounded-lg rounded-t-2xl flex flex-col ${
-          isOpen ? "visible" : "invisible"
-        }`}
+        className={`fixed inset-x-0 bottom-0 z-50 h-[80vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[600px] md:w-[400px] md:rounded-lg rounded-t-2xl flex flex-col
+					pc:visible pc:opacity-100
+					${isOpen ? "visible opacity-100" : "invisible opacity-0 pc:visible pc:opacity-100"}
+				`}
       >
         {/* ヘッダー - ハンドル */}
         <div className="flex items-center justify-center pt-1 px-6">
