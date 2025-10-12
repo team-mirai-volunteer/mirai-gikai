@@ -16,6 +16,7 @@ import {
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
 import type { Bill } from "@/features/bills/types";
+import { useIsDesktop } from "@/hooks/use-is-desktop";
 import { SystemMessage } from "./system-message";
 import { UserMessage } from "./user-message";
 
@@ -36,6 +37,7 @@ export function ChatWindow({
 }: ChatWindowProps) {
   const [input, setInput] = useState("");
   const { messages, sendMessage, status, error } = chatState;
+  const isDesktop = useIsDesktop();
 
   const isResponding = status === "streaming" || status === "submitted";
 
@@ -157,6 +159,7 @@ export function ChatWindow({
                 value={input}
                 placeholder="わからないことをAIに質問する"
                 rows={1}
+                submitOnEnter={isDesktop}
                 // min-w-0, wrap-anywhere が無いと長文で親幅を押し広げてしまう
                 className={`!min-h-0 min-w-0 wrap-anywhere text-sm font-medium leading-[1.5em] tracking-[0.01em] placeholder:text-[#AEAEB2] placeholder:font-medium placeholder:leading-[1.5em] placeholder:tracking-[0.01em] placeholder:no-underline border-none focus:ring-0 bg-transparent shadow-none !py-2 !px-0`}
               />

@@ -454,12 +454,20 @@ export const PromptInputBody = ({
   <div className={cn(className, "flex flex-col")} {...props} />
 );
 
-export type PromptInputTextareaProps = ComponentProps<typeof Textarea>;
+export type PromptInputTextareaProps = ComponentProps<typeof Textarea> & {
+  /**
+   * If true, pressing Enter without Shift will submit the form (desktop behavior).
+   * If false, Enter always inserts a newline (mobile behavior).
+   * Default: false
+   */
+  submitOnEnter?: boolean;
+};
 
 export const PromptInputTextarea = ({
   onChange,
   className,
   placeholder = "What would you like to know?",
+  submitOnEnter = false,
   ...props
 }: PromptInputTextareaProps) => {
   const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
@@ -469,9 +477,24 @@ export const PromptInputTextarea = ({
         return;
       }
 
-      // Always allow newline on Enter key (including on mobile)
-      // Submission is only done via UI button click
-      return;
+      if (submitOnEnter) {
+        // Desktop behavior: Enter submits, Shift+Enter adds newline
+        if (e.shiftKey) {
+          // Allow newline
+          return;
+        }
+
+        // Submit on Enter (without Shift)
+        e.preventDefault();
+        const form = e.currentTarget.form;
+        if (form) {
+          form.requestSubmit();
+        }
+      } else {
+        // Mobile behavior: Enter always adds newline
+        // Submission is only done via UI button click
+        return;
+      }
     }
   };
 
