@@ -1,10 +1,30 @@
 import { env } from "../env";
 
-export async function invalidateWebCache(): Promise<void> {
+/**
+ * Cache tags that correspond to web/src/lib/cache-tags.ts
+ * Keep in sync with web application cache tags
+ */
+export const CACHE_TAGS = {
+  BILLS: "bills",
+  DIET_SESSIONS: "diet-sessions",
+} as const;
+
+export type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];
+
+/**
+ * Invalidate specific cache tags in the web application
+ * @param tags Array of cache tags to invalidate
+ */
+export async function invalidateWebCache(tags: CacheTag[]): Promise<void> {
   if (!env.webUrl || !env.revalidateSecret) {
     console.warn(
       "Web URL or revalidate secret not configured, skipping cache invalidation"
     );
+    return;
+  }
+
+  if (!tags || tags.length === 0) {
+    console.warn("No tags provided for cache invalidation");
     return;
   }
 
@@ -15,6 +35,7 @@ export async function invalidateWebCache(): Promise<void> {
         "Content-Type": "application/json",
         Authorization: `Bearer ${env.revalidateSecret}`,
       },
+      body: JSON.stringify({ tags }),
     });
 
     if (!response.ok) {
@@ -32,12 +53,16 @@ export async function invalidateWebCache(): Promise<void> {
   }
 }
 
+/**
+ * Invalidate bills cache
+ */
 export async function invalidateBillCache(): Promise<void> {
-  // All bills use the same "bills" tag, so we always invalidate all
-  await invalidateWebCache();
+  await invalidateWebCache([CACHE_TAGS.BILLS]);
 }
 
+/**
+ * Invalidate diet sessions cache
+ */
 export async function invalidateDietSessionCache(): Promise<void> {
-  // All diet sessions use the same "diet-sessions" tag
-  await invalidateWebCache();
+  await invalidateWebCache([CACHE_TAGS.DIET_SESSIONS]);
 }
