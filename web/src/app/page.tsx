@@ -2,28 +2,40 @@ import { Container } from "@/components/layouts/container";
 import { About } from "@/components/top/about";
 import { Hero } from "@/components/top/hero";
 import { TeamMirai } from "@/components/top/team-mirai";
-import { getBills } from "@/features/bills/api/get-bills";
-import { BillList } from "@/features/bills/components/bill-list/bill-list";
+import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
+import { BillListSection } from "@/features/bills/components/bill-list-section";
+import { FeaturedBillSection } from "@/features/bills/components/featured-bill-section";
+import { loadHomeData } from "@/features/bills/loaders/load-home-data";
+import { HomeChatClient } from "@/features/chat/components/home-chat-client";
+import { getCurrentDietSession } from "@/features/diet-sessions/api/get-current-diet-session";
+import { CurrentDietSession } from "@/features/diet-sessions/components/current-diet-session";
+import { getJapanTime } from "@/lib/utils/date";
 
 export default async function Home() {
-  const bills = await getBills();
+  const { bills, featuredBills } = await loadHomeData();
+
+  // ゆくゆくタグ機能がマージされたらBFFに統合する
+  const [currentSession, currentDifficulty] = await Promise.all([
+    getCurrentDietSession(getJapanTime()),
+    getDifficultyLevel(),
+  ]);
 
   return (
     <>
       <Hero />
 
+      {/* 本日の国会セクション */}
+      <CurrentDietSession session={currentSession} />
+
       {/* 議案一覧セクション */}
       <Container>
         <div className="py-8">
-          <main>
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-4">議案一覧</h2>
-              <p className="text-sm text-gray-600 mb-4">
-                {bills.length}件の議案が公開されています
-              </p>
-            </div>
+          <main className="flex flex-col gap-16">
+            {/* 注目の法案セクション */}
+            <FeaturedBillSection bills={featuredBills} />
 
-            <BillList bills={bills} />
+            {/* 議案一覧セクション */}
+            <BillListSection bills={bills} />
           </main>
         </div>
       </Container>
@@ -33,6 +45,16 @@ export default async function Home() {
 
       {/* チームみらいについて セクション */}
       <TeamMirai />
+
+      {/* チャット機能 */}
+      <HomeChatClient
+        currentDifficulty={currentDifficulty}
+        bills={bills.map((bill) => ({
+          id: bill.id,
+          name: bill.name,
+          summary: bill.bill_content?.summary,
+        }))}
+      />
     </>
   );
 }

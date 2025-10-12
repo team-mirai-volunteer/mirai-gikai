@@ -24,6 +24,8 @@ export function RubyToggle({ className }: RubyToggleProps) {
     } else {
       rubyfulClient.hide();
     }
+    // 画面をリロード
+    window.location.reload();
   };
 
   return (

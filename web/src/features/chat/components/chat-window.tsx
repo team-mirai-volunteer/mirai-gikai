@@ -1,36 +1,39 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useState } from "react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
 import { Loader } from "@/components/ai-elements/loader";
-import { Message, MessageContent } from "@/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputBody,
   PromptInputError,
+  PromptInputHint,
   type PromptInputMessage,
-  PromptInputSubmit,
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
-import {
-  Reasoning,
-  ReasoningContent,
-  ReasoningTrigger,
-} from "@/components/ai-elements/reasoning";
-import { Response } from "@/components/ai-elements/response";
 import type { Bill } from "@/features/bills/types";
+import { useIsDesktop } from "@/hooks/use-is-desktop";
+import { useViewportHeight } from "@/hooks/use-viewport-height";
+import { SystemMessage } from "./system-message";
+import { UserMessage } from "./user-message";
 
 interface ChatWindowProps {
-  billContext: Bill;
+  billContext?: Bill;
   difficultyLevel: string;
   chatState: ReturnType<typeof import("@ai-sdk/react").useChat>;
   isOpen: boolean;
   onClose: () => void;
+  pageContext?: {
+    type: "home" | "bill";
+    bills?: Array<{ id: string; name: string; summary?: string }>;
+  };
 }
 
 export function ChatWindow({
@@ -39,11 +42,41 @@ export function ChatWindow({
   chatState,
   isOpen,
   onClose,
+  pageContext,
 }: ChatWindowProps) {
   const [input, setInput] = useState("");
+  const [isMounted, setIsMounted] = useState(false);
   const { messages, sendMessage, status, error } = chatState;
+  const isDesktop = useIsDesktop();
+  const viewportHeight = useViewportHeight();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const isResponding = status === "streaming" || status === "submitted";
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // チャットが開かれたときにinputにフォーカス
+  useEffect(() => {
+    if (isOpen && textareaRef.current) {
+      // 少し遅延させてからフォーカスを当てる（アニメーション完了後）
+      const timer = setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  // Auto-resize textarea based on content
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+
+    // Auto-resize
+    const textarea = e.target;
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
 
   const handleSubmit = async (message: PromptInputMessage) => {
     const hasText = Boolean(message.text);
@@ -52,24 +85,28 @@ export function ChatWindow({
       return;
     }
 
-    // Send message with bill context and difficulty level in metadata
+    // Send message with context and difficulty level in metadata
     // By default, this sends a HTTP POST request to the /api/chat endpoint.
     sendMessage({
       text: message.text ?? "",
-      metadata: { billContext, difficultyLevel },
+      metadata: {
+        billContext,
+        difficultyLevel,
+        pageContext,
+      },
     });
 
     // Reset form
     setInput("");
   };
 
-  return (
+  const chatContent = (
     <>
-      {/* オーバーレイ */}
+      {/* オーバーレイ（1400px未満でのみ表示） */}
       {isOpen && (
         <button
           type="button"
-          className="fixed inset-0 z-40 bg-black/50 transition-opacity cursor-default"
+          className="fixed inset-0 z-40 bg-black/50 transition-opacity cursor-default pc:hidden"
           onClick={onClose}
           aria-label="モーダルを閉じる"
         />
@@ -77,106 +114,144 @@ export function ChatWindow({
 
       {/* チャットウィンドウ */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-50 h-[80vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[600px] md:w-[400px] md:rounded-lg rounded-t-lg flex flex-col border ${
-          isOpen ? "visible" : "invisible"
-        }`}
+        className={`fixed inset-x-0 bottom-0 z-50
+          bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:w-[450px] md:rounded-2xl rounded-t-2xl flex flex-col
+					pc:visible pc:opacity-100 
+          h-[80vh] pc:h-[60vh]
+					${isOpen ? "visible opacity-100" : "invisible opacity-0 pc:visible pc:opacity-100"}
+				`}
+        style={
+          viewportHeight && !isDesktop
+            ? { maxHeight: `${viewportHeight}px` }
+            : undefined
+        }
       >
-        {/* ヘッダー */}
-        <div className="flex items-center justify-between border-b p-4 bg-gray-50 rounded-t-lg">
-          <h2 className="text-lg font-semibold">議案について質問する</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full p-1 hover:bg-gray-100"
-            aria-label="閉じる"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+        <button
+          type="button"
+          className="pc:hidden self-end p-2 m-2 hover:bg-gray-100 rounded-full"
+          onClick={onClose}
+          aria-label="モーダルを閉じる"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        {/* メッセージエリア（スクロール可能） */}
+        <Conversation className="flex-1 min-h-0">
+          <ConversationContent className="p-0 flex flex-col gap-3 pc:pt-6 pb-2 px-6">
+            <div className="flex flex-col gap-4">
+              {/* 初期メッセージ */}
+              <div className="flex flex-col gap-1">
+                <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
+                  なんでも質問してください。
+                </p>
+                {billContext && (
+                  <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
+                    本文中のテキストを選択すると簡単にAIに質問できます
+                  </p>
+                )}
+              </div>
 
-        {/* メッセージエリア */}
-        <Conversation className="flex-1">
-          <ConversationContent>
-            {messages.length === 0 && (
-              <Message from="assistant">
-                <MessageContent>
-                  <div>
-                    こんにちは！「{billContext.name}
-                    」について、ご質問はありませんか？
-                    <br />
-                    <br />
-                    例えば、以下のような質問にお答えできます：
-                    <br />• この議案の目的は何ですか？
-                    <br />• どのような影響がありますか？
-                    <br />
-                    <br />
-                    お気軽にご質問ください。
-                  </div>
-                </MessageContent>
-              </Message>
-            )}
-            {messages.map((message) => (
-              <Message key={message.id} from={message.role}>
-                <MessageContent>
-                  {message.parts.map((part, i: number) => {
-                    switch (part.type) {
-                      case "text":
-                        return (
-                          <Response
-                            key={`${message.id}-${i}`}
-                            className="break-words"
-                          >
-                            {part.text}
-                          </Response>
-                        );
-                      case "reasoning":
-                        return (
-                          <Reasoning
-                            key={`${message.id}-${i}`}
-                            className="w-full"
-                            // 最後のメッセージかつ最後のパートがストリーミング中
-                            isStreaming={
-                              status === "streaming" &&
-                              i === message.parts.length - 1 &&
-                              message.id === messages.at(-1)?.id
-                            }
-                          >
-                            <ReasoningTrigger />
-                            <ReasoningContent>{part.text}</ReasoningContent>
-                          </Reasoning>
-                        );
-                    }
-                    return null;
-                  })}
-                </MessageContent>
-              </Message>
-            ))}
+              {/* サンプル質問チップ */}
+              <div className="flex flex-wrap gap-3">
+                {(billContext
+                  ? [
+                      `「${billContext.name}」について教えて`,
+                      "この法案の目的は？",
+                    ]
+                  : [
+                      "みらい議会って何？",
+                      "国会って何をするところ？",
+                      "注目の法案について教えて",
+                    ]
+                ).map((question) => (
+                  <button
+                    key={question}
+                    type="button"
+                    className="px-3 py-1 text-xs leading-[2] text-[#0F8472] border border-[#2AA693] rounded-2xl hover:bg-gray-50"
+                    onClick={() => {
+                      sendMessage({
+                        text: question,
+                        metadata: {
+                          billContext,
+                          difficultyLevel,
+                          pageContext,
+                        },
+                      });
+                    }}
+                  >
+                    {question}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {messages.map((message) => {
+              const isStreaming =
+                status === "streaming" && message.id === messages.at(-1)?.id;
+
+              return message.role === "user" ? (
+                <UserMessage key={message.id} message={message} />
+              ) : (
+                <SystemMessage
+                  key={message.id}
+                  message={message}
+                  isStreaming={isStreaming}
+                />
+              );
+            })}
             {status === "submitted" && <Loader />}
           </ConversationContent>
           <ConversationScrollButton />
         </Conversation>
 
-        {/* 入力エリア */}
-        <div className="m-4">
-          <PromptInput onSubmit={handleSubmit} className="flex items-end gap-1">
+        {/* 入力エリア（固定下部） */}
+        <div className="px-6 pb-4 pt-2">
+          <PromptInput
+            onSubmit={handleSubmit}
+            className="flex items-end gap-2.5 py-2 pl-6 pr-4 bg-white rounded-[50px] border-2 border-transparent bg-clip-padding divide-y-0"
+            style={{
+              backgroundImage:
+                "linear-gradient(white, white), linear-gradient(-45deg, rgba(188, 236, 211, 1) 0%, rgba(100, 216, 198, 1) 100%)",
+              backgroundOrigin: "border-box",
+              backgroundClip: "padding-box, border-box",
+            }}
+          >
             <PromptInputBody className="flex-1">
               <PromptInputTextarea
-                onChange={(e) => setInput(e.target.value)}
+                ref={textareaRef}
+                onChange={handleInputChange}
                 value={input}
-                placeholder="質問を入力してください..."
+                placeholder="わからないことをAIに質問する"
+                rows={1}
+                submitOnEnter={isDesktop}
                 // min-w-0, wrap-anywhere が無いと長文で親幅を押し広げてしまう
-                className={`min-h-8 min-w-0 wrap-anywhere`}
+                className={`!min-h-0 min-w-0 wrap-anywhere text-sm font-medium leading-[1.5em] tracking-[0.01em] placeholder:text-[#AEAEB2] placeholder:font-medium placeholder:leading-[1.5em] placeholder:tracking-[0.01em] placeholder:no-underline border-none focus:ring-0 bg-transparent shadow-none !py-2 !px-0`}
               />
             </PromptInputBody>
-            <PromptInputSubmit
-              disabled={!input && !status}
-              status={status}
-              className="m-2"
-            />
+            <button
+              type="submit"
+              disabled={!input || isResponding}
+              className="flex-shrink-0 w-10 h-10 disabled:opacity-50"
+            >
+              <Image
+                src="/icons/send-button-icon.svg"
+                alt="送信"
+                width={40}
+                height={40}
+                className="w-full h-full"
+              />
+            </button>
           </PromptInput>
           <PromptInputError status={status} error={error} />
+          {messages.length > 0 && <PromptInputHint />}
         </div>
       </div>
     </>
   );
+
+  // body直下にPortalでマウント（クライアントサイドのみ）
+  if (!isMounted) {
+    return null;
+  }
+
+  // チャットのストリーミング表示がルビ機能と競合して表示がおかしくなるため、body直下に移動してルビ機能の影響を受けないようにする
+  return createPortal(chatContent, document.body);
 }

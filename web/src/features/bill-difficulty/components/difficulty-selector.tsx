@@ -22,7 +22,7 @@ export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
 
     try {
       await setDifficultyLevel(newLevel);
-      // Server Actionが成功したらページがrevalidateされて自動的にリロードされる
+      window.location.reload();
     } catch (error) {
       console.error("Failed to update difficulty level:", error);
       // エラーの場合は元に戻す

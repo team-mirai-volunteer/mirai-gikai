@@ -1,43 +1,61 @@
+import { toJsxRuntime } from "hast-util-to-jsx-runtime";
+import type { ReactElement } from "react";
+import { Fragment } from "react";
+import { jsx, jsxs } from "react/jsx-runtime";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
-import rehypeStringify from "rehype-stringify";
 import remarkBreaks from "remark-breaks";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
+import { LongPressSection } from "@/features/bills/components/bill-detail/long-press-section";
 import { rehypeEmbedYouTube } from "./rehype-embed-youtube";
 import { rehypeExternalLinks } from "./rehype-external-links";
+import { rehypeInjectElement } from "./rehype-inject-element";
 import { rehypeWrapSections } from "./rehype-wrap-sections";
 
-// rehypeSanitizeのスキーマをカスタマイズ（target="_blank"とrel属性を許可）
+// rehypeSanitizeのスキーマをカスタマイズ
 const sanitizeSchema = {
   ...defaultSchema,
   attributes: {
     ...defaultSchema.attributes,
     a: [...(defaultSchema.attributes?.a || []), "target", "rel"],
   },
+  tagNames: [
+    ...(defaultSchema.tagNames || []),
+    // カスタム要素を許可
+    "LongPressSection",
+  ],
 };
 
 /**
- * MarkdownをHTMLに変換するプロセッサー
- * 注意: rehypeSanitizeの後にカスタムプラグインを配置することで、
- * sanitizeされた安全なコンテンツに対して変換を適用
- */
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkBreaks) // 改行を<br>タグに変換
-  .use(remarkRehype)
-  .use(rehypeWrapSections)
-  .use(rehypeSanitize, sanitizeSchema)
-  .use(rehypeExternalLinks)
-  .use(rehypeEmbedYouTube)
-  .use(rehypeStringify);
-
-/**
- * MarkdownテキストをHTMLに変換
+ * MarkdownテキストをReact Elementに変換
  * @param markdown - Markdown形式のテキスト
- * @returns HTML文字列
+ * @returns React Element（部分水和対応）
  */
-export async function parseMarkdown(markdown: string): Promise<string> {
-  const result = await processor.process(markdown);
-  return result.toString();
+export async function parseMarkdown(markdown: string): Promise<ReactElement> {
+  // Markdown → mdast
+  const mdast = unified().use(remarkParse).use(remarkBreaks).parse(markdown);
+
+  // mdast → hast（rehypeプラグイン適用）
+  const hast = await unified()
+    .use(remarkRehype)
+    .use(rehypeWrapSections)
+    .use(rehypeInjectElement, {
+      targetH2Index: 3,
+      tagName: "LongPressSection",
+    })
+    .use(rehypeSanitize, sanitizeSchema)
+    .use(rehypeExternalLinks)
+    .use(rehypeEmbedYouTube)
+    .run(mdast);
+
+  // hast → React Element（部分水和）
+  return toJsxRuntime(hast, {
+    Fragment,
+    jsx,
+    jsxs,
+    components: {
+      LongPressSection, // Client Componentとして水和
+    },
+  });
 }

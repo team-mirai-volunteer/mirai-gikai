@@ -454,12 +454,20 @@ export const PromptInputBody = ({
   <div className={cn(className, "flex flex-col")} {...props} />
 );
 
-export type PromptInputTextareaProps = ComponentProps<typeof Textarea>;
+export type PromptInputTextareaProps = ComponentProps<typeof Textarea> & {
+  /**
+   * If true, pressing Enter without Shift will submit the form (desktop behavior).
+   * If false, Enter always inserts a newline (mobile behavior).
+   * Default: false
+   */
+  submitOnEnter?: boolean;
+};
 
 export const PromptInputTextarea = ({
   onChange,
   className,
   placeholder = "What would you like to know?",
+  submitOnEnter = false,
   ...props
 }: PromptInputTextareaProps) => {
   const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
@@ -469,16 +477,23 @@ export const PromptInputTextarea = ({
         return;
       }
 
-      if (e.shiftKey) {
-        // Allow newline
-        return;
-      }
+      if (submitOnEnter) {
+        // Desktop behavior: Enter submits, Shift+Enter adds newline
+        if (e.shiftKey) {
+          // Allow newline
+          return;
+        }
 
-      // Submit on Enter (without Shift)
-      e.preventDefault();
-      const form = e.currentTarget.form;
-      if (form) {
-        form.requestSubmit();
+        // Submit on Enter (without Shift)
+        e.preventDefault();
+        const form = e.currentTarget.form;
+        if (form) {
+          form.requestSubmit();
+        }
+      } else {
+        // Mobile behavior: Enter always adds newline
+        // Submission is only done via UI button click
+        return;
       }
     }
   };
@@ -488,7 +503,7 @@ export const PromptInputTextarea = ({
       className={cn(
         "w-full resize-none rounded-none border-none p-3 shadow-none outline-none ring-0",
         "field-sizing-content bg-transparent dark:bg-transparent",
-        "max-h-48 min-h-16",
+        "max-h-48",
         "focus-visible:ring-0",
         className
       )}
@@ -519,16 +534,31 @@ export const PromptInputError = ({
   }
 
   return (
-    <div
-      className={cn("px-3 py-2 text-xs text-red-600 border-t", className)}
-      {...props}
-    >
+    <div className={cn("px-3 py-2 text-xs text-red-600", className)} {...props}>
       <div>エラーが発生しました。数秒後に再送信してください。</div>
       {error?.message && (
         <div className="mt-1 text-red-500 opacity-80">
           詳細: {error.message}
         </div>
       )}
+    </div>
+  );
+};
+
+export type PromptInputHintProps = HTMLAttributes<HTMLDivElement> & {};
+
+export const PromptInputHint = ({
+  className,
+  children,
+  ...props
+}: PromptInputHintProps) => {
+  return (
+    <div
+      className={cn("px-3 py-2 text-xs text-gray-400", className)}
+      {...props}
+    >
+      {children ??
+        "AIの回答は間違えることがあります。重要な情報はご確認ください。"}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Lexend_Giga, Noto_Sans_JP } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import { Header } from "@/components/header";
@@ -24,6 +24,12 @@ export const metadata: Metadata = {
   description: "議案をわかりやすく解説するプラットフォーム",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,11 +41,14 @@ export default function RootLayout({
         className={`${notoSansJP.variable} ${lexendGiga.variable} font-sans antialiased`}
       >
         <NextTopLoader showSpinner={false} color="#2aa693" />
-        <Header />
-        <main className="min-h-screen mt-20">{children}</main>
         <SpeedInsights />
         <RubyfulInitializer />
-        <Footer />
+
+        <div className="relative max-w-[700px] mx-auto pc:mr-[500px] sm:shadow-lg">
+          <Header />
+          <main className="min-h-screen">{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );
