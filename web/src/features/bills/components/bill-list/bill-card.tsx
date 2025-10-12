@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils/date";
 import { type BillWithContent, HOUSE_LABELS } from "../../types";
 import { BillStatusBadge } from "./bill-status-badge";
+import { BillTag } from "./bill-tag";
 
 interface BillCardProps {
   bill: BillWithContent;
@@ -44,12 +45,7 @@ export function BillCard({ bill }: BillCardProps) {
               {bill.tags && bill.tags.length > 0 && (
                 <div className="flex flex-wrap gap-3 mt-2">
                   {bill.tags.map((tag) => (
-                    <span
-                      key={tag.id}
-                      className="inline-flex items-center justify-center px-3 py-1 text-xs font-medium text-black bg-[#E8E8E8] rounded-full"
-                    >
-                      {tag.label}
-                    </span>
+                    <BillTag key={tag.id} tag={tag} />
                   ))}
                 </div>
               )}

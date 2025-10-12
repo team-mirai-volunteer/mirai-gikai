@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils/date";
 import type { BillWithContent } from "../../types";
+import { BillTag } from "../bill-list/bill-tag";
 
 interface BillDetailHeaderProps {
   bill: BillWithContent;
@@ -47,12 +48,7 @@ export function BillDetailHeader({ bill }: BillDetailHeaderProps) {
         {bill.tags && bill.tags.length > 0 && (
           <div className="flex flex-wrap gap-3 mb-4">
             {bill.tags.map((tag) => (
-              <span
-                key={tag.id}
-                className="inline-flex items-center justify-center px-3 py-1 text-xs font-medium text-black bg-[#E8E8E8] rounded-full"
-              >
-                {tag.label}
-              </span>
+              <BillTag key={tag.id} tag={tag} />
             ))}
           </div>
         )}
