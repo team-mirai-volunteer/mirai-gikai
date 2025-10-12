@@ -6,14 +6,24 @@
     "supabase:types:gen": "npx supabase gen types typescript --local > packages/supabase/types/supabase.types.ts",
     "supabase:migrate": "npx supabase migration up && pnpm run supabase:types:gen",
     "dev": "dotenv -e .env -- pnpm -r --stream --parallel run dev",
+    "db:reset": "dotenv -e .env -- npx supabase db reset && pnpm supabase:types:gen && pnpm seed",
     "seed": "dotenv -e .env -- pnpm --filter @mirai-gikai/seed seed",
     "test": "pnpm -r --parallel run test",
     "typecheck": "pnpm -r run typecheck",
     "lint": "biome format . && biome lint .",
-    "lint:fix": "biome format --write . && biome lint --write ."
+    "lint:fix": "biome format --write . && biome lint --write .",
+    "postinstall": "npx simple-git-hooks"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.2",
-    "dotenv-cli": "^7.4.2"
+    "dotenv-cli": "^7.4.2",
+    "lint-staged": "^15.5.2",
+    "simple-git-hooks": "^2.13.1"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "pnpm run lint:fix"
   }
 }
