@@ -83,7 +83,7 @@ export function ChatWindow({
 
       {/* チャットウィンドウ */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-50 h-[80vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[600px] md:w-[400px] md:rounded-lg rounded-t-2xl flex flex-col
+        className={`fixed inset-x-0 bottom-0 z-50 h-[80vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[600px] md:w-[450px] md:rounded-lg rounded-t-2xl flex flex-col
 					pc:visible pc:opacity-100
 					${isOpen ? "visible opacity-100" : "invisible opacity-0 pc:visible pc:opacity-100"}
 				`}
