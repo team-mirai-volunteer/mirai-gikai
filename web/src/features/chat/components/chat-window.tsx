@@ -2,7 +2,7 @@
 
 import { X } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   Conversation,
@@ -19,6 +19,7 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import type { Bill } from "@/features/bills/types";
 import { useIsDesktop } from "@/hooks/use-is-desktop";
+import { useViewportHeight } from "@/hooks/use-viewport-height";
 import { SystemMessage } from "./system-message";
 import { UserMessage } from "./user-message";
 
@@ -46,12 +47,25 @@ export function ChatWindow({
   const [isMounted, setIsMounted] = useState(false);
   const { messages, sendMessage, status, error } = chatState;
   const isDesktop = useIsDesktop();
+  const viewportHeight = useViewportHeight();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const isResponding = status === "streaming" || status === "submitted";
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // チャットが開かれたときにinputにフォーカス
+  useEffect(() => {
+    if (isOpen && textareaRef.current) {
+      // 少し遅延させてからフォーカスを当てる（アニメーション完了後）
+      const timer = setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   // Auto-resize textarea based on content
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -99,10 +113,17 @@ export function ChatWindow({
 
       {/* チャットウィンドウ */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-50 h-[80vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[60vh] md:w-[450px] md:rounded-2xl rounded-t-2xl flex flex-col
-					pc:visible pc:opacity-100
+        className={`fixed inset-x-0 bottom-0 z-50
+          bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:w-[450px] md:rounded-2xl rounded-t-2xl flex flex-col
+					pc:visible pc:opacity-100 
+          h-[80vh] pc:h-[60vh]
 					${isOpen ? "visible opacity-100" : "invisible opacity-0 pc:visible pc:opacity-100"}
 				`}
+        style={
+          viewportHeight && !isDesktop
+            ? { maxHeight: `${viewportHeight}px` }
+            : undefined
+        }
       >
         <button
           type="button"
@@ -194,6 +215,7 @@ export function ChatWindow({
           >
             <PromptInputBody className="flex-1">
               <PromptInputTextarea
+                ref={textareaRef}
                 onChange={handleInputChange}
                 value={input}
                 placeholder="わからないことをAIに質問する"
