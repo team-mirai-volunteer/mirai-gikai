@@ -15,8 +15,12 @@ const ANIMATION_DURATION = {
 } as const;
 
 interface ChatButtonProps {
-  billContext: Bill;
+  billContext?: Bill;
   difficultyLevel: string;
+  pageContext?: {
+    type: "home" | "bill";
+    bills?: Array<{ id: string; name: string; summary?: string }>;
+  };
 }
 
 export interface ChatButtonRef {
@@ -24,7 +28,7 @@ export interface ChatButtonRef {
 }
 
 export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
-  ({ billContext, difficultyLevel }, ref) => {
+  ({ billContext, difficultyLevel, pageContext }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isCompact, setIsCompact] = useState(false);
     const [showText, setShowText] = useState(true);
@@ -41,7 +45,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
         setIsOpen(true);
         chatState.sendMessage({
           text: questionText,
-          metadata: { billContext, difficultyLevel },
+          metadata: { billContext, difficultyLevel, pageContext },
         });
       },
     }));
@@ -135,6 +139,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
           chatState={chatState}
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
+          pageContext={pageContext}
         />
       </>
     );
