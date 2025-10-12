@@ -5,10 +5,10 @@ import {
   ReasoningTrigger,
 } from "@/components/ai-elements/reasoning";
 import { Response } from "@/components/ai-elements/response";
-import type { Message as ChatMessage } from "@ai-sdk/react";
+import type { UIMessage } from "@ai-sdk/react";
 
 interface SystemMessageProps {
-  message: ChatMessage;
+  message: UIMessage;
   isStreaming: boolean;
 }
 

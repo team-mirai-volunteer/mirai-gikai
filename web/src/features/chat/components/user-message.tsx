@@ -1,9 +1,9 @@
 import { Message, MessageContent } from "@/components/ai-elements/message";
 import { Response } from "@/components/ai-elements/response";
-import type { Message as ChatMessage } from "@ai-sdk/react";
+import type { UIMessage } from "@ai-sdk/react";
 
 interface UserMessageProps {
-  message: ChatMessage;
+  message: UIMessage;
 }
 
 export function UserMessage({ message }: UserMessageProps) {
