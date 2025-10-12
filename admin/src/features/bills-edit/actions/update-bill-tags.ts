@@ -2,7 +2,7 @@
 
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
-import { invalidateBillCache } from "@/lib/utils/cache-invalidation";
+import { invalidateWebCache } from "@/lib/utils/cache-invalidation";
 
 /**
  * 議案のタグを更新する
@@ -72,7 +72,7 @@ export async function updateBillTags(billId: string, tagIds: string[]) {
     }
 
     // キャッシュを更新
-    await invalidateBillCache();
+    await invalidateWebCache();
 
     return { success: true };
   } catch (error) {
