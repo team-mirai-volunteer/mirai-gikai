@@ -8,7 +8,6 @@ import {
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
 import { Loader } from "@/components/ai-elements/loader";
-import { Message, MessageContent } from "@/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputBody,
@@ -16,13 +15,9 @@ import {
   type PromptInputMessage,
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
-import {
-  Reasoning,
-  ReasoningContent,
-  ReasoningTrigger,
-} from "@/components/ai-elements/reasoning";
-import { Response } from "@/components/ai-elements/response";
 import type { Bill } from "@/features/bills/types";
+import { SystemMessage } from "./system-message";
+import { UserMessage } from "./user-message";
 
 interface ChatWindowProps {
   billContext: Bill;
@@ -125,67 +120,20 @@ export function ChatWindow({
                 )}
               </ul>
             </div>
-            {messages.map((message) => (
-              <Message
-                key={message.id}
-                from={message.role}
-                className={
-                  message.role === "user"
-                    ? "justify-end py-0"
-                    : "justify-start py-0"
-                }
-              >
-                <MessageContent
-                  variant="flat"
-                  className={
-                    message.role === "user"
-                      ? "max-w-fit text-sm font-medium leading-[2] text-[#000000]"
-                      : "text-sm font-medium leading-[1.8] text-[#1F2937]"
-                  }
-                  style={
-                    message.role === "user"
-                      ? {
-                          padding: "4px 16px",
-                          background:
-                            "linear-gradient(-45deg, rgba(188, 236, 211, 1) 0%, rgba(100, 216, 198, 1) 100%)",
-                          borderRadius: "16px",
-                        }
-                      : undefined
-                  }
-                >
-                  {message.parts.map((part, i: number) => {
-                    switch (part.type) {
-                      case "text":
-                        return (
-                          <Response
-                            key={`${message.id}-${i}`}
-                            className="break-words"
-                          >
-                            {part.text}
-                          </Response>
-                        );
-                      case "reasoning":
-                        return (
-                          <Reasoning
-                            key={`${message.id}-${i}`}
-                            className="w-full"
-                            // 最後のメッセージかつ最後のパートがストリーミング中
-                            isStreaming={
-                              status === "streaming" &&
-                              i === message.parts.length - 1 &&
-                              message.id === messages.at(-1)?.id
-                            }
-                          >
-                            <ReasoningTrigger />
-                            <ReasoningContent>{part.text}</ReasoningContent>
-                          </Reasoning>
-                        );
-                    }
-                    return null;
-                  })}
-                </MessageContent>
-              </Message>
-            ))}
+            {messages.map((message) => {
+              const isStreaming =
+                status === "streaming" && message.id === messages.at(-1)?.id;
+
+              return message.role === "user" ? (
+                <UserMessage key={message.id} message={message} />
+              ) : (
+                <SystemMessage
+                  key={message.id}
+                  message={message}
+                  isStreaming={isStreaming}
+                />
+              );
+            })}
             {status === "submitted" && <Loader />}
           </ConversationContent>
           <ConversationScrollButton />
