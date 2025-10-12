@@ -1,7 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { invalidateBillCache } from "@/lib/utils/cache-invalidation";
+import { invalidateWebCache } from "@/lib/utils/cache-invalidation";
 
 export async function deleteStance(stanceId: string) {
   try {
@@ -17,7 +17,7 @@ export async function deleteStance(stanceId: string) {
       throw new Error("スタンスの削除に失敗しました");
     }
 
-    invalidateBillCache();
+    invalidateWebCache();
     return { success: true };
   } catch (error) {
     console.error("Error in deleteStance:", error);
