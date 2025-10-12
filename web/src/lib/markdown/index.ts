@@ -27,23 +27,12 @@ const sanitizeSchema = {
   ],
 };
 
-export interface ParseMarkdownOptions {
-  /** 議案ID（挿入コンポーネントに渡される） */
-  billId?: string;
-}
-
 /**
  * MarkdownテキストをReact Elementに変換
  * @param markdown - Markdown形式のテキスト
- * @param options - パースオプション
  * @returns React Element（部分水和対応）
  */
-export async function parseMarkdown(
-  markdown: string,
-  options: ParseMarkdownOptions = {}
-): Promise<ReactElement> {
-  const { billId } = options;
-
+export async function parseMarkdown(markdown: string): Promise<ReactElement> {
   // Markdown → mdast
   const mdast = unified().use(remarkParse).use(remarkBreaks).parse(markdown);
 
@@ -54,7 +43,6 @@ export async function parseMarkdown(
     .use(rehypeInjectElement, {
       targetH2Index: 3,
       tagName: "LongPressSection",
-      props: { billId },
     })
     .use(rehypeSanitize, sanitizeSchema)
     .use(rehypeExternalLinks)

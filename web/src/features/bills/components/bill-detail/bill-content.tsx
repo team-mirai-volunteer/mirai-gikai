@@ -12,9 +12,7 @@ export async function BillContent({ bill }: BillContentProps) {
     return null;
   }
 
-  const content = await parseMarkdown(markdownContent, {
-    billId: bill.id,
-  });
+  const content = await parseMarkdown(markdownContent);
 
   return (
     <div
