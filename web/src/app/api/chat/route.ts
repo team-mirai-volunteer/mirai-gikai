@@ -54,7 +54,11 @@ export async function POST(req: Request) {
     messages,
   }: {
     messages: UIMessage<{
-      billContext: BillWithContent;
+      billContext?: BillWithContent;
+      pageContext?: {
+        type: "home" | "bill";
+        bills?: Array<{ id: string; name: string; summary?: string }>;
+      };
       difficultyLevel: string;
     }>[];
   } = await req.json();
@@ -75,22 +79,30 @@ export async function POST(req: Request) {
 
   // Extract bill context and difficulty level from the first user message data if available
   const billContext = messages[0]?.metadata?.billContext;
+  const pageContext = messages[0]?.metadata?.pageContext;
   const difficultyLevel = (messages[0]?.metadata?.difficultyLevel ||
     "normal") as DifficultyLevelEnum;
   const promptProvider = createPromptProvider();
 
   // 難易度に応じたプロンプト名を決定
-  const promptName = `bill-chat-system-${difficultyLevel}`;
+  const promptName =
+    pageContext?.type === "home"
+      ? "top-chat-system"
+      : `bill-chat-system-${difficultyLevel}`;
 
   // Langfuseからプロンプト取得
   let promptResult: CompiledPrompt;
   try {
-    promptResult = await promptProvider.getPrompt(promptName, {
-      billName: billContext?.name || "",
-      billTitle: billContext?.bill_content?.title || "",
-      billSummary: billContext?.bill_content?.summary || "",
-      billContent: billContext?.bill_content?.content || "",
-    });
+    const variables: Record<string, string> =
+      pageContext?.type === "home"
+        ? { billSummary: JSON.stringify(pageContext.bills ?? "") }
+        : {
+            billName: billContext?.name ?? "",
+            billTitle: billContext?.bill_content?.title ?? "",
+            billSummary: billContext?.bill_content?.summary ?? "",
+            billContent: billContext?.bill_content?.content ?? "",
+          };
+    promptResult = await promptProvider.getPrompt(promptName, variables);
   } catch (error) {
     console.error("Prompt fetch error:", error);
     return new Response(
