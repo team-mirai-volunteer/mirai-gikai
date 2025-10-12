@@ -1,5 +1,6 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
 import type { BillWithContent } from "../types";
+import { groupTagsByBillId } from "../utils/group-tags-by-bill-id";
 
 /**
  * 注目の議案を取得する
@@ -42,17 +43,7 @@ export async function getFeaturedBills(): Promise<BillWithContent[]> {
     .select("bill_id, tags(id, label)")
     .in("bill_id", billIds);
 
-  // bill_id ごとにタグをグループ化
-  const tagsByBillId = new Map<string, Array<{ id: string; label: string }>>();
-  allBillTags?.forEach((bt: { bill_id: string; tags: unknown }) => {
-    if (bt.tags) {
-      const existing = tagsByBillId.get(bt.bill_id) || [];
-      tagsByBillId.set(bt.bill_id, [
-        ...existing,
-        bt.tags as { id: string; label: string },
-      ]);
-    }
-  });
+  const tagsByBillId = groupTagsByBillId(allBillTags ?? []);
 
   // データ構造を整形
   return data.map((item) => {

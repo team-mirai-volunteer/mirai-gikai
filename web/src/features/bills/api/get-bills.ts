@@ -4,6 +4,7 @@ import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficult
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import type { BillWithContent } from "../types";
+import { groupTagsByBillId } from "../utils/group-tags-by-bill-id";
 
 export async function getBills(): Promise<BillWithContent[]> {
   // キャッシュ外でcookiesにアクセス
@@ -69,18 +70,3 @@ const _getCachedBills = unstable_cache(
     tags: [CACHE_TAGS.BILLS],
   }
 );
-
-function groupTagsByBillId(
-  billTags: Array<{
-    bill_id: string;
-    tags: { id: string; label: string } | null;
-  }>
-): Map<string, Array<{ id: string; label: string }>> {
-  return billTags.reduce((acc, bt) => {
-    if (bt.tags) {
-      const existing = acc.get(bt.bill_id) ?? [];
-      acc.set(bt.bill_id, [...existing, bt.tags]);
-    }
-    return acc;
-  }, new Map<string, Array<{ id: string; label: string }>>());
-}
