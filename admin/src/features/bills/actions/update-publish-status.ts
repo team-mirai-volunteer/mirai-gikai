@@ -3,7 +3,7 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
-import { invalidateBillCache } from "@/lib/utils/cache-invalidation";
+import { invalidateWebCache } from "@/lib/utils/cache-invalidation";
 import type { BillPublishStatus } from "../types";
 
 interface UpdatePublishStatusResult {
@@ -55,7 +55,7 @@ async function _updateBillPublishStatus(
     }
 
     // web側のキャッシュを無効化
-    await invalidateBillCache();
+    await invalidateWebCache();
 
     return { success: true };
   } catch (error) {

@@ -2,7 +2,7 @@
 
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
-import { invalidateDietSessionCache } from "@/lib/utils/cache-invalidation";
+import { invalidateWebCache } from "@/lib/utils/cache-invalidation";
 import type { CreateDietSessionInput } from "../types";
 
 export async function createDietSession(input: CreateDietSessionInput) {
@@ -46,7 +46,7 @@ export async function createDietSession(input: CreateDietSessionInput) {
       return { error: `国会会期の作成に失敗しました: ${error.message}` };
     }
 
-    await invalidateDietSessionCache();
+    await invalidateWebCache();
     return { data };
   } catch (error) {
     console.error("Create diet session error:", error);

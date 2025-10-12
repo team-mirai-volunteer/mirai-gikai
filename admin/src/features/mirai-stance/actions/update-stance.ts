@@ -1,7 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { invalidateBillCache } from "@/lib/utils/cache-invalidation";
+import { invalidateWebCache } from "@/lib/utils/cache-invalidation";
 import type { StanceInput } from "../types";
 
 export async function updateStance(stanceId: string, data: StanceInput) {
@@ -22,7 +22,7 @@ export async function updateStance(stanceId: string, data: StanceInput) {
       throw new Error("スタンスの更新に失敗しました");
     }
 
-    invalidateBillCache();
+    invalidateWebCache();
     return { success: true };
   } catch (error) {
     console.error("Error in updateStance:", error);

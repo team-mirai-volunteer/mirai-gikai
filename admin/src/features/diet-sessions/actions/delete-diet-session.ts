@@ -2,7 +2,7 @@
 
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
-import { invalidateDietSessionCache } from "@/lib/utils/cache-invalidation";
+import { invalidateWebCache } from "@/lib/utils/cache-invalidation";
 import type { DeleteDietSessionInput } from "../types";
 
 export async function deleteDietSession(input: DeleteDietSessionInput) {
@@ -20,7 +20,7 @@ export async function deleteDietSession(input: DeleteDietSessionInput) {
       return { error: `国会会期の削除に失敗しました: ${error.message}` };
     }
 
-    await invalidateDietSessionCache();
+    await invalidateWebCache();
     return { success: true };
   } catch (error) {
     console.error("Delete diet session error:", error);

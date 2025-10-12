@@ -1,6 +1,6 @@
 import { revalidateTag } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
-import { CACHE_TAGS, type CacheTag } from "@/lib/cache-tags";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { env } from "@/lib/env";
 
 export async function POST(request: NextRequest) {
@@ -19,30 +19,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Parse request body to get tags
-    const body = await request.json();
-    const tags = body.tags as CacheTag[] | undefined;
-
-    // Validate tags
-    const validTags = Object.values(CACHE_TAGS) as string[];
-    const tagsToRevalidate = tags?.filter((tag) => validTags.includes(tag));
-
-    if (!tagsToRevalidate || tagsToRevalidate.length === 0) {
-      return NextResponse.json(
-        { error: "No valid tags provided" },
-        { status: 400 }
-      );
-    }
-
-    // Revalidate each specified tag
-    for (const tag of tagsToRevalidate) {
-      revalidateTag(tag);
-    }
+    // Revalidate all cache tags
+    revalidateTag(CACHE_TAGS.BILLS);
+    revalidateTag(CACHE_TAGS.DIET_SESSIONS);
 
     return NextResponse.json({
       success: true,
       revalidated: true,
-      tags: tagsToRevalidate,
       timestamp: Date.now(),
     });
   } catch (error) {
