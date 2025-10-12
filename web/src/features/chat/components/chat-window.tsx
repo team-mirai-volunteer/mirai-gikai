@@ -65,11 +65,11 @@ export function ChatWindow({
 
   return (
     <>
-      {/* オーバーレイ */}
+      {/* オーバーレイ（1400px未満でのみ表示） */}
       {isOpen && (
         <button
           type="button"
-          className="fixed inset-0 z-40 bg-black/50 transition-opacity cursor-default"
+          className="fixed inset-0 z-40 bg-black/50 transition-opacity cursor-default pc:hidden"
           onClick={onClose}
           aria-label="モーダルを閉じる"
         />
@@ -77,9 +77,10 @@ export function ChatWindow({
 
       {/* チャットウィンドウ */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-50 h-[80vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[600px] md:w-[400px] md:rounded-lg rounded-t-lg flex flex-col border ${
-          isOpen ? "visible" : "invisible"
-        }`}
+        className={`fixed inset-x-0 bottom-0 z-50 h-[80vh] bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:h-[600px] md:w-[400px] md:rounded-lg rounded-t-lg flex flex-col border
+					pc:visible pc:opacity-100
+					${isOpen ? "visible opacity-100" : "invisible opacity-0 pc:visible pc:opacity-100"}
+				`}
       >
         {/* ヘッダー */}
         <div className="flex items-center justify-between border-b p-4 bg-gray-50 rounded-t-lg">
@@ -87,7 +88,7 @@ export function ChatWindow({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-1 hover:bg-gray-100"
+            className="rounded-full p-1 hover:bg-gray-100 pc:hidden"
             aria-label="閉じる"
           >
             <X className="h-5 w-5" />
