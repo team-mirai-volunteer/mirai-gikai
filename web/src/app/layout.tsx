@@ -35,11 +35,14 @@ export default function RootLayout({
         className={`${notoSansJP.variable} ${lexendGiga.variable} font-sans antialiased`}
       >
         <NextTopLoader showSpinner={false} color="#2aa693" />
-        <Header />
-        <main className="min-h-screen mt-20">{children}</main>
         <SpeedInsights />
         <RubyfulInitializer />
-        <Footer />
+
+        <div className="max-w-[500px] mx-auto sm:shadow-lg">
+          <Header />
+          <main className="min-h-screen pt-20">{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );
