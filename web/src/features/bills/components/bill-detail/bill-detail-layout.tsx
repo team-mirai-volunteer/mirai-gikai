@@ -4,6 +4,7 @@ import { BillShareButtons } from "../share/bill-share-buttons";
 import { BillContent } from "./bill-content";
 import { BillDetailClient } from "./bill-detail-client";
 import { BillDetailHeader } from "./bill-detail-header";
+import { BillDisclaimer } from "./bill-disclaimer";
 import { BillStatusProgress } from "./bill-status-progress";
 import { MiraiStanceCard } from "./mirai-stance-card";
 
@@ -50,6 +51,11 @@ export function BillDetailLayout({
       {/* シェアボタン */}
       <div className="my-8">
         <BillShareButtons bill={bill} />
+      </div>
+
+      {/* データの出典と免責事項 */}
+      <div className="my-8">
+        <BillDisclaimer />
       </div>
     </div>
   );
