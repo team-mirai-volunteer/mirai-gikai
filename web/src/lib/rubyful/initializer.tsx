@@ -30,7 +30,7 @@ export function RubyfulInitializer() {
             selector:
               "main p, main h1, main h2, main h3, main h4, main h5, main h6, main li, main td, main th, main span, main a",
             defaultDisplay: isEnabled,
-            observeChanges: true,
+            observeChanges: isEnabled,
             styles: {
               toggleButtonClass: "ruby-button",
             },
