@@ -1,14 +1,6 @@
 import Image from "next/image";
-import type { BillWithContent } from "../../types";
 
-interface LongPressSectionProps {
-  bill: BillWithContent;
-}
-
-export function LongPressSection({ bill }: LongPressSectionProps) {
-  // billは将来的に使用する予定
-  void bill;
-
+export function LongPressSection() {
   return (
     <section className="relative bg-white rounded-2xl !px-3 !py-12 overflow-hidden">
       {/* コンテンツエリア */}
