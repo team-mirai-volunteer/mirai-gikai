@@ -8,6 +8,7 @@
 
 @theme inline {
   --breakpoint-pc: 1000px;
+  --breakpoint-pcl: 1400px;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -133,7 +134,7 @@
 
 @layer components {
   .bg-mirai-gradient {
-    background-image: linear-gradient(to bottom right, #64d8c6, #bcecb3);
+    background-image: linear-gradient(to bottom right, #64d8c6, #bcecd3);
   }
 
   .font-lexend {

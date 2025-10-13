@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Container } from "@/components/layouts/container";
+import { EXTERNAL_LINKS } from "@/config/external-links";
 import { LinkButton } from "./link-button";
 
 export function About() {
@@ -38,7 +39,7 @@ export function About() {
 
             {/* もっと詳しく知るボタン */}
             <LinkButton
-              href="https://note.com/interests/%E3%83%81%E3%83%BC%E3%83%A0%E3%81%BF%E3%82%89%E3%81%84"
+              href={EXTERNAL_LINKS.ABOUT_NOTE}
               icon={{
                 src: "/icons/note-icon.png",
                 alt: "note",
