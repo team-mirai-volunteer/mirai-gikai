@@ -27,4 +27,101 @@ export class LangfusePromptProvider implements PromptProvider {
       );
     }
   }
+
+  async getUsageCostUsd(
+    userId: string,
+    from: string,
+    to: string
+  ): Promise<number> {
+    try {
+      const query = this.buildMetricsQuery(userId, from, to);
+      console.log("📤 Langfuse Metrics Query:", JSON.stringify(query, null, 2));
+
+      const response = await this.client.api.metricsMetrics({
+        query: JSON.stringify(query),
+      });
+
+      console.log("📥 Langfuse Response:", JSON.stringify(response, null, 2));
+
+      const totalCost = this.extractCostValue(response?.data);
+
+      if (totalCost === null) {
+        console.error(
+          "❌ Failed to extract cost value. Response data:",
+          response?.data
+        );
+        throw new Error("Failed to extract cost value from Langfuse response");
+      }
+
+      return totalCost;
+    } catch (error) {
+      console.error("❌ Langfuse API Error Details:", error);
+
+      // Responseオブジェクトの場合、bodyを読み取ってエラー詳細を表示
+      if (error && typeof error === "object" && "status" in error) {
+        const response = error as Response;
+        try {
+          const errorBody = await response.text();
+          console.error("❌ Langfuse Error Response Body:", errorBody);
+          throw new Error(
+            `Failed to fetch usage cost from Langfuse (${response.status}): ${errorBody}`
+          );
+        } catch (readError) {
+          console.error("❌ Failed to read error body:", readError);
+        }
+      }
+
+      throw new Error(
+        `Failed to fetch usage cost from Langfuse: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  }
+
+  private buildMetricsQuery(userId: string, from: string, to: string) {
+    return {
+      view: "observations",
+      metrics: [
+        {
+          measure: "totalCost",
+          aggregation: "sum",
+        },
+      ],
+      filters: [
+        {
+          column: "userId",
+          operator: "=",
+          value: userId,
+          type: "string",
+        },
+        {
+          column: "type",
+          operator: "=",
+          value: "GENERATION",
+          type: "string",
+        },
+      ],
+      fromTimestamp: from,
+      toTimestamp: to,
+    } satisfies Record<string, unknown>;
+  }
+
+  private extractCostValue(
+    data: Record<string, unknown>[] | undefined
+  ): number | null {
+    // レスポンス形式: [{ sum_totalCost: number | null }]
+    const sumTotalCost = data?.[0]?.sum_totalCost;
+
+    // 数値が返ってきた場合はそのまま返す
+    if (typeof sumTotalCost === "number") {
+      return sumTotalCost;
+    }
+
+    // nullまたはundefinedの場合は0を返す（使用量がない）
+    if (sumTotalCost === null || sumTotalCost === undefined) {
+      return 0;
+    }
+
+    // 予期しない型の場合はnullを返してエラーにする
+    return null;
+  }
 }

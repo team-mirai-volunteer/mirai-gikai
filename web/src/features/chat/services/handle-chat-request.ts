@@ -24,6 +24,22 @@ export async function handleChatRequest({
   messages,
   userId,
 }: ChatRequestParams) {
+  // Check usage cost before processing
+  const promptProvider = createPromptProvider();
+  const jstDayRange = getJstDayRange();
+  const usageCost = await promptProvider.getUsageCostUsd(
+    userId,
+    jstDayRange.from,
+    jstDayRange.to
+  );
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  console.log("📊 Daily Usage Cost Report");
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  console.log(`👤 User ID: ${userId}`);
+  console.log(`💰 Total Cost (Today): $${usageCost.toFixed(4)} USD`);
+  console.log(`📅 Period: ${jstDayRange.from} ~ ${jstDayRange.to}`);
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
   // Extract context from messages
   const context = extractChatContext(messages);
 
@@ -102,6 +118,35 @@ async function buildPrompt(context: ChatMessageMetadata) {
       `プロンプトの取得に失敗しました: ${error instanceof Error ? error.message : String(error)}`
     );
   }
+}
+
+/**
+ * JST基準の1日の時間範囲を取得（UTC形式で返す）
+ */
+function getJstDayRange(): { from: string; to: string } {
+  const now = new Date();
+  const jstOffsetMs = 9 * 60 * 60 * 1000;
+  const jstNow = new Date(now.getTime() + jstOffsetMs);
+
+  const startOfJstDay = new Date(
+    Date.UTC(
+      jstNow.getUTCFullYear(),
+      jstNow.getUTCMonth(),
+      jstNow.getUTCDate(),
+      0,
+      0,
+      0,
+      0
+    )
+  );
+
+  const startUtc = new Date(startOfJstDay.getTime() - jstOffsetMs);
+  const endUtc = new Date(startUtc.getTime() + 24 * 60 * 60 * 1000);
+
+  return {
+    from: startUtc.toISOString(),
+    to: endUtc.toISOString(),
+  };
 }
 
 /**
