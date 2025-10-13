@@ -31,17 +31,23 @@ export function DifficultySelector({
     try {
       await setDifficultyLevel(newLevel);
 
-      // URLから ?difficulty パラメータを削除
-      const url = new URL(window.location.href);
-      url.searchParams.delete("difficulty");
-
       if (scrollToTop) {
         // スクロール位置をトップに戻す
         window.scrollTo(0, 0);
       }
 
-      // パラメータを削除したURLでリロード
-      window.location.href = url.toString();
+      // URLから ?difficulty パラメータを削除
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("difficulty") !== null) {
+        url.searchParams.delete("difficulty");
+        // パラメータを削除したURLでリロード
+        // ただし、スクロール位置は維持されない
+        window.location.replace(url.toString());
+      } else {
+        // パラメータがない場合は通常のリロード
+        // この場合はスクロール位置は維持される
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Failed to update difficulty level:", error);
       // エラーの場合は元に戻す

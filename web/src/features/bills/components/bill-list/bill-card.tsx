@@ -46,7 +46,7 @@ export function BillCard({ bill }: BillCardProps) {
               <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
                 <time>{formatDateWithDots(bill.published_at)}</time>
               </div>
-              <CardTitle className="text-2xl leading-tight">
+              <CardTitle className="text-2xl tracking-wide leading-tight">
                 {displayTitle}
               </CardTitle>
               {displaySummary && (
