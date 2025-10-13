@@ -1,18 +1,19 @@
 "use client";
 
+import Image from "next/image";
 import {
   shareNative,
   shareOnFacebook,
   shareOnLine,
   shareOnTwitter,
 } from "@/features/bills/utils/share-handlers";
-import Image from "next/image";
 
 interface BillShareModalProps {
   isOpen: boolean;
   onClose: () => void;
   shareMessage: string;
   shareUrl: string;
+  thumbnailUrl?: string | null;
 }
 
 export function BillShareModal({
@@ -20,6 +21,7 @@ export function BillShareModal({
   onClose,
   shareMessage,
   shareUrl,
+  thumbnailUrl,
 }: BillShareModalProps) {
   if (!isOpen) return null;
 
@@ -78,8 +80,17 @@ export function BillShareModal({
           記事を共有する
         </h2>
 
-        {/* プレースホルダー画像エリア */}
-        <div className="w-full h-[181px] bg-gray-300 rounded" />
+        {/* サムネイル画像エリア */}
+        {thumbnailUrl && (
+          <div className="w-full h-[180px] relative rounded-md overflow-hidden">
+            <Image
+              src={thumbnailUrl}
+              alt="記事のサムネイル"
+              fill
+              className="object-cover"
+            />
+          </div>
+        )}
 
         {/* シェアセクション */}
         <div className="flex flex-col items-center gap-4 w-full">

@@ -24,6 +24,7 @@ export function BillCreateForm() {
       status_note: null,
       published_at: new Date().toISOString().slice(0, 16),
       thumbnail_url: null,
+      is_featured: false,
     },
   });
 

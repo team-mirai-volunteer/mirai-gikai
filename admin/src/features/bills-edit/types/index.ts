@@ -30,7 +30,7 @@ const billBaseSchema = z.object({
     .nullable(),
   published_at: z.string().min(1, "公開日時は必須です"),
   thumbnail_url: z.string().nullable().optional(),
-  is_featured: z.boolean().default(false),
+  is_featured: z.boolean(),
 });
 
 // 更新用スキーマ（既存）

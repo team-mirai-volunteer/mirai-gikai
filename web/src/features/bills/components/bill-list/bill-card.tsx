@@ -1,8 +1,7 @@
 import Image from "next/image";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDate } from "@/lib/utils/date";
-import { type BillWithContent, HOUSE_LABELS } from "../../types";
-import { BillStatusBadge } from "./bill-status-badge";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDateWithDots } from "@/lib/utils/date";
+import type { BillWithContent } from "../../types";
 import { BillTag } from "./bill-tag";
 
 interface BillCardProps {
@@ -14,11 +13,13 @@ export function BillCard({ bill }: BillCardProps) {
   const displaySummary = bill.bill_content?.summary;
 
   return (
-    <Card className="hover:bg-muted/50 transition-colors">
+    <Card className="hover:bg-muted/50 transition-colors relative overflow-hidden">
       <div className="flex flex-col">
         {/* 注目バッジエリア */}
         {bill.is_featured && (
-          <div className="relative px-3 py-2 bg-white rounded-t-lg">
+          <div
+            className={`${bill.thumbnail_url != null ? "absolute" : "relative"} top-3 left-3 z-1`}
+          >
             <span className="inline-flex items-center justify-center px-3 py-0.5 text-xs font-medium text-[#1F2937] bg-[#F4FF5F] rounded-[20px]">
               注目🔥
             </span>
@@ -40,18 +41,18 @@ export function BillCard({ bill }: BillCardProps) {
 
         {/* コンテンツエリア */}
         <div className="flex-1">
-          <CardHeader className="pb-3">
+          <CardHeader>
             <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>{HOUSE_LABELS[bill.originating_house]}</span>
-                <span>•</span>
-                <time>{formatDate(bill.published_at)}</time>
+              <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
+                <time>{formatDateWithDots(bill.published_at)}</time>
               </div>
-              <CardTitle className="text-lg leading-tight">
+              <CardTitle className="text-2xl leading-tight">
                 {displayTitle}
               </CardTitle>
               {displaySummary && (
-                <p className="text-sm line-clamp-2 mt-1">{displaySummary}</p>
+                <p className="text-sm line-clamp-4 mt-1 leading-relaxed">
+                  {displaySummary}
+                </p>
               )}
               {/* タグ表示 */}
               {bill.tags && bill.tags.length > 0 && (
@@ -61,19 +62,11 @@ export function BillCard({ bill }: BillCardProps) {
                   ))}
                 </div>
               )}
-              <p className="text-sm font-medium text-muted-foreground">
+              <p className="text-xs font-medium text-muted-foreground">
                 {bill.name}
               </p>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <BillStatusBadge
-                status={bill.status}
-                originatingHouse={bill.originating_house}
-              />
-            </div>
-          </CardContent>
         </div>
       </div>
     </Card>

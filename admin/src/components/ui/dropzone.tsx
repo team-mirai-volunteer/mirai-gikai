@@ -28,16 +28,17 @@ export function Dropzone({
 }: DropzoneProps) {
   const [files, setFiles] = React.useState<File[]>([]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: (acceptedFiles) => {
-      setFiles(acceptedFiles);
-      onFilesAccepted?.(acceptedFiles);
-    },
-    accept,
-    maxFiles,
-    maxSize,
-    disabled,
-  });
+  const { getRootProps, getInputProps, isDragActive, fileRejections } =
+    useDropzone({
+      onDrop: (acceptedFiles) => {
+        setFiles(acceptedFiles);
+        onFilesAccepted?.(acceptedFiles);
+      },
+      accept,
+      maxFiles,
+      maxSize,
+      disabled,
+    });
 
   const removeFile = (index: number) => {
     const newFiles = files.filter((_, i) => i !== index);
@@ -74,6 +75,24 @@ export function Dropzone({
           </>
         )}
       </div>
+
+      {fileRejections.length > 0 && (
+        <div className="space-y-2">
+          {fileRejections.map(({ file, errors }) => (
+            <div
+              key={`${file.name}-${file.size}-${file.lastModified}`}
+              className="p-3 bg-red-50 border border-red-200 rounded-lg"
+            >
+              <p className="text-sm font-medium text-red-900">{file.name}</p>
+              <ul className="mt-1 text-xs text-red-700 list-disc list-inside">
+                {errors.map((error) => (
+                  <li key={error.code}>{error.message}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
 
       {files.length > 0 && (
         <div className="space-y-2">

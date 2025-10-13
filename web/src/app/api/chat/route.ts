@@ -1,13 +1,9 @@
-import {
-  convertToModelMessages,
-  simulateReadableStream,
-  streamText,
-  type UIMessage,
-} from "ai";
-import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
-import type { BillWithContent } from "@/features/bills/types";
+import { simulateReadableStream, type UIMessage } from "ai";
 import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
-import { type CompiledPrompt, createPromptProvider } from "@/lib/prompt";
+import {
+  type ChatMessageMetadata,
+  handleChatRequest,
+} from "@/features/chat/services/handle-chat-request";
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);
@@ -50,14 +46,8 @@ async function _mockResponse(_req: Request) {
 }
 
 export async function POST(req: Request) {
-  const {
-    messages,
-  }: {
-    messages: UIMessage<{
-      billContext: BillWithContent;
-      difficultyLevel: string;
-    }>[];
-  } = await req.json();
+  const { messages }: { messages: UIMessage<ChatMessageMetadata>[] } =
+    await req.json();
 
   const {
     data: { user },
@@ -73,63 +63,16 @@ export async function POST(req: Request) {
     );
   }
 
-  // Extract bill context and difficulty level from the first user message data if available
-  const billContext = messages[0]?.metadata?.billContext;
-  const difficultyLevel = (messages[0]?.metadata?.difficultyLevel ||
-    "normal") as DifficultyLevelEnum;
-  const promptProvider = createPromptProvider();
-
-  // 難易度に応じたプロンプト名を決定
-  const promptName = `bill-chat-system-${difficultyLevel}`;
-
-  // Langfuseからプロンプト取得
-  let promptResult: CompiledPrompt;
   try {
-    promptResult = await promptProvider.getPrompt(promptName, {
-      billName: billContext?.name || "",
-      billTitle: billContext?.bill_content?.title || "",
-      billSummary: billContext?.bill_content?.summary || "",
-      billContent: billContext?.bill_content?.content || "",
-    });
+    return await handleChatRequest({ messages, userId: user.id });
   } catch (error) {
-    console.error("Prompt fetch error:", error);
+    console.error("Chat request error:", error);
     return new Response(
       JSON.stringify({
-        error: "プロンプトの取得に失敗しました",
-        details: error instanceof Error ? error.message : String(error),
-      }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
-  }
-
-  // Vercel AI SDKでストリーミング生成
-  try {
-    const result = streamText({
-      model: "openai/gpt-4o-mini",
-      // "openai/gpt-5-mini" Context 400K Input Tokens $0.25/M Output Tokens $2.00/M Cache Read Tokens $0.03/M
-      // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M Cache Read Tokens $0.07/M
-      // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
-      system: promptResult.content,
-      messages: convertToModelMessages(messages),
-      experimental_telemetry: {
-        isEnabled: true,
-        functionId: promptName,
-        metadata: {
-          langfusePrompt: promptResult.metadata,
-          billId: billContext?.id || "",
-          difficultyLevel,
-          userId: user.id,
-        },
-      },
-    });
-
-    return result.toUIMessageStreamResponse();
-  } catch (error) {
-    console.error("LLM generation error:", error);
-    return new Response(
-      JSON.stringify({
-        error: "応答の生成に失敗しました",
-        details: error instanceof Error ? error.message : String(error),
+        error:
+          error instanceof Error
+            ? error.message
+            : "予期しないエラーが発生しました",
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );

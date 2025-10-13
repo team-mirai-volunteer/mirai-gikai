@@ -1,4 +1,4 @@
-import { bills, createMiraiStances } from "./data";
+import { bills, tags, createMiraiStances, createBillsTags } from "./data";
 import { createBillContents } from "./bill-contents-data";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@mirai-gikai/supabase";
@@ -31,9 +31,34 @@ async function seedDatabase() {
       .delete()
       .neq("id", "00000000-0000-0000-0000-000000000000");
     await supabase
+      .from("bills_tags")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase
       .from("bills")
       .delete()
       .neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase
+      .from("tags")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+
+    // Insert tags
+    console.log("🏷️  Inserting tags...");
+    const { data: insertedTags, error: tagsError } = await supabase
+      .from("tags")
+      .insert(tags)
+      .select("id, label");
+
+    if (tagsError) {
+      throw new Error(`Failed to insert tags: ${tagsError.message}`);
+    }
+
+    if (!insertedTags) {
+      throw new Error("No tags were inserted");
+    }
+
+    console.log(`✅ Inserted ${insertedTags.length} tags`);
 
     // Insert bills
     console.log("📄 Inserting bills...");
@@ -94,11 +119,34 @@ async function seedDatabase() {
 
     console.log(`✅ Inserted ${insertedStances.length} mirai stances`);
 
+    // Insert bills_tags (関連付け)
+    console.log("🔗 Inserting bills-tags relations...");
+    const billsTags = createBillsTags(insertedBills, insertedTags);
+
+    const { data: insertedBillsTags, error: billsTagsError } = await supabase
+      .from("bills_tags")
+      .insert(billsTags)
+      .select();
+
+    if (billsTagsError) {
+      throw new Error(
+        `Failed to insert bills-tags relations: ${billsTagsError.message}`
+      );
+    }
+
+    if (!insertedBillsTags) {
+      throw new Error("No bills-tags relations were inserted");
+    }
+
+    console.log(`✅ Inserted ${insertedBillsTags.length} bills-tags relations`);
+
     console.log("🎉 Database seeding completed successfully!");
     console.log("\n📊 Summary:");
+    console.log(`  Tags: ${insertedTags.length}`);
     console.log(`  Bills: ${insertedBills.length}`);
     console.log(`  Bill Contents: ${insertedContents.length}`);
     console.log(`  Mirai Stances: ${insertedStances.length}`);
+    console.log(`  Bills-Tags Relations: ${insertedBillsTags.length}`);
   } catch (error) {
     console.error("❌ Error seeding database:", error);
     process.exit(1);

@@ -25,6 +25,7 @@ export function RubyfulInitializer() {
       onLoad={() => {
         if (typeof window !== "undefined" && window.RubyfulV2) {
           const isEnabled = rubyfulClient.getIsEnabledFromStorage();
+          if (!isEnabled) return;
           // Rubyful V2を初期化（デフォルトで非表示）
           window.RubyfulV2.init({
             selector:

@@ -7,9 +7,15 @@ import type { DifficultyLevelEnum } from "../types";
 
 interface DifficultySelectorProps {
   currentLevel: DifficultyLevelEnum;
+  label?: string;
+  scrollToTop?: boolean;
 }
 
-export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
+export function DifficultySelector({
+  currentLevel,
+  label = "より詳しく",
+  scrollToTop,
+}: DifficultySelectorProps) {
   const [selectedLevel, setSelectedLevel] =
     useState<DifficultyLevelEnum>(currentLevel);
   const uniqueId = useId();
@@ -22,6 +28,10 @@ export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
 
     try {
       await setDifficultyLevel(newLevel);
+      if (scrollToTop) {
+        // スクロール位置をトップに戻す
+        window.scrollTo(0, 0);
+      }
       window.location.reload();
     } catch (error) {
       console.error("Failed to update difficulty level:", error);
@@ -35,7 +45,7 @@ export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
   return (
     <div className="flex items-center gap-3">
       <div className="flex items-center gap-2">
-        <span className="text-sm text-gray-600 font-bold">より詳しく</span>
+        <span className="text-sm text-gray-600 font-bold">{label}</span>
         <Switch
           id={`${uniqueId}-difficulty-toggle`}
           checked={selectedLevel === "hard"}

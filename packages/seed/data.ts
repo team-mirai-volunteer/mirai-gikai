@@ -3,6 +3,27 @@ import type { Database } from "@mirai-gikai/supabase";
 type BillInsert = Database["public"]["Tables"]["bills"]["Insert"];
 type MiraiStanceInsert =
   Database["public"]["Tables"]["mirai_stances"]["Insert"];
+type TagInsert = Database["public"]["Tables"]["tags"]["Insert"];
+type BillsTagsInsert = Database["public"]["Tables"]["bills_tags"]["Insert"];
+
+// タグデータ
+export const tags: TagInsert[] = [
+  {
+    label: "エネルギー・環境",
+    description: "エネルギー政策、環境保護、気候変動対策に関する法案",
+    featured_priority: 1,
+  },
+  {
+    label: "子育て・教育",
+    description: "子育て支援、教育政策、若者支援に関する法案",
+    featured_priority: 2,
+  },
+  {
+    label: "選挙・政治改革",
+    description: "選挙制度、政治改革、民主主義の強化に関する法案",
+    featured_priority: 3,
+  },
+];
 
 export const bills: BillInsert[] = [
   {
@@ -12,6 +33,7 @@ export const bills: BillInsert[] = [
     status_note: "衆議院で審議中",
     published_at: "2025-08-01T09:00:00+09:00",
     publish_status: "published",
+    is_featured: true,
   },
   {
     name: "こども家庭庁予算大幅増額法案",
@@ -20,6 +42,7 @@ export const bills: BillInsert[] = [
     status_note: "参議院で可決、衆議院へ送付",
     published_at: "2025-01-20T10:00:00+09:00",
     publish_status: "published",
+    is_featured: true,
   },
   {
     name: "18歳選挙権完全実施法案",
@@ -28,6 +51,7 @@ export const bills: BillInsert[] = [
     status_note: "衆議院に提出済み",
     published_at: "2025-02-01T09:00:00+09:00",
     publish_status: "published",
+    is_featured: false,
   },
   {
     name: "学校給食無償化促進法案",
@@ -36,6 +60,7 @@ export const bills: BillInsert[] = [
     status_note: "両院で可決、4月から実施",
     published_at: "2025-01-10T09:00:00+09:00",
     publish_status: "published",
+    is_featured: false,
   },
   {
     name: "中学生・高校生向けプログラミング教育必修化法案",
@@ -44,8 +69,42 @@ export const bills: BillInsert[] = [
     status_note: "衆議院本会議で否決",
     published_at: "2024-11-15T10:00:00+09:00",
     publish_status: "published",
+    is_featured: false,
   },
 ];
+
+// 議案とタグの関連付け
+// billsの順番: [ガソリン税, こども家庭庁, 18歳選挙権, 学校給食, プログラミング教育]
+// tagsの順番: [エネルギー・環境, 子育て・教育, 選挙・政治改革]
+export function createBillsTags(
+  insertedBills: { id: string; name: string }[],
+  insertedTags: { id: string; label: string }[]
+): Omit<BillsTagsInsert, "id" | "created_at">[] {
+  const billTagMap: { [billName: string]: string[] } = {
+    "ガソリン税暫定税率廃止法案": ["エネルギー・環境"],
+    "こども家庭庁予算大幅増額法案": ["子育て・教育"],
+    "18歳選挙権完全実施法案": ["選挙・政治改革"],
+    "学校給食無償化促進法案": ["子育て・教育"],
+    "中学生・高校生向けプログラミング教育必修化法案": ["子育て・教育"],
+  };
+
+  const billsTags: Omit<BillsTagsInsert, "id" | "created_at">[] = [];
+
+  for (const bill of insertedBills) {
+    const tagLabels = billTagMap[bill.name] || [];
+    for (const tagLabel of tagLabels) {
+      const tag = insertedTags.find((t) => t.label === tagLabel);
+      if (tag) {
+        billsTags.push({
+          bill_id: bill.id,
+          tag_id: tag.id,
+        });
+      }
+    }
+  }
+
+  return billsTags;
+}
 
 const miraiStancesData: Omit<MiraiStanceInsert, "bill_id">[] = [
   {

@@ -7,6 +7,7 @@ import remarkBreaks from "remark-breaks";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
+import { DifficultyInfoCard } from "@/features/bills/components/bill-detail/difficulty-info-card";
 import { LongPressSection } from "@/features/bills/components/bill-detail/long-press-section";
 import { rehypeEmbedYouTube } from "./rehype-embed-youtube";
 import { rehypeExternalLinks } from "./rehype-external-links";
@@ -24,12 +25,14 @@ const sanitizeSchema = {
     ...(defaultSchema.tagNames || []),
     // カスタム要素を許可
     "LongPressSection",
+    "DifficultyInfoCard",
   ],
 };
 
 /**
  * MarkdownテキストをReact Elementに変換
  * @param markdown - Markdown形式のテキスト
+ * @param options - オプション（currentLevel等）
  * @returns React Element（部分水和対応）
  */
 export async function parseMarkdown(markdown: string): Promise<ReactElement> {
@@ -41,8 +44,16 @@ export async function parseMarkdown(markdown: string): Promise<ReactElement> {
     .use(remarkRehype)
     .use(rehypeWrapSections)
     .use(rehypeInjectElement, {
-      targetH2Index: 3,
-      tagName: "LongPressSection",
+      injections: [
+        {
+          targetH2Index: 3,
+          tagName: "LongPressSection",
+        },
+        {
+          targetH2Index: -1,
+          tagName: "DifficultyInfoCard",
+        },
+      ],
     })
     .use(rehypeSanitize, sanitizeSchema)
     .use(rehypeExternalLinks)
@@ -56,6 +67,7 @@ export async function parseMarkdown(markdown: string): Promise<ReactElement> {
     jsxs,
     components: {
       LongPressSection, // Client Componentとして水和
+      DifficultyInfoCard, // Client Componentとして水和
     },
   });
 }

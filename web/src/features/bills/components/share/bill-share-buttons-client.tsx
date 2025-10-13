@@ -1,18 +1,20 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { BillShareModal } from "./bill-share-modal";
 
 interface BillShareButtonsClientProps {
   shareMessage: string;
   shareUrl: string;
+  thumbnailUrl?: string | null;
 }
 
 export function BillShareButtonsClient({
   shareMessage,
   shareUrl,
+  thumbnailUrl,
 }: BillShareButtonsClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -73,6 +75,7 @@ export function BillShareButtonsClient({
         onClose={handleCloseModal}
         shareMessage={shareMessage}
         shareUrl={shareUrl}
+        thumbnailUrl={thumbnailUrl}
       />
     </>
   );
