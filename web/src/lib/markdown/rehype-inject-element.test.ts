@@ -25,9 +25,13 @@ Content 3`;
       .use(remarkParse)
       .use(remarkRehype)
       .use(rehypeInjectElement, {
-        targetH2Index: 2,
-        tagName: "CustomElement",
-        props: { id: "custom-1" },
+        injections: [
+          {
+            targetH2Index: 2,
+            tagName: "CustomElement",
+            props: { id: "custom-1" },
+          },
+        ],
       })
       .use(rehypeStringify)
       .process(markdown);
@@ -59,8 +63,12 @@ Content`;
       .use(remarkParse)
       .use(remarkRehype)
       .use(rehypeInjectElement, {
-        targetH2Index: 1,
-        tagName: "CustomElement",
+        injections: [
+          {
+            targetH2Index: 1,
+            tagName: "CustomElement",
+          },
+        ],
       })
       .use(rehypeStringify)
       .process(markdown);
@@ -84,8 +92,12 @@ Content`;
       .use(remarkParse)
       .use(remarkRehype)
       .use(rehypeInjectElement, {
-        targetH2Index: 5,
-        tagName: "CustomElement",
+        injections: [
+          {
+            targetH2Index: 5,
+            tagName: "CustomElement",
+          },
+        ],
       })
       .use(rehypeStringify)
       .process(markdown);
@@ -105,14 +117,18 @@ Content`;
       .use(remarkParse)
       .use(remarkRehype)
       .use(rehypeInjectElement, {
-        targetH2Index: 2,
-        tagName: "ComplexElement",
-        props: {
-          id: "test-id",
-          className: "test-class",
-          dataValue: 123,
-          enabled: true,
-        },
+        injections: [
+          {
+            targetH2Index: 2,
+            tagName: "ComplexElement",
+            props: {
+              id: "test-id",
+              className: "test-class",
+              dataValue: 123,
+              enabled: true,
+            },
+          },
+        ],
       })
       .use(rehypeStringify)
       .process(markdown);
@@ -137,8 +153,12 @@ Content`;
       .use(remarkParse)
       .use(remarkRehype)
       .use(rehypeInjectElement, {
-        targetH2Index: 2,
-        tagName: "OnceElement",
+        injections: [
+          {
+            targetH2Index: 2,
+            tagName: "OnceElement",
+          },
+        ],
       })
       .use(rehypeStringify)
       .process(markdown);
@@ -163,8 +183,12 @@ More content.`;
       .use(remarkParse)
       .use(remarkRehype)
       .use(rehypeInjectElement, {
-        targetH2Index: 1,
-        tagName: "CustomElement",
+        injections: [
+          {
+            targetH2Index: 1,
+            tagName: "CustomElement",
+          },
+        ],
       })
       .use(rehypeStringify)
       .process(markdown);
@@ -173,5 +197,53 @@ More content.`;
 
     // H2がないので挿入されないことを確認
     expect(html).not.toContain("<CustomElement");
+  });
+
+  it("should inject multiple elements at different positions", async () => {
+    const markdown = `## Section 1
+
+Content 1
+
+## Section 2
+
+Content 2
+
+## Section 3
+
+Content 3`;
+
+    const result = await unified()
+      .use(remarkParse)
+      .use(remarkRehype)
+      .use(rehypeInjectElement, {
+        injections: [
+          {
+            targetH2Index: 2,
+            tagName: "FirstElement",
+          },
+          {
+            targetH2Index: -1,
+            tagName: "LastElement",
+          },
+        ],
+      })
+      .use(rehypeStringify)
+      .process(markdown);
+
+    const html = String(result);
+
+    // 両方の要素が挿入されていることを確認
+    expect(html).toContain("<FirstElement");
+    expect(html).toContain("<LastElement");
+
+    // FirstElementがSection 2の前にあることを確認
+    const firstElementIndex = html.indexOf("<FirstElement");
+    const section2Index = html.indexOf("<h2>Section 2</h2>");
+    expect(firstElementIndex).toBeLessThan(section2Index);
+
+    // LastElementがSection 3の前にあることを確認
+    const lastElementIndex = html.indexOf("<LastElement");
+    const section3Index = html.indexOf("<h2>Section 3</h2>");
+    expect(lastElementIndex).toBeLessThan(section3Index);
   });
 });

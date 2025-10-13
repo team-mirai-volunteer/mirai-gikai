@@ -7,9 +7,13 @@ import type { DifficultyLevelEnum } from "../types";
 
 interface DifficultySelectorProps {
   currentLevel: DifficultyLevelEnum;
+  scrollToTop?: boolean;
 }
 
-export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
+export function DifficultySelector({
+  currentLevel,
+  scrollToTop,
+}: DifficultySelectorProps) {
   const [selectedLevel, setSelectedLevel] =
     useState<DifficultyLevelEnum>(currentLevel);
   const uniqueId = useId();
@@ -22,6 +26,10 @@ export function DifficultySelector({ currentLevel }: DifficultySelectorProps) {
 
     try {
       await setDifficultyLevel(newLevel);
+      if (scrollToTop) {
+        // スクロール位置をトップに戻す
+        window.scrollTo(0, 0);
+      }
       window.location.reload();
     } catch (error) {
       console.error("Failed to update difficulty level:", error);
