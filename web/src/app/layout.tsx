@@ -48,7 +48,12 @@ export default function RootLayout({
         {/* 画面幅1400px以上で表示されるデスクトップメニュー */}
         <DesktopMenu />
 
-        <div className="relative max-w-[500px] mx-auto pc:mr-[500px] sm:shadow-lg">
+        <div
+          className="
+            relative max-w-[500px] mx-auto sm:shadow-lg
+            pc:mr-[500px] pcl:mr-[max(calc(50vw-250px),500px)]
+          "
+        >
           <Header />
           <main className="min-h-screen">{children}</main>
           <Footer />
