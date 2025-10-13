@@ -54,6 +54,12 @@ const _getCachedBillsByFeaturedTags = unstable_cache(
                 difficulty_level,
                 created_at,
                 updated_at
+              ),
+              bills_tags!inner (
+                tags (
+                  id,
+                  label
+                )
               )
             )
             `
@@ -77,15 +83,22 @@ const _getCachedBillsByFeaturedTags = unstable_cache(
             const billData = item.bills;
             if (!billData) return null;
 
-            const { bill_contents, ...bill } = billData;
+            const { bill_contents, bills_tags, ...bill } = billData;
             const billContent = Array.isArray(bill_contents)
               ? bill_contents[0]
               : undefined;
 
+            // billに紐づくすべてのタグを取得
+            const tags = Array.isArray(bills_tags)
+              ? bills_tags
+                  .map((bt) => bt.tags)
+                  .filter((t): t is NonNullable<typeof t> => t !== null)
+              : [];
+
             return {
               ...bill,
               bill_content: billContent,
-              tags: [{ id: tag.id, label: tag.label }],
+              tags,
             };
           })
           .filter((bill): bill is NonNullable<typeof bill> => bill !== null);
