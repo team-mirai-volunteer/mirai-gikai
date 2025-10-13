@@ -25,7 +25,7 @@ export function DesktopMenuRubyToggle() {
             fontSize: "20px",
           }}
         >
-          ルビを表示する
+          ふりがなを表示する
         </span>
         <Switch
           checked={rubyEnabled}

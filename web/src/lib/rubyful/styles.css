@@ -4,3 +4,10 @@
 .ruby-button {
   display: none;
 }
+
+/* ルビは選択できないようにする */
+rt {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
