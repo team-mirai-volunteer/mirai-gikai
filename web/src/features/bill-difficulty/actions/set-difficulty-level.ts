@@ -1,7 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { DIFFICULTY_COOKIE_NAME, type DifficultyLevelEnum } from "../types";
+import {
+  DIFFICULTY_COOKIE_NAME,
+  DIFFICULTY_COOKIE_OPTIONS,
+  type DifficultyLevelEnum,
+} from "../types";
 
 /**
  * 難易度設定をCookieに保存
@@ -9,12 +13,5 @@ import { DIFFICULTY_COOKIE_NAME, type DifficultyLevelEnum } from "../types";
  */
 export async function setDifficultyLevel(level: DifficultyLevelEnum) {
   const cookieStore = await cookies();
-
-  cookieStore.set(DIFFICULTY_COOKIE_NAME, level, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 365, // 1年間
-    path: "/",
-  });
+  cookieStore.set(DIFFICULTY_COOKIE_NAME, level, DIFFICULTY_COOKIE_OPTIONS);
 }

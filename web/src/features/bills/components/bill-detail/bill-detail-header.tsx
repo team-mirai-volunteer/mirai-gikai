@@ -1,9 +1,8 @@
 import Image from "next/image";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { formatDateWithDots } from "@/lib/utils/date";
-import { getOrigin } from "@/lib/utils/url";
 import type { BillWithContent } from "../../types";
-import { createShareMessage } from "../../utils/share-message";
+import { getBillShareData } from "../../utils/share";
 import { BillTag } from "../bill-list/bill-tag";
 import { BillDetailShareButton } from "./bill-detail-share-button";
 
@@ -15,9 +14,7 @@ export async function BillDetailHeader({ bill }: BillDetailHeaderProps) {
   const displayTitle = bill.bill_content?.title;
   const displaySummary = bill.bill_content?.summary;
 
-  const origin = await getOrigin();
-  const shareUrl = `${origin}/bills/${bill.id}`;
-  const shareMessage = createShareMessage(bill);
+  const { shareUrl, shareMessage, thumbnailUrl } = await getBillShareData(bill);
 
   return (
     <Card className="mb-8">
@@ -65,7 +62,7 @@ export async function BillDetailHeader({ bill }: BillDetailHeaderProps) {
         <BillDetailShareButton
           shareMessage={shareMessage}
           shareUrl={shareUrl}
-          thumbnailUrl={bill.thumbnail_url}
+          thumbnailUrl={thumbnailUrl}
         />
       </CardContent>
     </Card>
