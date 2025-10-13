@@ -154,8 +154,8 @@ export function ChatWindow({
               <div className="flex flex-wrap gap-3">
                 {(billContext
                   ? [
-                      `「${billContext.name}」について教えて`,
-                      "この法案の目的は？",
+                      `この法案のポイントは？`,
+                      "この法案は私にどんな影響がある？",
                     ]
                   : [
                       "みらい議会って何？",
