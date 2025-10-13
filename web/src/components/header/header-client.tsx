@@ -30,7 +30,7 @@ export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
 
           {/* Navigation */}
           <nav className="flex items-center space-x-2">
-            <DifficultySelector currentLevel={difficultyLevel} />
+            <DifficultySelector currentLevel={difficultyLevel} label="詳しく" />
             <HamburgerMenu />
           </nav>
         </div>
