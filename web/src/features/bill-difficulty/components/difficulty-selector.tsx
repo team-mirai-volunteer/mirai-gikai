@@ -8,12 +8,14 @@ import type { DifficultyLevelEnum } from "../types";
 interface DifficultySelectorProps {
   currentLevel: DifficultyLevelEnum;
   label?: string;
+  labelStyle?: React.CSSProperties;
   scrollToTop?: boolean;
 }
 
 export function DifficultySelector({
   currentLevel,
   label = "より詳しく",
+  labelStyle,
   scrollToTop,
 }: DifficultySelectorProps) {
   const [selectedLevel, setSelectedLevel] =
@@ -52,7 +54,9 @@ export function DifficultySelector({
   return (
     <div className="flex items-center gap-3">
       <div className="flex items-center gap-2">
-        <span className="text-sm text-gray-600 font-bold">{label}</span>
+        <span className="text-sm font-bold" style={labelStyle}>
+          {label}
+        </span>
         <Switch
           id={`${uniqueId}-difficulty-toggle`}
           checked={selectedLevel === "hard"}

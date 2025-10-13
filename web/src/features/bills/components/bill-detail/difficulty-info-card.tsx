@@ -12,7 +12,11 @@ export async function DifficultyInfoCard() {
           <br />
           いつでも切り替えられます
         </p>
-        <DifficultySelector currentLevel={level} scrollToTop />
+        <DifficultySelector
+          currentLevel={level}
+          labelStyle={{ fontSize: "16px" }}
+          scrollToTop
+        />
       </div>
       <div className="absolute right-6 top-6 w-[121px] h-[128px]">
         <Image
