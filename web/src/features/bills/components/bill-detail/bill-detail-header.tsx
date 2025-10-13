@@ -19,7 +19,7 @@ export async function BillDetailHeader({ bill }: BillDetailHeaderProps) {
   return (
     <Card className="mb-8">
       {bill.thumbnail_url && (
-        <div className="relative w-full h-70 md:h-100">
+        <div className="relative w-full h-65 md:h-80">
           <Image
             src={bill.thumbnail_url}
             alt={bill.name}
