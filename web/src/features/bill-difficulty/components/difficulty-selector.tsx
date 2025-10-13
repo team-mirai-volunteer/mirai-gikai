@@ -52,19 +52,17 @@ export function DifficultySelector({
   };
 
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-bold" style={labelStyle}>
-          {label}
-        </span>
-        <Switch
-          id={`${uniqueId}-difficulty-toggle`}
-          checked={selectedLevel === "hard"}
-          onCheckedChange={handleToggle}
-          disabled={isChanging}
-          aria-label="難易度を切り替え"
-        />
-      </div>
+    <div className="flex items-center gap-2">
+      <span className="text-sm font-bold" style={labelStyle}>
+        {label}
+      </span>
+      <Switch
+        id={`${uniqueId}-difficulty-toggle`}
+        checked={selectedLevel === "hard"}
+        onCheckedChange={handleToggle}
+        disabled={isChanging}
+        aria-label="難易度を切り替え"
+      />
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { policyLinks, primaryLinks, socialLinks } from "./footer.config";
 
 export function Footer() {
   return (
-    <footer className="bg-gradient-to-br from-[#bcecd3] to-[#64d8c6] text-slate-900">
+    <footer className="bg-mirai-gradient text-slate-900">
       <div className="mx-auto flex w-full max-w-[402px] flex-col items-center gap-9 px-6 py-14 text-center">
         <FooterLogoSection />
         <FooterPrimaryLinks />

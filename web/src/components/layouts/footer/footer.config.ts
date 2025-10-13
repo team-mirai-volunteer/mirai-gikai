@@ -39,10 +39,9 @@ export type FooterSocialLink = {
 } & SocialLink;
 
 export const socialLinks: FooterSocialLink[] = [
-  { key: "note", ...SOCIAL_LINKS.note },
   { key: "youtube", ...SOCIAL_LINKS.youtube },
-  { key: "line", ...SOCIAL_LINKS.line },
   { key: "x", ...SOCIAL_LINKS.x },
+  { key: "line", ...SOCIAL_LINKS.line },
   { key: "instagram", ...SOCIAL_LINKS.instagram },
   { key: "facebook", ...SOCIAL_LINKS.facebook },
   { key: "tiktok", ...SOCIAL_LINKS.tiktok },
