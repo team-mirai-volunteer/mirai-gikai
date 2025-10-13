@@ -1,3 +1,4 @@
+import { MessageCircleQuestion } from "lucide-react";
 import Image from "next/image";
 
 export function LongPressSection() {
@@ -20,13 +21,7 @@ export function LongPressSection() {
           {/* 3行目 */}
           <div className="flex items-start gap-2 pt-2">
             <div className="inline-flex items-center gap-1 bg-white border border-[#D2D2D2] rounded-lg px-1.5 py-1 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.2)]">
-              <Image
-                src="/illustrations/question-bubble.svg"
-                alt="質問アイコン"
-                width={14}
-                height={14}
-                className="flex-shrink-0"
-              />
+              <MessageCircleQuestion className={`h-4 w-4`} />
               <span className="text-[#1F2937] text-sm font-medium leading-[1.43] font-noto-sans text-center">
                 AIに質問
               </span>
