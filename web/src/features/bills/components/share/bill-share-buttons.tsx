@@ -1,4 +1,5 @@
 import type { BillWithContent } from "@/features/bills/types";
+import { createShareMessage } from "@/features/bills/utils/share-message";
 import { getOrigin } from "@/lib/utils/url";
 import { BillShareButtonsClient } from "./bill-share-buttons-client";
 
@@ -13,8 +14,7 @@ export async function BillShareButtons({
 }: BillShareButtonsProps) {
   const origin = await getOrigin();
   const shareUrl = `${origin}/bills/${bill.id}`;
-
-  const shareMessage = `${bill.bill_content?.title ?? bill.name} #みらい議会`;
+  const shareMessage = createShareMessage(bill);
 
   return (
     <div className={`flex flex-col gap-3 ${className || ""}`}>
