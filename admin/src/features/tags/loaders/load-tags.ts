@@ -11,11 +11,14 @@ export async function loadTags(): Promise<TagWithBillCount[]> {
       `
       id,
       label,
+      description,
+      featured_priority,
       created_at,
       updated_at,
       bills_tags(count)
     `
     )
+    .order("featured_priority", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: true });
 
   if (error) {
@@ -27,6 +30,8 @@ export async function loadTags(): Promise<TagWithBillCount[]> {
     data?.map((tag) => ({
       id: tag.id,
       label: tag.label,
+      description: tag.description,
+      featured_priority: tag.featured_priority,
       created_at: tag.created_at,
       updated_at: tag.updated_at,
       bill_count: tag.bills_tags?.[0]?.count ?? 0,
