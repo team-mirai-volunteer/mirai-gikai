@@ -13,6 +13,16 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
   );
 }
 
+const chatDailyCostLimitUsdRaw = process.env.CHAT_DAILY_COST_LIMIT_USD || "0.5";
+
+const chatDailyCostLimitUsd = Number(chatDailyCostLimitUsdRaw);
+
+if (Number.isNaN(chatDailyCostLimitUsd) || chatDailyCostLimitUsd <= 0) {
+  throw new Error(
+    "環境変数 CHAT_DAILY_COST_LIMIT_USD は正の数値で指定してください"
+  );
+}
+
 export const env = {
   adminUrl: process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3001",
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -22,6 +32,9 @@ export const env = {
     publicKey: process.env.LANGFUSE_PUBLIC_KEY,
     secretKey: process.env.LANGFUSE_SECRET_KEY,
     baseUrl: process.env.LANGFUSE_BASE_URL || "https://cloud.langfuse.com",
+  },
+  chat: {
+    dailyCostLimitUsd: chatDailyCostLimitUsd,
   },
 } as const;
 

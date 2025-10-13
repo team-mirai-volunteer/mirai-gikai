@@ -69,7 +69,7 @@ export function BillShareModal({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3"
+      className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 p-3"
       onClick={handleBackgroundClick}
       onKeyDown={handleBackgroundKeyDown}
       tabIndex={-1}
@@ -95,7 +95,7 @@ export function BillShareModal({
         {/* シェアセクション */}
         <div className="flex flex-col items-center gap-4 w-full">
           <p className="text-base font-bold text-gray-800 text-center">
-            シェアして国会議論をオープンに
+            シェアして国会の議論をオープンに
           </p>
 
           {/* SNSアイコン */}

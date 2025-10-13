@@ -19,7 +19,7 @@ export function FeaturedBillSection({ bills }: FeaturedBillSectionProps) {
           注目の法案🔥
         </h2>
         <p className="text-xs font-medium text-[#404040] leading-[1.67]">
-          いま、国会に提出されている注目法案
+          国会に提出された注目法案
         </p>
       </div>
 

@@ -4,12 +4,12 @@ import { X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useStickToBottomContext } from "use-stick-to-bottom";
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
-import { Loader } from "@/components/ai-elements/loader";
 import {
   PromptInput,
   PromptInputBody,
@@ -32,8 +32,105 @@ interface ChatWindowProps {
   onClose: () => void;
   pageContext?: {
     type: "home" | "bill";
-    bills?: Array<{ id: string; name: string; summary?: string }>;
+    bills?: Array<{
+      name: string;
+      summary?: string;
+      tags?: string[];
+      isFeatured?: boolean;
+    }>;
   };
+}
+
+/**
+ * Conversation内部で使用するコンポーネント
+ * useStickToBottomContextを使用するために分離
+ */
+function ChatMessages({
+  billContext,
+  difficultyLevel,
+  messages,
+  sendMessage,
+  status,
+  pageContext,
+}: {
+  billContext?: Bill;
+  difficultyLevel: string;
+  messages: ChatWindowProps["chatState"]["messages"];
+  sendMessage: ChatWindowProps["chatState"]["sendMessage"];
+  status: ChatWindowProps["chatState"]["status"];
+  pageContext?: ChatWindowProps["pageContext"];
+}) {
+  const { scrollToBottom } = useStickToBottomContext();
+  const userMessageLength = messages.filter((x) => x.role === "user").length;
+
+  // メッセージが追加されたら自動的にスクロール
+  useEffect(() => {
+    if (userMessageLength > 0) {
+      scrollToBottom();
+    }
+  }, [userMessageLength, scrollToBottom]);
+
+  return (
+    <>
+      <div className="flex flex-col gap-4">
+        {/* 初期メッセージ */}
+        <div className="flex flex-col gap-1">
+          <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
+            なんでも質問してください。
+          </p>
+          {billContext && (
+            <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
+              本文中のテキストを選択すると簡単にAIに質問できます
+            </p>
+          )}
+        </div>
+
+        {/* サンプル質問チップ */}
+        <div className="flex flex-wrap gap-3">
+          {(billContext
+            ? [`この法案のポイントは？`, "この法案は私にどんな影響がある？"]
+            : [
+                "みらい議会って何？",
+                "国会って何をするところ？",
+                "注目の法案について教えて",
+              ]
+          ).map((question) => (
+            <button
+              key={question}
+              type="button"
+              className="px-3 py-1 text-xs leading-[2] text-[#0F8472] border border-[#2AA693] rounded-2xl hover:bg-gray-50"
+              onClick={() => {
+                sendMessage({
+                  text: question,
+                  metadata: {
+                    billContext,
+                    difficultyLevel,
+                    pageContext,
+                  },
+                });
+              }}
+            >
+              {question}
+            </button>
+          ))}
+        </div>
+      </div>
+      {messages.map((message) => {
+        const isStreaming =
+          status === "streaming" && message.id === messages.at(-1)?.id;
+
+        return message.role === "user" ? (
+          <UserMessage key={message.id} message={message} />
+        ) : (
+          <SystemMessage
+            key={message.id}
+            message={message}
+            isStreaming={isStreaming}
+          />
+        );
+      })}
+    </>
+  );
 }
 
 export function ChatWindow({
@@ -116,7 +213,7 @@ export function ChatWindow({
       <div
         className={`fixed inset-x-0 bottom-0 z-50
           bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:w-[450px] md:rounded-2xl rounded-t-2xl flex flex-col
-					pc:visible pc:opacity-100 
+					pc:visible pc:opacity-100
           h-[80vh] pc:h-[60vh]
 					${isOpen ? "visible opacity-100" : "invisible opacity-0 pc:visible pc:opacity-100"}
 				`}
@@ -137,67 +234,14 @@ export function ChatWindow({
         {/* メッセージエリア（スクロール可能） */}
         <Conversation className="flex-1 min-h-0">
           <ConversationContent className="p-0 flex flex-col gap-3 pc:pt-6 pb-2 px-6">
-            <div className="flex flex-col gap-4">
-              {/* 初期メッセージ */}
-              <div className="flex flex-col gap-1">
-                <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
-                  なんでも質問してください。
-                </p>
-                {billContext && (
-                  <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
-                    本文中のテキストを選択すると簡単にAIに質問できます
-                  </p>
-                )}
-              </div>
-
-              {/* サンプル質問チップ */}
-              <div className="flex flex-wrap gap-3">
-                {(billContext
-                  ? [
-                      `この法案のポイントは？`,
-                      "この法案は私にどんな影響がある？",
-                    ]
-                  : [
-                      "みらい議会って何？",
-                      "国会って何をするところ？",
-                      "注目の法案について教えて",
-                    ]
-                ).map((question) => (
-                  <button
-                    key={question}
-                    type="button"
-                    className="px-3 py-1 text-xs leading-[2] text-[#0F8472] border border-[#2AA693] rounded-2xl hover:bg-gray-50"
-                    onClick={() => {
-                      sendMessage({
-                        text: question,
-                        metadata: {
-                          billContext,
-                          difficultyLevel,
-                          pageContext,
-                        },
-                      });
-                    }}
-                  >
-                    {question}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {messages.map((message) => {
-              const isStreaming =
-                status === "streaming" && message.id === messages.at(-1)?.id;
-
-              return message.role === "user" ? (
-                <UserMessage key={message.id} message={message} />
-              ) : (
-                <SystemMessage
-                  key={message.id}
-                  message={message}
-                  isStreaming={isStreaming}
-                />
-              );
-            })}
-            {status === "submitted" && <Loader />}
+            <ChatMessages
+              billContext={billContext}
+              difficultyLevel={difficultyLevel}
+              messages={messages}
+              sendMessage={sendMessage}
+              status={status}
+              pageContext={pageContext}
+            />
           </ConversationContent>
           <ConversationScrollButton />
         </Conversation>

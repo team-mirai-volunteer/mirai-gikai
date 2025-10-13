@@ -1,7 +1,13 @@
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
-import { type CompiledPrompt, createPromptProvider } from "@/lib/prompt";
+import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
+import { env } from "@/lib/env";
+import {
+  type CompiledPrompt,
+  type PromptProvider,
+  createPromptProvider,
+} from "@/lib/prompt";
 
 export type ChatMessageMetadata = {
   billContext?: BillWithContent;
@@ -24,11 +30,22 @@ export async function handleChatRequest({
   messages,
   userId,
 }: ChatRequestParams) {
+  const promptProvider = createPromptProvider();
+
+  // Check cost limit before processing
+  const isWithinLimit = await isWithinCostLimit(userId, promptProvider);
+  if (!isWithinLimit) {
+    throw new ChatError(ChatErrorCode.DAILY_COST_LIMIT_REACHED);
+  }
+
   // Extract context from messages
   const context = extractChatContext(messages);
 
   // Build prompt configuration
-  const { promptName, promptResult } = await buildPrompt(context);
+  const { promptName, promptResult } = await buildPrompt(
+    context,
+    promptProvider
+  );
 
   // Generate streaming response
   try {
@@ -49,8 +66,9 @@ export async function handleChatRequest({
     return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error("LLM generation error:", error);
-    throw new Error(
-      `応答の生成に失敗しました: ${error instanceof Error ? error.message : String(error)}`
+    throw new ChatError(
+      ChatErrorCode.LLM_GENERATION_FAILED,
+      error instanceof Error ? error.message : String(error)
     );
   }
 }
@@ -71,9 +89,30 @@ function extractChatContext(
 }
 
 /**
+ * ユーザーがコストリミット内かどうかを判定
+ */
+async function isWithinCostLimit(
+  userId: string,
+  promptProvider: PromptProvider
+): Promise<boolean> {
+  const jstDayRange = getJstDayRange();
+  const usedCost = await promptProvider.getUsageCostUsd(
+    userId,
+    jstDayRange.from,
+    jstDayRange.to
+  );
+  const limitCost = env.chat.dailyCostLimitUsd;
+
+  return usedCost < limitCost;
+}
+
+/**
  * コンテキストに基づいてプロンプトを組み立てる
  */
-async function buildPrompt(context: ChatMessageMetadata) {
+async function buildPrompt(
+  context: ChatMessageMetadata,
+  promptProvider: PromptProvider
+) {
   // Determine prompt name
   const promptName =
     context.pageContext?.type === "home"
@@ -92,16 +131,45 @@ async function buildPrompt(context: ChatMessageMetadata) {
         };
 
   // Fetch prompt from Langfuse
-  const promptProvider = createPromptProvider();
   try {
     const promptResult = await promptProvider.getPrompt(promptName, variables);
     return { promptName, promptResult };
   } catch (error) {
     console.error("Prompt fetch error:", error);
-    throw new Error(
-      `プロンプトの取得に失敗しました: ${error instanceof Error ? error.message : String(error)}`
+    throw new ChatError(
+      ChatErrorCode.PROMPT_FETCH_FAILED,
+      error instanceof Error ? error.message : String(error)
     );
   }
+}
+
+/**
+ * JST基準の1日の時間範囲を取得（UTC形式で返す）
+ */
+function getJstDayRange(): { from: string; to: string } {
+  const now = new Date();
+  const jstOffsetMs = 9 * 60 * 60 * 1000;
+  const jstNow = new Date(now.getTime() + jstOffsetMs);
+
+  const startOfJstDay = new Date(
+    Date.UTC(
+      jstNow.getUTCFullYear(),
+      jstNow.getUTCMonth(),
+      jstNow.getUTCDate(),
+      0,
+      0,
+      0,
+      0
+    )
+  );
+
+  const startUtc = new Date(startOfJstDay.getTime() - jstOffsetMs);
+  const endUtc = new Date(startUtc.getTime() + 24 * 60 * 60 * 1000);
+
+  return {
+    from: startUtc.toISOString(),
+    to: endUtc.toISOString(),
+  };
 }
 
 /**
