@@ -29,6 +29,23 @@ interface UseTextSelectionOptions {
   minLength?: number;
 }
 
+/**
+ * 選択範囲からルビ（<rt>要素）のテキストを除外する
+ */
+function getTextWithoutRuby(range: Range): string {
+  const fragment = range.cloneContents();
+  const tempDiv = document.createElement("div");
+  tempDiv.appendChild(fragment);
+
+  // すべての<rt>要素を削除
+  const rtElements = tempDiv.querySelectorAll("rt");
+  rtElements.forEach((rt) => {
+    rt.remove();
+  });
+
+  return tempDiv.textContent?.trim() ?? "";
+}
+
 export function useTextSelection({
   containerRef,
   minLength = 1,
@@ -48,7 +65,7 @@ export function useTextSelection({
     }
 
     const range = windowSelection.getRangeAt(0);
-    const selectedText = windowSelection.toString().trim();
+    const selectedText = getTextWithoutRuby(range);
 
     // 最小文字数チェック
     if (selectedText.length < minLength) {
