@@ -17,7 +17,9 @@ export function BillCard({ bill }: BillCardProps) {
       <div className="flex flex-col">
         {/* 注目バッジエリア */}
         {bill.is_featured && (
-          <div className="absolute top-3 left-3 z-1">
+          <div
+            className={`${bill.thumbnail_url != null ? "absolute" : "relative"} top-3 left-3 z-1`}
+          >
             <span className="inline-flex items-center justify-center px-3 py-0.5 text-xs font-medium text-[#1F2937] bg-[#F4FF5F] rounded-[20px]">
               注目🔥
             </span>
