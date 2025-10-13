@@ -1,18 +1,18 @@
-import { getBills } from "@/features/bills/api/get-bills";
-import { getFeaturedBills } from "@/features/bills/api/get-featured-bill";
+import { getBillsByFeaturedTags } from "@/features/bills/api/get-bills-by-featured-tags";
+import { getFeaturedBills } from "../api/get-featured-bills";
 
 /**
  * トップページ用のデータを並列取得する
  * BFF (Backend For Frontend) パターン
  */
 export async function loadHomeData() {
-  const [bills, featuredBills] = await Promise.all([
-    getBills(),
+  const [featuredBills, billsByTag] = await Promise.all([
     getFeaturedBills(),
+    getBillsByFeaturedTags(),
   ]);
 
   return {
-    bills,
+    billsByTag,
     featuredBills,
   };
 }

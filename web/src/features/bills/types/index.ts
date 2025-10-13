@@ -31,10 +31,23 @@ export type BillTag = {
   label: string;
 };
 
+export type FeaturedTag = {
+  id: string;
+  label: string;
+  priority: number;
+};
+
 export type BillWithContent = Bill & {
   bill_content?: BillContent;
   mirai_stance?: MiraiStance;
   tags: BillTag[];
+  featured_tag?: FeaturedTag;
+};
+
+// タグごとにグループ化された議案
+export type BillsByTag = {
+  tag: BillTag & { priority: number };
+  bills: BillWithContent[];
 };
 
 // House display mapping

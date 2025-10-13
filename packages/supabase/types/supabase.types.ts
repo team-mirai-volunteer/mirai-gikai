@@ -288,18 +288,21 @@ export type Database = {
       tags: {
         Row: {
           created_at: string
+          featured_priority: number | null
           id: string
           label: string
           updated_at: string
         }
         Insert: {
           created_at?: string
+          featured_priority?: number | null
           id?: string
           label: string
           updated_at?: string
         }
         Update: {
           created_at?: string
+          featured_priority?: number | null
           id?: string
           label?: string
           updated_at?: string
