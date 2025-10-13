@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { EXTERNAL_LINKS } from "@/config/external-links";
 import { BillShareModal } from "./bill-share-modal";
 
 interface BillShareButtonsClientProps {
@@ -27,13 +28,7 @@ export function BillShareButtonsClient({
   };
 
   const handleReport = () => {
-    // TODO: 問題報告機能の実装
-    // 現時点ではプレースホルダーとして実装
-    const subject = encodeURIComponent("みらい議会：問題の報告");
-    const body = encodeURIComponent(
-      `以下のページで問題を見つけました：\n${shareUrl}\n\n問題の詳細：\n`
-    );
-    window.location.href = `mailto:contact@example.com?subject=${subject}&body=${body}`;
+    window.open(EXTERNAL_LINKS.REPORT, "_blank");
   };
 
   return (
