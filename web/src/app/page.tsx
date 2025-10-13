@@ -6,6 +6,7 @@ import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficult
 import { BillsByTagSection } from "@/features/bills/components/bills-by-tag-section";
 import { FeaturedBillSection } from "@/features/bills/components/featured-bill-section";
 import { loadHomeData } from "@/features/bills/loaders/load-home-data";
+import type { BillWithContent } from "@/features/bills/types";
 import { HomeChatClient } from "@/features/chat/components/home-chat-client";
 import { getCurrentDietSession } from "@/features/diet-sessions/api/get-current-diet-session";
 import { CurrentDietSession } from "@/features/diet-sessions/components/current-diet-session";
@@ -19,6 +20,15 @@ export default async function Home() {
     getCurrentDietSession(getJapanTime()),
     getDifficultyLevel(),
   ]);
+
+  const toBillChatContext = (bill: BillWithContent) => {
+    return {
+      name: bill.name,
+      summary: bill.bill_content?.summary,
+      tags: bill.tags?.map((tag) => tag.label) || [],
+      isFeatured: featuredBills.some((b) => b.id === bill.id),
+    };
+  };
 
   return (
     <>
@@ -49,13 +59,10 @@ export default async function Home() {
       {/* チャット機能 */}
       <HomeChatClient
         currentDifficulty={currentDifficulty}
-        bills={billsByTag.flatMap(({ bills }) =>
-          bills.map((bill) => ({
-            id: bill.id,
-            name: bill.name,
-            summary: bill.bill_content?.summary,
-          }))
-        )}
+        bills={billsByTag
+          .flatMap((x) => x.bills)
+          .concat(featuredBills)
+          .map(toBillChatContext)}
       />
     </>
   );

@@ -32,7 +32,12 @@ interface ChatWindowProps {
   onClose: () => void;
   pageContext?: {
     type: "home" | "bill";
-    bills?: Array<{ id: string; name: string; summary?: string }>;
+    bills?: Array<{
+      name: string;
+      summary?: string;
+      tags?: string[];
+      isFeatured?: boolean;
+    }>;
   };
 }
 
