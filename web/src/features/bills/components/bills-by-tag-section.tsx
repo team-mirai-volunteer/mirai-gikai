@@ -21,7 +21,7 @@ export function BillsByTagSection({ billsByTag }: BillsByTagSectionProps) {
               {tag.label}
             </h2>
             {tag.description && (
-              <p className="text-sm text-gray-600">{tag.description}</p>
+              <p className="text-xs text-[#404040]">{tag.description}</p>
             )}
           </div>
 
