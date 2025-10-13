@@ -288,6 +288,7 @@ export type Database = {
       tags: {
         Row: {
           created_at: string
+          description: string | null
           featured_priority: number | null
           id: string
           label: string
@@ -295,6 +296,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          description?: string | null
           featured_priority?: number | null
           id?: string
           label: string
@@ -302,6 +304,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          description?: string | null
           featured_priority?: number | null
           id?: string
           label?: string

@@ -46,7 +46,7 @@ export type BillWithContent = Bill & {
 
 // タグごとにグループ化された議案
 export type BillsByTag = {
-  tag: BillTag & { priority: number };
+  tag: BillTag & { description?: string; priority: number };
   bills: BillWithContent[];
 };
 

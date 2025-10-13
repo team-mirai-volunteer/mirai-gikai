@@ -20,6 +20,9 @@ export function BillsByTagSection({ billsByTag }: BillsByTagSectionProps) {
             <h2 className="text-[22px] font-bold text-black leading-[1.48]">
               {tag.label}
             </h2>
+            {tag.description && (
+              <p className="text-sm text-gray-600">{tag.description}</p>
+            )}
           </div>
 
           {/* 議案カード一覧 */}

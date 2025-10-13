@@ -22,7 +22,7 @@ const _getCachedBillsByFeaturedTags = unstable_cache(
     // featured_priorityが設定されているタグを取得
     const { data: featuredTags, error: tagsError } = await supabase
       .from("tags")
-      .select("id, label, featured_priority")
+      .select("id, label, description, featured_priority")
       .not("featured_priority", "is", null)
       .order("featured_priority", { ascending: true });
 
@@ -98,6 +98,7 @@ const _getCachedBillsByFeaturedTags = unstable_cache(
           tag: {
             id: tag.id,
             label: tag.label,
+            description: tag.description ?? undefined,
             priority: tag.featured_priority ?? -1,
           },
           bills,
