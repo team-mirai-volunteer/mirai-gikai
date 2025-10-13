@@ -1,6 +1,8 @@
 export type Tag = {
   id: string;
   label: string;
+  description: string | null;
+  featured_priority: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -16,6 +18,8 @@ export type CreateTagInput = {
 export type UpdateTagInput = {
   id: string;
   label: string;
+  description?: string | null;
+  featured_priority?: number | null;
 };
 
 export type DeleteTagInput = {
