@@ -42,3 +42,6 @@ UPDATE auth.users
 SET raw_app_meta_data = raw_app_meta_data || '{"roles": ["admin"]}'::jsonb
 WHERE email = '<1で作成したユーザーのemail>';
 ```
+
+> [!NOTE]
+> 開発環境では、seedデータによって、`email: admin@example.com, password: admin123456` のAdminユーザーが作成されます。
