@@ -18,7 +18,11 @@ export async function updateTag(input: UpdateTagInput) {
 
     const { data, error } = await supabase
       .from("tags")
-      .update({ label: input.label.trim() })
+      .update({
+        label: input.label.trim(),
+        description: input.description,
+        featured_priority: input.featured_priority,
+      })
       .eq("id", input.id)
       .select()
       .single();

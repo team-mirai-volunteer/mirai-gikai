@@ -1,6 +1,5 @@
 import type { BillWithContent } from "@/features/bills/types";
-import { createShareMessage } from "@/features/bills/utils/share-message";
-import { getOrigin } from "@/lib/utils/url";
+import { getBillShareData } from "@/features/bills/utils/share";
 import { BillShareButtonsClient } from "./bill-share-buttons-client";
 
 interface BillShareButtonsProps {
@@ -12,16 +11,14 @@ export async function BillShareButtons({
   bill,
   className,
 }: BillShareButtonsProps) {
-  const origin = await getOrigin();
-  const shareUrl = `${origin}/bills/${bill.id}`;
-  const shareMessage = createShareMessage(bill);
+  const { shareUrl, shareMessage, thumbnailUrl } = await getBillShareData(bill);
 
   return (
     <div className={`flex flex-col gap-3 ${className || ""}`}>
       <BillShareButtonsClient
         shareMessage={shareMessage}
         shareUrl={shareUrl}
-        thumbnailUrl={bill.thumbnail_url}
+        thumbnailUrl={thumbnailUrl}
       />
     </div>
   );
