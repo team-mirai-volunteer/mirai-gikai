@@ -2,6 +2,7 @@
  * 外部リンク定数
  */
 export const EXTERNAL_LINKS = {
+  REPORT: "https://forms.gle/wJXXMt6cv2ZdiCgg6",
   ABOUT_NOTE:
     "https://note.com/interests/%E3%83%81%E3%83%BC%E3%83%A0%E3%81%BF%E3%82%89%E3%81%84",
   DONATION: "https://team-mir.ai/support/donation",
