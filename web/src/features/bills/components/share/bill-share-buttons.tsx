@@ -14,11 +14,15 @@ export async function BillShareButtons({
   const origin = await getOrigin();
   const shareUrl = `${origin}/bills/${bill.id}`;
 
-  const shareMessage = `「${bill.name}」についてチェック！ #みらい議会`;
+  const shareMessage = `${bill.bill_content?.title ?? bill.name} #みらい議会`;
 
   return (
     <div className={`flex flex-col gap-3 ${className || ""}`}>
-      <BillShareButtonsClient shareMessage={shareMessage} shareUrl={shareUrl} />
+      <BillShareButtonsClient
+        shareMessage={shareMessage}
+        shareUrl={shareUrl}
+        thumbnailUrl={bill.thumbnail_url}
+      />
     </div>
   );
 }

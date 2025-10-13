@@ -1,14 +1,13 @@
 "use client";
 
-import { FileText, Tag } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const navigationLinks = [
-  { href: "/bills", label: "議案管理", icon: FileText },
-  { href: "/diet-sessions", label: "国会会期管理", icon: Tag },
-  { href: "/tags", label: "タグ管理", icon: Tag },
+  { href: "/bills", label: "議案管理" },
+  { href: "/diet-sessions", label: "国会会期管理" },
+  { href: "/tags", label: "タグ管理" },
 ];
 
 export function NavigationLinks() {
@@ -18,7 +17,6 @@ export function NavigationLinks() {
     <nav>
       <div className="flex space-x-8">
         {navigationLinks.map((link) => {
-          const Icon = link.icon;
           const isActive = pathname.startsWith(link.href);
 
           return (
@@ -32,7 +30,6 @@ export function NavigationLinks() {
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium"
               )}
             >
-              <Icon className="h-4 w-4" />
               <span>{link.label}</span>
             </Link>
           );

@@ -24,8 +24,10 @@ export async function uploadThumbnail(
     return { error: "画像ファイルを選択してください" };
   }
 
+  console.log("@@@@@@@@@@@@@", file.size);
   // ファイルサイズチェック (5MB以下)
   if (file.size > 5 * 1024 * 1024) {
+    console.log("@@@@@@@@@@@@@");
     return { error: "ファイルサイズは5MB以下にしてください" };
   }
 
