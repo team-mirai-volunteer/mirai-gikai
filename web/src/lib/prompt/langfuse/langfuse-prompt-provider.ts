@@ -35,40 +35,25 @@ export class LangfusePromptProvider implements PromptProvider {
   ): Promise<number> {
     try {
       const query = this.buildMetricsQuery(userId, from, to);
-      console.log("📤 Langfuse Metrics Query:", JSON.stringify(query, null, 2));
-
       const response = await this.client.api.metricsMetrics({
         query: JSON.stringify(query),
       });
 
-      console.log("📥 Langfuse Response:", JSON.stringify(response, null, 2));
-
       const totalCost = this.extractCostValue(response?.data);
 
       if (totalCost === null) {
-        console.error(
-          "❌ Failed to extract cost value. Response data:",
-          response?.data
-        );
         throw new Error("Failed to extract cost value from Langfuse response");
       }
 
       return totalCost;
     } catch (error) {
-      console.error("❌ Langfuse API Error Details:", error);
-
       // Responseオブジェクトの場合、bodyを読み取ってエラー詳細を表示
       if (error && typeof error === "object" && "status" in error) {
         const response = error as Response;
-        try {
-          const errorBody = await response.text();
-          console.error("❌ Langfuse Error Response Body:", errorBody);
-          throw new Error(
-            `Failed to fetch usage cost from Langfuse (${response.status}): ${errorBody}`
-          );
-        } catch (readError) {
-          console.error("❌ Failed to read error body:", readError);
-        }
+        const errorBody = await response.text();
+        throw new Error(
+          `Failed to fetch usage cost from Langfuse (${response.status}): ${errorBody}`
+        );
       }
 
       throw new Error(

@@ -529,18 +529,13 @@ export const PromptInputError = ({
   error,
   ...props
 }: PromptInputErrorProps) => {
-  if (status !== "error") {
+  if (status !== "error" || !error) {
     return null;
   }
 
   return (
     <div className={cn("px-3 py-2 text-xs text-red-600", className)} {...props}>
-      <div>エラーが発生しました。数秒後に再送信してください。</div>
-      {error?.message && (
-        <div className="mt-1 text-red-500 opacity-80">
-          詳細: {error.message}
-        </div>
-      )}
+      <div>{error.message}</div>
     </div>
   );
 };
