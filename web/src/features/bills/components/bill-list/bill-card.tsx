@@ -28,7 +28,7 @@ export function BillCard({ bill }: BillCardProps) {
 
         {/* サムネイル画像 */}
         {bill.thumbnail_url && (
-          <div className="relative w-full h-48">
+          <div className="relative w-full h-65">
             <Image
               src={bill.thumbnail_url}
               alt={bill.name}
@@ -46,7 +46,7 @@ export function BillCard({ bill }: BillCardProps) {
               <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
                 <time>{formatDateWithDots(bill.published_at)}</time>
               </div>
-              <CardTitle className="text-2xl tracking-wide leading-tight">
+              <CardTitle className="text-2xl tracking-normal leading-tight">
                 {displayTitle}
               </CardTitle>
               {displaySummary && (
