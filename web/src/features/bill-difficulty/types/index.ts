@@ -19,3 +19,18 @@ export const DIFFICULTY_DESCRIPTIONS: Record<DifficultyLevelEnum, string> = {
 // Cookie名とデフォルト値
 export const DIFFICULTY_COOKIE_NAME = "bill_difficulty_level";
 export const DEFAULT_DIFFICULTY: DifficultyLevelEnum = "normal";
+
+// 有効な難易度レベルの配列
+export const VALID_DIFFICULTY_LEVELS: DifficultyLevelEnum[] = [
+  "normal",
+  "hard",
+];
+
+// Cookie設定オプション
+export const DIFFICULTY_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax" as const,
+  maxAge: 60 * 60 * 24 * 365, // 1年間
+  path: "/",
+};
