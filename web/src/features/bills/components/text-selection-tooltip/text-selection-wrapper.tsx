@@ -32,6 +32,8 @@ export function TextSelectionWrapper({
   const handleAskQuestion = (text: string) => {
     if (onOpenChat) {
       onOpenChat(text);
+      // テキスト選択を解除
+      window.getSelection()?.removeAllRanges();
     }
   };
 
