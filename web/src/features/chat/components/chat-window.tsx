@@ -62,6 +62,7 @@ function ChatMessages({
 }) {
   const { scrollToBottom } = useStickToBottomContext();
   const userMessageLength = messages.filter((x) => x.role === "user").length;
+  const isResponding = status === "streaming" || status === "submitted";
 
   // メッセージが追加されたら自動的にスクロール
   useEffect(() => {
@@ -94,25 +95,28 @@ function ChatMessages({
                 "国会って何をするところ？",
                 "注目の法案について教えて",
               ]
-          ).map((question) => (
-            <button
-              key={question}
-              type="button"
-              className="px-3 py-1 text-xs leading-[2] text-[#0F8472] border border-[#2AA693] rounded-2xl hover:bg-gray-50"
-              onClick={() => {
-                sendMessage({
-                  text: question,
-                  metadata: {
-                    billContext,
-                    difficultyLevel,
-                    pageContext,
-                  },
-                });
-              }}
-            >
-              {question}
-            </button>
-          ))}
+          ).map((question) => {
+            return (
+              <button
+                key={question}
+                type="button"
+                disabled={isResponding}
+                className="px-3 py-1 text-xs leading-[2] text-[#0F8472] border border-[#2AA693] rounded-2xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => {
+                  sendMessage({
+                    text: question,
+                    metadata: {
+                      billContext,
+                      difficultyLevel,
+                      pageContext,
+                    },
+                  });
+                }}
+              >
+                {question}
+              </button>
+            );
+          })}
         </div>
       </div>
       {messages.map((message) => {

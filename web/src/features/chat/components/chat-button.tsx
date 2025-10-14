@@ -46,6 +46,14 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
 
     useImperativeHandle(ref, () => ({
       openWithText: (selectedText: string) => {
+        // AIからの返答待ち中は新しいメッセージを送信しない
+        if (
+          chatState.status === "streaming" ||
+          chatState.status === "submitted"
+        ) {
+          return;
+        }
+
         const questionText = `「${selectedText}」について教えてください。`;
         setIsOpen(true);
         chatState.sendMessage({

@@ -5,8 +5,8 @@ import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
 import { env } from "@/lib/env";
 import {
   type CompiledPrompt,
-  type PromptProvider,
   createPromptProvider,
+  type PromptProvider,
 } from "@/lib/prompt";
 
 export type ChatMessageMetadata = {
