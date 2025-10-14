@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { Container } from "@/components/ui/container";
+import { Container } from "@/components/layouts/container";
 
 export const metadata: Metadata = {
   title: "プライバシーポリシー | みらい議会",
