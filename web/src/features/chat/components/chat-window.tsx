@@ -134,6 +134,9 @@ function ChatMessages({
           />
         );
       })}
+      {status === "submitted" && (
+        <span className="text-sm text-gray-500">考え中...</span>
+      )}
     </>
   );
 }
