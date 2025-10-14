@@ -25,6 +25,18 @@ export const metadata: Metadata = {
   metadataBase: new URL(env.webUrl),
   title: "みらい議会",
   description: "議案をわかりやすく解説するプラットフォーム",
+  keywords: [
+    "みらい議会",
+    "議案",
+    "政治",
+    "日本",
+    "政策",
+    "解説",
+    "チームみらい",
+  ],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "みらい議会",
     description: "議案をわかりやすく解説するプラットフォーム",
