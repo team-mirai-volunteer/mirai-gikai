@@ -44,6 +44,17 @@ export const metadata: Metadata = {
     description: "議案をわかりやすく解説するプラットフォーム",
     images: ["/ogp.png"],
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export const viewport: Viewport = {
