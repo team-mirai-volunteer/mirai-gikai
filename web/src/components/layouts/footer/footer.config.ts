@@ -55,12 +55,10 @@ export const policyLinks: FooterPolicyLink[] = [
   },
   {
     label: "利用規約",
-    href: "https://team-mir.ai/terms",
-    external: true,
+    href: "/terms",
   },
   {
     label: "プライバシーポリシー",
-    href: "https://team-mir.ai/privacy",
-    external: true,
+    href: "/privacy",
   },
 ];
