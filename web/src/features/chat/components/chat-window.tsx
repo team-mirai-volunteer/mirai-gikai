@@ -166,11 +166,7 @@ export function ChatWindow({
   // チャットが開かれたときにinputにフォーカス（disableAutoFocusがfalseの場合のみ）
   useEffect(() => {
     if (isOpen && textareaRef.current && !disableAutoFocus) {
-      // 少し遅延させてからフォーカスを当てる（アニメーション完了後）
-      const timer = setTimeout(() => {
-        textareaRef.current?.focus();
-      }, 100);
-      return () => clearTimeout(timer);
+      textareaRef.current?.focus();
     }
   }, [isOpen, disableAutoFocus]);
 
