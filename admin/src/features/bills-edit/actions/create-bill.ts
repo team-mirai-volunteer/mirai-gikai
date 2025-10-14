@@ -16,7 +16,9 @@ export async function createBill(input: BillCreateInput) {
 
     const insertData = {
       ...validatedData,
-      published_at: new Date(validatedData.published_at).toISOString(),
+      published_at: validatedData.published_at
+        ? new Date(validatedData.published_at).toISOString()
+        : null,
     };
 
     // Supabaseに挿入

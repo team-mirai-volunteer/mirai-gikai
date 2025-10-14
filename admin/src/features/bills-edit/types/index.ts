@@ -28,7 +28,7 @@ const billBaseSchema = z.object({
     .string()
     .max(500, "ステータス備考は500文字以内で入力してください")
     .nullable(),
-  published_at: z.string().min(1, "公開日時は必須です"),
+  published_at: z.string().optional(),
   thumbnail_url: z.string().nullable().optional(),
   is_featured: z.boolean(),
 });
