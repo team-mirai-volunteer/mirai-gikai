@@ -24,7 +24,8 @@ if (Number.isNaN(chatDailyCostLimitUsd) || chatDailyCostLimitUsd <= 0) {
 }
 
 export const env = {
-  adminUrl: process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3001",
+  webUrl: process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3000",
+  adminUrl: process.env.ADMIN_URL || "http://localhost:3001",
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
   supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   revalidateSecret: process.env.REVALIDATE_SECRET,

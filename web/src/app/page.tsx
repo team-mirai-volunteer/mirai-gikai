@@ -3,6 +3,7 @@ import { About } from "@/components/top/about";
 import { Hero } from "@/components/top/hero";
 import { TeamMirai } from "@/components/top/team-mirai";
 import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
+import { BillDisclaimer } from "@/features/bills/components/bill-detail/bill-disclaimer";
 import { BillsByTagSection } from "@/features/bills/components/bills-by-tag-section";
 import { FeaturedBillSection } from "@/features/bills/components/featured-bill-section";
 import { loadHomeData } from "@/features/bills/loaders/load-home-data";
@@ -38,7 +39,7 @@ export default async function Home() {
       <CurrentDietSession session={currentSession} />
 
       {/* 議案一覧セクション */}
-      <Container>
+      <Container className="pb-20">
         <div className="py-8">
           <main className="flex flex-col gap-16">
             {/* 注目の法案セクション */}
@@ -48,13 +49,16 @@ export default async function Home() {
             <BillsByTagSection billsByTag={billsByTag} />
           </main>
         </div>
+
+        {/* みらい議会とは セクション */}
+        <About />
+
+        {/* チームみらいについて セクション */}
+        <TeamMirai />
+
+        {/* 免責事項 */}
+        <BillDisclaimer />
       </Container>
-
-      {/* みらい議会とは セクション */}
-      <About />
-
-      {/* チームみらいについて セクション */}
-      <TeamMirai />
 
       {/* チャット機能 */}
       <HomeChatClient

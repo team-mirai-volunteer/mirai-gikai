@@ -39,6 +39,7 @@ interface ChatWindowProps {
       isFeatured?: boolean;
     }>;
   };
+  disableAutoFocus?: boolean;
 }
 
 /**
@@ -62,6 +63,7 @@ function ChatMessages({
 }) {
   const { scrollToBottom } = useStickToBottomContext();
   const userMessageLength = messages.filter((x) => x.role === "user").length;
+  const isResponding = status === "streaming" || status === "submitted";
 
   // メッセージが追加されたら自動的にスクロール
   useEffect(() => {
@@ -94,25 +96,28 @@ function ChatMessages({
                 "国会って何をするところ？",
                 "注目の法案について教えて",
               ]
-          ).map((question) => (
-            <button
-              key={question}
-              type="button"
-              className="px-3 py-1 text-xs leading-[2] text-[#0F8472] border border-[#2AA693] rounded-2xl hover:bg-gray-50"
-              onClick={() => {
-                sendMessage({
-                  text: question,
-                  metadata: {
-                    billContext,
-                    difficultyLevel,
-                    pageContext,
-                  },
-                });
-              }}
-            >
-              {question}
-            </button>
-          ))}
+          ).map((question) => {
+            return (
+              <button
+                key={question}
+                type="button"
+                disabled={isResponding}
+                className="px-3 py-1 text-xs leading-[2] text-[#0F8472] border border-[#2AA693] rounded-2xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => {
+                  sendMessage({
+                    text: question,
+                    metadata: {
+                      billContext,
+                      difficultyLevel,
+                      pageContext,
+                    },
+                  });
+                }}
+              >
+                {question}
+              </button>
+            );
+          })}
         </div>
       </div>
       {messages.map((message) => {
@@ -140,6 +145,7 @@ export function ChatWindow({
   isOpen,
   onClose,
   pageContext,
+  disableAutoFocus = false,
 }: ChatWindowProps) {
   const [input, setInput] = useState("");
   const [isMounted, setIsMounted] = useState(false);
@@ -154,16 +160,16 @@ export function ChatWindow({
     setIsMounted(true);
   }, []);
 
-  // チャットが開かれたときにinputにフォーカス
+  // チャットが開かれたときにinputにフォーカス（disableAutoFocusがfalseの場合のみ）
   useEffect(() => {
-    if (isOpen && textareaRef.current) {
+    if (isOpen && textareaRef.current && !disableAutoFocus) {
       // 少し遅延させてからフォーカスを当てる（アニメーション完了後）
       const timer = setTimeout(() => {
         textareaRef.current?.focus();
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [isOpen, disableAutoFocus]);
 
   // Auto-resize textarea based on content
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
