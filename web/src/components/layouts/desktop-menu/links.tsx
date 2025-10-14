@@ -15,12 +15,12 @@ const links: FooterLinkItem[] = [
   },
   {
     label: "利用規約",
-    href: EXTERNAL_LINKS.TERMS,
+    href: "/terms",
     external: false,
   },
   {
     label: "プライバシーポリシー",
-    href: EXTERNAL_LINKS.PRIVACY,
+    href: "/privacy",
     external: false,
   },
   {
