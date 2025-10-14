@@ -3,6 +3,10 @@
 import { useId, useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { setDifficultyLevel } from "../actions/set-difficulty-level";
+import {
+  saveScrollDistanceFromBottom,
+  useRestoreScrollFromBottom,
+} from "../hooks/use-scroll-from-bottom";
 import type { DifficultyLevelEnum } from "../types";
 
 interface DifficultySelectorProps {
@@ -10,6 +14,7 @@ interface DifficultySelectorProps {
   label?: string;
   labelStyle?: React.CSSProperties;
   scrollToTop?: boolean;
+  maintainScrollFromBottom?: boolean;
 }
 
 export function DifficultySelector({
@@ -17,11 +22,15 @@ export function DifficultySelector({
   label = "より詳しく",
   labelStyle,
   scrollToTop,
+  maintainScrollFromBottom,
 }: DifficultySelectorProps) {
   const [selectedLevel, setSelectedLevel] =
     useState<DifficultyLevelEnum>(currentLevel);
   const uniqueId = useId();
   const [isChanging, setIsChanging] = useState(false);
+
+  // ページロード時にスクロール位置を復元
+  useRestoreScrollFromBottom(maintainScrollFromBottom ?? false);
 
   const handleToggle = async (checked: boolean) => {
     const newLevel = checked ? "hard" : "normal";
@@ -34,6 +43,9 @@ export function DifficultySelector({
       if (scrollToTop) {
         // スクロール位置をトップに戻す
         window.scrollTo(0, 0);
+      } else if (maintainScrollFromBottom) {
+        // 画面下端からの距離を保存
+        saveScrollDistanceFromBottom();
       }
 
       // URLから ?difficulty パラメータを削除

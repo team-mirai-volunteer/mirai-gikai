@@ -15,6 +15,7 @@ export async function DifficultyInfoCard() {
         <DifficultySelector
           currentLevel={level}
           labelStyle={{ fontSize: "16px" }}
+          maintainScrollFromBottom
         />
       </div>
       <div className="absolute right-6 top-6 w-[121px] h-[128px]">
