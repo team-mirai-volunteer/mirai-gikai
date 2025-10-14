@@ -1,5 +1,6 @@
 import { Container } from "@/components/layouts/container";
 import { About } from "@/components/top/about";
+import { ComingSoonSection } from "@/components/top/coming-soon-section";
 import { Hero } from "@/components/top/hero";
 import { TeamMirai } from "@/components/top/team-mirai";
 import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
@@ -47,6 +48,9 @@ export default async function Home() {
 
             {/* タグ別議案一覧セクション */}
             <BillsByTagSection billsByTag={billsByTag} />
+
+            {/* Coming soonセクション */}
+            <ComingSoonSection />
           </main>
         </div>
 
