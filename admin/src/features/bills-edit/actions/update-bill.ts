@@ -19,6 +19,9 @@ export async function updateBill(id: string, input: BillUpdateInput) {
       .from("bills")
       .update({
         ...validatedData,
+        published_at: validatedData.published_at
+          ? new Date(validatedData.published_at).toISOString()
+          : null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", id);

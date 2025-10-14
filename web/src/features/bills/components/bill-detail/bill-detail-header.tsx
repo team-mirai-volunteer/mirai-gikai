@@ -33,9 +33,13 @@ export async function BillDetailHeader({ bill }: BillDetailHeaderProps) {
 
       <CardHeader className="pb-0">
         <div className="font-bold text-xs text-muted-foreground">
-          <time dateTime={bill.published_at}>
-            {formatDateWithDots(bill.published_at)}
-          </time>
+          {bill.published_at ? (
+            <time dateTime={bill.published_at}>
+              {formatDateWithDots(bill.published_at)}
+            </time>
+          ) : (
+            <span>法案提出前</span>
+          )}
         </div>
         {displayTitle && (
           <h1 className="text-2xl font-bold mb-4">{displayTitle}</h1>

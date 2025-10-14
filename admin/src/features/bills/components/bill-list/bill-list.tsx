@@ -76,7 +76,9 @@ function BillCard({ bill }: { bill: Bill }) {
               <Calendar className="h-4 w-4" />
               公開日:
               <span className="font-medium text-gray-900">
-                {new Date(bill.published_at).toLocaleDateString("ja-JP")}
+                {bill.published_at
+                  ? new Date(bill.published_at).toLocaleDateString("ja-JP")
+                  : "-"}
               </span>
             </span>
           </div>

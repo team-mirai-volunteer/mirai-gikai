@@ -33,7 +33,7 @@ export async function generateMetadata({
       title: bill.name,
       description: description,
       type: "article",
-      publishedTime: bill.published_at,
+      publishedTime: bill.published_at ?? undefined,
       modifiedTime: bill.updated_at,
       ...(bill.thumbnail_url
         ? {
