@@ -3,6 +3,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Lexend_Giga, Noto_Sans_JP } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
+import { env } from "@/lib/env";
 import { Header } from "@/components/header";
 import { DesktopMenu } from "@/components/layouts/desktop-menu";
 import { Footer } from "@/components/layouts/footer/footer";
@@ -21,8 +22,28 @@ const lexendGiga = Lexend_Giga({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(env.webUrl),
   title: "みらい議会",
   description: "議案をわかりやすく解説するプラットフォーム",
+  openGraph: {
+    title: "みらい議会",
+    description: "議案をわかりやすく解説するプラットフォーム",
+    images: [
+      {
+        url: "/ogp.png",
+        width: 1200,
+        height: 630,
+        alt: "みらい議会のOGPイメージ",
+      },
+    ],
+    siteName: "みらい議会",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "みらい議会",
+    description: "議案をわかりやすく解説するプラットフォーム",
+    images: ["/ogp.png"],
+  },
 };
 
 export const viewport: Viewport = {
