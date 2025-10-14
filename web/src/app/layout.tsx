@@ -21,8 +21,75 @@ const lexendGiga = Lexend_Giga({
 });
 
 export const metadata: Metadata = {
-  title: "みらい議会",
-  description: "議案をわかりやすく解説するプラットフォーム",
+  title: {
+    default: "みらい議会",
+    template: "%s | みらい議会",
+  },
+  description:
+    "議案をわかりやすく解説するプラットフォーム。国会で議論されている法案を、やさしい言葉でわかりやすく説明します。",
+  keywords: [
+    "みらい議会",
+    "国会",
+    "法案",
+    "議案",
+    "政治",
+    "わかりやすい",
+    "解説",
+    "市民参加",
+  ],
+  authors: [{ name: "チームみらい" }],
+  creator: "チームみらい",
+  publisher: "チームみらい",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://mirai-gikai.vercel.app"
+  ),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "ja_JP",
+    url: "/",
+    title: "みらい議会",
+    description:
+      "議案をわかりやすく解説するプラットフォーム。国会で議論されている法案を、やさしい言葉でわかりやすく説明します。",
+    siteName: "みらい議会",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "みらい議会",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "みらい議会",
+    description:
+      "議案をわかりやすく解説するプラットフォーム。国会で議論されている法案を、やさしい言葉でわかりやすく説明します。",
+    images: ["/og-image.png"],
+    creator: "@team_mirai",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
 };
 
 export const viewport: Viewport = {

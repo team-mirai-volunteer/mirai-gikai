@@ -15,8 +15,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "みらい議会 Admin",
-  description: "みらい議会の管理者向けダッシュボード",
+  title: {
+    default: "みらい議会 Admin",
+    template: "%s | みらい議会 Admin",
+  },
+  description:
+    "みらい議会の管理者向けダッシュボード。議案の作成・編集・公開を管理します。",
+  robots: {
+    index: false,
+    follow: false,
+    noarchive: true,
+    nosnippet: true,
+  },
 };
 
 export default function RootLayout({

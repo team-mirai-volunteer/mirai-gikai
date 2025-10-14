@@ -24,16 +24,38 @@ export async function generateMetadata({
 
   // bill_contentのsummaryがあればそれを使用、なければデフォルト値を使用
   const description = bill.bill_content?.summary || "議案の詳細情報";
+  const imageUrl = bill.thumbnail_url || "/og-image.png";
 
   return {
     title: bill.name,
     description: description,
+    keywords: ["議案", "法案", bill.name, "国会", "政治"],
     openGraph: {
       title: bill.name,
       description: description,
       type: "article",
       publishedTime: bill.published_at,
       modifiedTime: bill.updated_at,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: bill.name,
+        },
+      ],
+      locale: "ja_JP",
+      siteName: "みらい議会",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: bill.name,
+      description: description,
+      images: [imageUrl],
+      creator: "@team_mirai",
+    },
+    alternates: {
+      canonical: `/bills/${id}`,
     },
   };
 }
