@@ -1,9 +1,9 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
+import { invalidateWebCache } from "@/lib/utils/cache-invalidation";
 import { type BillCreateInput, billCreateSchema } from "../types";
 
 export async function createBill(input: BillCreateInput) {
@@ -33,8 +33,8 @@ export async function createBill(input: BillCreateInput) {
       throw new Error(`議案の作成に失敗しました: ${error.message}`);
     }
 
-    // キャッシュをリフレッシュ
-    revalidatePath("/bills");
+    // web側のキャッシュを無効化
+    await invalidateWebCache();
   } catch (error) {
     console.error("Create bill error:", error);
     if (error instanceof Error) {
