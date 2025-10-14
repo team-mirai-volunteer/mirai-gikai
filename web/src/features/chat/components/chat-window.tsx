@@ -39,6 +39,7 @@ interface ChatWindowProps {
       isFeatured?: boolean;
     }>;
   };
+  disableAutoFocus?: boolean;
 }
 
 /**
@@ -144,6 +145,7 @@ export function ChatWindow({
   isOpen,
   onClose,
   pageContext,
+  disableAutoFocus = false,
 }: ChatWindowProps) {
   const [input, setInput] = useState("");
   const [isMounted, setIsMounted] = useState(false);
@@ -158,16 +160,16 @@ export function ChatWindow({
     setIsMounted(true);
   }, []);
 
-  // チャットが開かれたときにinputにフォーカス
+  // チャットが開かれたときにinputにフォーカス（disableAutoFocusがfalseの場合のみ）
   useEffect(() => {
-    if (isOpen && textareaRef.current) {
+    if (isOpen && textareaRef.current && !disableAutoFocus) {
       // 少し遅延させてからフォーカスを当てる（アニメーション完了後）
       const timer = setTimeout(() => {
         textareaRef.current?.focus();
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [isOpen, disableAutoFocus]);
 
   // Auto-resize textarea based on content
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
