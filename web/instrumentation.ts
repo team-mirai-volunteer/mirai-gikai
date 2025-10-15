@@ -38,8 +38,6 @@ export async function register() {
         shouldExportSpan,
         // サーバーレス環境では即座にエクスポート
         exportMode: "immediate",
-        // 詳細ログを有効化
-        verbose: true,
       });
 
       const tracerProvider = new NodeTracerProvider({
