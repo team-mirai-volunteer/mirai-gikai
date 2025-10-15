@@ -62,11 +62,11 @@ export async function handleChatRequest({
       // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
       system: buildSystemPromptWithSearchInstruction(promptResult.content),
       messages: convertToModelMessages(messages),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       tools: {
-        web_search: openai.tools.webSearch() as any,
+        web_search: openai.tools.webSearch(),
       },
-      onStepFinish: (step) => {
+      maxSteps: 5,
+      onStepFinish: (step: any) => {
         console.log("[DEBUG] Step finished:", {
           toolCalls: step.toolCalls?.length ?? 0,
           toolResults: step.toolResults?.length ?? 0,
@@ -79,7 +79,8 @@ export async function handleChatRequest({
         functionId: promptName,
         metadata: buildTelemetryMetadata(context, promptResult, userId),
       },
-    });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
 
     console.log("[DEBUG] streamText result created, converting to response");
     return result.toUIMessageStreamResponse();
