@@ -48,7 +48,7 @@ async function _mockResponse(_req: Request) {
 }
 
 export async function POST(req: Request) {
-  // Vercel環境でinstrumentationが起動しない問題のハック対応
+  // Vercel node環境でinstrumentationが自動で起動しない問題対応
   // 明示的にtelemetryを初期化
   await registerNodeTelemetry();
 
