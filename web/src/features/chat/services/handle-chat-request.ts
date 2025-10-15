@@ -35,9 +35,6 @@ type ChatRequestParams = {
 
 /**
  * チャットリクエストを処理してストリーミングレスポンスを返す
- *
- * NOTE: Web検索機能は実験的実装です。
- * gpt-4oのweb_searchツールを使用して最新情報を取得します。
  */
 export async function handleChatRequest({
   messages,
@@ -82,30 +79,25 @@ export async function handleChatRequest({
 
   // Generate streaming response
   try {
-    console.log(
-      `[Chat:${requestId}] Initializing streamText with web_search tool...`,
-      {
-        openaiApiKeyConfigured: !!process.env.OPENAI_API_KEY,
-        messageCount: messages.length,
-      }
-    );
+    console.log(`[Chat:${requestId}] Initializing streamText with tools...`, {
+      openaiApiKeyConfigured: !!process.env.OPENAI_API_KEY,
+      messageCount: messages.length,
+    });
     // Get available tools based on environment variables
     const tools = getAvailableTools();
-    const hasWebSearch = !!tools?.web_search;
+    // const hasWebSearch = !!tools?.web_search;
     const hasDice = !!tools?.dice;
 
     console.log(`[Chat:${requestId}] Tools configured:`, {
-      hasWebSearch,
+      // hasWebSearch,
       hasDice,
       toolCount: tools ? Object.keys(tools).length : 0,
     });
 
     // Build system prompt with tool-specific instructions
-    const systemPrompt =
-      promptResult.content + buildToolInstructions(hasWebSearch, hasDice);
+    const systemPrompt = promptResult.content + buildToolInstructions(hasDice);
 
     const result = streamText({
-      // OpenAI Responses API supports web_search tool
       // gpt-4o with Responses API - Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
       // gpt-4o-mini with Responses API - Context 128K Input Tokens $0.15/M Output Tokens $0.60/M
       model: openai("gpt-4o"),
