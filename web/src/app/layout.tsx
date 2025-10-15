@@ -86,7 +86,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${notoSansJP.variable} ${lexendGiga.variable} font-sans antialiased`}
+        className={`${notoSansJP.variable} ${lexendGiga.variable} font-sans antialiased bg-[#EEEEEE]`}
       >
         <NextTopLoader showSpinner={false} color="#2aa693" />
         <SpeedInsights />
@@ -101,7 +101,7 @@ export default function RootLayout({
           "
         >
           <Header />
-          <main id={mainContentId} className="min-h-screen">
+          <main id={mainContentId} className="min-h-screen bg-[#F7F4F0]">
             {children}
           </main>
           <Footer />
