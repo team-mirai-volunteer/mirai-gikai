@@ -1,9 +1,5 @@
-import {
-  convertToModelMessages,
-  stepCountIs,
-  streamText,
-  type UIMessage,
-} from "ai";
+import { convertToModelMessages, streamText, type UIMessage } from "ai";
+import { openai } from "@ai-sdk/openai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
@@ -13,10 +9,6 @@ import {
   createPromptProvider,
   type PromptProvider,
 } from "@/lib/prompt";
-import {
-  buildToolInstructions,
-  getAvailableTools,
-} from "@/features/chat/tools";
 
 export type ChatMessageMetadata = {
   billContext?: BillWithContent;
@@ -39,63 +31,41 @@ export async function handleChatRequest({
   messages,
   userId,
 }: ChatRequestParams) {
-  const requestId = generateRequestId();
-  console.log(`[Chat:${requestId}] Starting chat request`, {
-    userId,
-    messageCount: messages.length,
-    environment: process.env.VERCEL_ENV || "development",
-  });
-
   const promptProvider = createPromptProvider();
 
   // Check cost limit before processing
-  console.log(`[Chat:${requestId}] Checking cost limit...`);
   const isWithinLimit = await isWithinCostLimit(userId, promptProvider);
   if (!isWithinLimit) {
-    console.log(`[Chat:${requestId}] Cost limit exceeded for user ${userId}`);
     throw new ChatError(ChatErrorCode.DAILY_COST_LIMIT_REACHED);
   }
-  console.log(`[Chat:${requestId}] Cost limit check passed`);
 
   // Extract context from messages
   const context = extractChatContext(messages);
-  console.log(`[Chat:${requestId}] Extracted context:`, {
-    pageType: context.pageContext?.type,
-    hasBillContext: !!context.billContext,
-    difficultyLevel: context.difficultyLevel,
-  });
 
   // Build prompt configuration
-  console.log(`[Chat:${requestId}] Building prompt...`);
   const { promptName, promptResult } = await buildPrompt(
     context,
     promptProvider
   );
-  console.log(`[Chat:${requestId}] Prompt built:`, {
-    promptName,
-    promptLength: promptResult.content.length,
-  });
 
   // Generate streaming response
   try {
-    console.log(`[Chat:${requestId}] Initializing streamText with tools...`, {
-      openaiApiKeyConfigured: !!process.env.OPENAI_API_KEY,
-      messageCount: messages.length,
-    });
-    // Get available tools based on environment variables
-    const tools = getAvailableTools();
-    const hasWebSearch = !!tools?.web_search;
-    const hasDice = !!tools?.dice;
+    // Web検索ツールを有効化（環境変数で制御可能）
+    const enableWebSearch = process.env.ENABLE_WEB_SEARCH !== "false";
 
-    console.log(`[Chat:${requestId}] Tools configured:`, {
-      hasWebSearch,
-      hasDice,
-      toolCount: tools ? Object.keys(tools).length : 0,
-    });
+    // Build system prompt with web search instructions
+    const webSearchInstructions = enableWebSearch
+      ? `
 
-    // Build system prompt with tool-specific instructions
-    const systemPrompt =
-      promptResult.content + buildToolInstructions(hasWebSearch, hasDice);
+## Web検索の使用について
+- あなたの知識カットオフ（2025年1月）以降の情報や、知らない情報については積極的にWeb検索を使用してください
+- 最新の政治動向、法案の審議状況、統計データ、ニュースなど時事的な情報が必要な場合は検索してください
+- 検索結果を使用する場合は、必ず引用元のURLを明記してください
+- 検索すれば分かる内容でも、政治や政策・チームみらいに関係ない内容については答えないようにしてください。
+`
+      : "";
+
+    const systemPrompt = promptResult.content + webSearchInstructions;
 
     const result = streamText({
       model: "openai/gpt-4o",
@@ -103,82 +73,27 @@ export async function handleChatRequest({
       // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M
       system: systemPrompt,
       messages: convertToModelMessages(messages),
-      ...(tools && { tools }),
-      // Multi-step tool calling: tool call後に自動的に次のステップを実行
-      stopWhen: stepCountIs(5),
+      ...(enableWebSearch && {
+        tools: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          web_search: openai.tools.webSearch() as any,
+        },
+      }),
       experimental_telemetry: {
         isEnabled: true,
         functionId: promptName,
         metadata: buildTelemetryMetadata(context, promptResult, userId),
       },
-      onChunk: ({ chunk }) => {
-        // Log different chunk types for debugging
-        if (chunk.type === "tool-call") {
-          console.log(`[Chat:${requestId}] Tool call:`, {
-            type: chunk.type,
-            toolName: chunk.toolName,
-            toolCallId: chunk.toolCallId,
-            // @ts-expect-error - input/args property may vary
-            input: chunk.input || chunk.args,
-          });
-        } else if (chunk.type === "tool-result") {
-          // @ts-expect-error - output/result property may vary
-          const output = chunk.output || chunk.result;
-          console.log(`[Chat:${requestId}] Tool result:`, {
-            type: chunk.type,
-            toolName: chunk.toolName,
-            toolCallId: chunk.toolCallId,
-            output:
-              typeof output === "string"
-                ? output.substring(0, 300)
-                : JSON.stringify(output).substring(0, 300),
-          });
-        } else if (chunk.type === "text-delta") {
-          // Don't log every text delta to avoid noise
-        } else {
-          console.log(`[Chat:${requestId}] Chunk:`, {
-            type: chunk.type,
-          });
-        }
-      },
-      onFinish: ({ text, finishReason, usage, toolCalls, toolResults }) => {
-        console.log(`[Chat:${requestId}] Stream finished:`, {
-          finishReason,
-          textLength: text.length,
-          generatedText: text,
-          usage,
-          toolCallsCount: toolCalls?.length || 0,
-          toolResultsCount: toolResults?.length || 0,
-          toolCalls: toolCalls?.map((tc) => ({
-            toolName: tc.toolName,
-            toolCallId: tc.toolCallId,
-          })),
-        });
-      },
     });
 
-    console.log(`[Chat:${requestId}] Converting to UI message stream...`);
-    const response = result.toUIMessageStreamResponse();
-    console.log(`[Chat:${requestId}] Response created successfully`);
-    return response;
+    return result.toUIMessageStreamResponse();
   } catch (error) {
-    console.error(`[Chat:${requestId}] LLM generation error:`, {
-      error,
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
+    console.error("LLM generation error:", error);
     throw new ChatError(
       ChatErrorCode.LLM_GENERATION_FAILED,
       error instanceof Error ? error.message : String(error)
     );
   }
-}
-
-/**
- * リクエストIDを生成（ログ追跡用）
- */
-function generateRequestId(): string {
-  return Math.random().toString(36).substring(2, 10);
 }
 
 /**

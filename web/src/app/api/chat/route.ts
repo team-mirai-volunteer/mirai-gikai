@@ -48,36 +48,19 @@ async function _mockResponse(_req: Request) {
 }
 
 export async function POST(req: Request) {
-  const requestId = Math.random().toString(36).substring(2, 10);
-  console.log(`[API:${requestId}] Received POST request to /api/chat`, {
-    environment: process.env.VERCEL_ENV || "development",
-    nodeVersion: process.version,
-    platform: process.platform,
-  });
-
   // Vercel node環境でinstrumentationが自動で起動しない問題対応
   // 明示的にtelemetryを初期化
-  console.log(`[API:${requestId}] Initializing telemetry...`);
   await registerNodeTelemetry();
-  console.log(`[API:${requestId}] Telemetry initialized`);
 
-  console.log(`[API:${requestId}] Parsing request body...`);
   const { messages }: { messages: UIMessage<ChatMessageMetadata>[] } =
     await req.json();
-  console.log(`[API:${requestId}] Request body parsed:`, {
-    messageCount: messages.length,
-  });
 
-  console.log(`[API:${requestId}] Getting Supabase user...`);
   const {
     data: { user },
     error: getUserError,
   } = await getChatSupabaseUser();
 
   if (getUserError || !user) {
-    console.log(`[API:${requestId}] User authentication failed:`, {
-      error: getUserError,
-    });
     return new Response(
       JSON.stringify({
         error: "Anonymous session required",
@@ -86,21 +69,10 @@ export async function POST(req: Request) {
     );
   }
 
-  console.log(`[API:${requestId}] User authenticated:`, {
-    userId: user.id,
-  });
-
   try {
-    console.log(`[API:${requestId}] Calling handleChatRequest...`);
-    const response = await handleChatRequest({ messages, userId: user.id });
-    console.log(`[API:${requestId}] handleChatRequest completed successfully`);
-    return response;
+    return await handleChatRequest({ messages, userId: user.id });
   } catch (error) {
-    console.error(`[API:${requestId}] Chat request error:`, {
-      error,
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
+    console.error("Chat request error:", error);
 
     // レートリミットエラー
     if (

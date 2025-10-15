@@ -11,34 +11,18 @@ let isInitialized = false;
  */
 export async function registerNodeTelemetry() {
   if (isInitialized) {
-    console.log("[Telemetry] Already initialized, skipping");
     return;
   }
-
-  console.log("[Telemetry] Starting initialization...", {
-    environment: process.env.VERCEL_ENV || "development",
-    nodeVersion: process.version,
-  });
 
   try {
     const { publicKey, secretKey, baseUrl } = env.langfuse;
 
     if (!publicKey || !secretKey) {
       console.warn(
-        "[Telemetry] Langfuse credentials not configured. Telemetry disabled.",
-        {
-          hasPublicKey: !!publicKey,
-          hasSecretKey: !!secretKey,
-          baseUrl,
-        }
+        "[Telemetry] Langfuse credentials not configured. Telemetry disabled."
       );
       return;
     }
-
-    console.log("[Telemetry] Creating LangfuseExporter...", {
-      baseUrl,
-      environment: process.env.VERCEL_ENV || "development",
-    });
 
     const langfuseExporter = new LangfuseExporter({
       publicKey,
@@ -47,15 +31,12 @@ export async function registerNodeTelemetry() {
       environment: process.env.VERCEL_ENV || "development",
     });
 
-    console.log("[Telemetry] Creating NodeSDK...");
     const sdk = new NodeSDK({
       traceExporter: langfuseExporter,
     });
 
-    console.log("[Telemetry] Starting SDK...");
     sdk.start();
     isInitialized = true;
-    console.log("[Telemetry] Initialization completed successfully");
   } catch (error) {
     console.error("[Telemetry] Failed to initialize Langfuse:", {
       error,
