@@ -95,7 +95,7 @@ export default function RootLayout({
 
         <div
           className="
-            relative max-w-[700px] mx-auto sm:shadow-lg sm:mt-22
+            relative max-w-[700px] mx-auto sm:shadow-lg md:mt-22
             pc:mr-[500px] pcl:mr-[max(calc(50vw-250px),500px)]
           "
         >
