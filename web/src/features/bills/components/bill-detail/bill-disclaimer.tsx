@@ -1,3 +1,6 @@
+import { LinkButton } from "@/components/top/link-button";
+import { EXTERNAL_LINKS } from "@/config/external-links";
+
 export function BillDisclaimer() {
   return (
     <div className="space-y-6 pt-4">
@@ -16,6 +19,18 @@ export function BillDisclaimer() {
           本サイトで公開する情報は、可能な限り正確かつ最新の情報を反映するよう努めていますが、その正確性・完全性・即時性について保証するものではありません。また、AIチャットは不正確または誤解を招く回答を生成する可能性があります。正確な情報は、公式文書や一次資料をご確認ください。
         </p>
       </div>
+
+      <LinkButton
+        href={EXTERNAL_LINKS.FAQ}
+        icon={{
+          src: "/icons/question-bubble.svg",
+          alt: "note",
+          width: 22,
+          height: 22,
+        }}
+      >
+        よくある質問
+      </LinkButton>
     </div>
   );
 }
