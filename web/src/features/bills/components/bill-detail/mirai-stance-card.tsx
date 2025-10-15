@@ -19,9 +19,9 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
   const getStanceStyles = () => {
     if (isPreparing) {
       return {
-        bg: "bg-[#E8E8E8]",
-        border: "border-gray-400",
-        textColor: "text-black",
+        bg: "bg-white",
+        border: "border-[#8E8E93]",
+        textColor: "text-[#8E8E93]",
         label: "法案提出前",
       };
     }
@@ -30,24 +30,21 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
       case "for":
       case "conditional_for":
         return {
-          bg: "bg-primary",
-          border: "border-primary-accent",
-          textColor: "text-white",
+          bg: "bg-[#ECFCF1]",
+          textColor: "text-[#0F8472]",
           label: STANCE_LABELS[stance.type],
         };
       case "against":
       case "conditional_against":
         return {
-          bg: "bg-[#C9272A]",
-          border: "border-red-700",
-          textColor: "text-white",
+          bg: "bg-[#FFF1F1]",
+          textColor: "text-[#C9272A]",
           label: STANCE_LABELS[stance.type],
         };
       default:
         return {
-          bg: "bg-[#8F8F8F]",
-          border: "border-gray-500",
-          textColor: "text-white",
+          bg: "bg-[#E5E5EA]",
+          textColor: "text-black",
           label: stance != null ? STANCE_LABELS[stance.type] : "中立",
         };
     }
@@ -58,8 +55,8 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
   return (
     <>
       <h2 className="text-[22px] font-bold mb-4">🗳️チームみらいの賛否</h2>
-      <div className="relative p-1 rounded-lg bg-mirai-gradient">
-        <div className="bg-white rounded-lg px-6 py-8">
+      <div className="relative p-1 rounded-2xl bg-mirai-gradient">
+        <div className="bg-white rounded-lg px-6 pb-8 pt-10">
           <div className="flex flex-col gap-8">
             {/* ヘッダー部分：ロゴとスタンスバッジ */}
             <div className="flex flex-col items-center gap-8">
@@ -75,9 +72,9 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
 
               {/* スタンスバッジ */}
               <div
-                className={`w-full py-4 ${styles.bg} border ${styles.border} rounded-lg flex justify-center items-center`}
+                className={`w-full py-4 ${styles.bg} ${styles.border ? `border ${styles.border}` : ""} rounded-lg flex justify-center items-center`}
               >
-                <span className={`${styles.textColor} text-[28px] font-bold`}>
+                <span className={`${styles.textColor} text-xl font-bold`}>
                   {styles.label}
                 </span>
               </div>

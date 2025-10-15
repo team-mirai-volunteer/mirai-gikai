@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "supabase:types:gen": "npx supabase gen types typescript --local > packages/supabase/types/supabase.types.ts",
-    "supabase:migrate": "npx supabase migration up && pnpm run supabase:types:gen",
-    "dev": "dotenv -e .env -- pnpm -r --stream --parallel run dev",
+    "db:types:gen": "npx supabase gen types typescript --local > packages/supabase/types/supabase.types.ts",
+    "db:migrate": "npx supabase migration up && pnpm run supabase:types:gen",
     "db:reset": "dotenv -e .env -- npx supabase db reset && pnpm supabase:types:gen && pnpm seed",
+    "dev": "dotenv -e .env -- pnpm -r --stream --parallel run dev",
     "seed": "dotenv -e .env -- pnpm --filter @mirai-gikai/seed seed",
     "test": "pnpm -r --parallel run test",
     "typecheck": "pnpm -r run typecheck",

@@ -25,7 +25,8 @@ const lexendGiga = Lexend_Giga({
 export const metadata: Metadata = {
   metadataBase: new URL(env.webUrl),
   title: "みらい議会",
-  description: "議案をわかりやすく解説するプラットフォーム",
+  description:
+    "国会で今どんな法案が検討されているか、わかりやすく伝えるプラットフォーム",
   keywords: [
     "みらい議会",
     "議案",
@@ -40,7 +41,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "みらい議会",
-    description: "議案をわかりやすく解説するプラットフォーム",
+    description:
+      "国会で今どんな法案が検討されているか、わかりやすく伝えるプラットフォーム",
     images: [
       {
         url: "/ogp.png",
@@ -54,7 +56,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "みらい議会",
-    description: "議案をわかりやすく解説するプラットフォーム",
+    description:
+      "国会で今どんな法案が検討されているか、わかりやすく伝えるプラットフォーム",
     images: ["/ogp.png"],
   },
   robots: {
@@ -86,7 +89,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${notoSansJP.variable} ${lexendGiga.variable} font-sans antialiased`}
+        className={`${notoSansJP.variable} ${lexendGiga.variable} font-sans antialiased bg-[#EEEEEE]`}
       >
         <NextTopLoader showSpinner={false} color="#2aa693" />
         <SpeedInsights />
@@ -96,12 +99,12 @@ export default function RootLayout({
         <div
           // xlサイズでは、横幅1180px（メイン + チャット）の中央寄せにする
           className="
-            relative max-w-[700px] mx-auto sm:shadow-lg md:mt-22
+            relative max-w-[700px] mx-auto sm:shadow-lg md:mt-24
             pc:mr-[500px] xl:ml-[calc(calc(100vw-1180px)/2)]
           "
         >
           <Header />
-          <main id={mainContentId} className="min-h-screen">
+          <main id={mainContentId} className="min-h-screen bg-[#F7F4F0]">
             {children}
           </main>
           <Footer />

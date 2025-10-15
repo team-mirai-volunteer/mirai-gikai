@@ -1,6 +1,4 @@
 import { EXTERNAL_LINKS } from "@/config/external-links";
-import type { SocialLink } from "@/lib/social-links";
-import { SOCIAL_LINKS } from "@/lib/social-links";
 
 export type FooterLink = {
   label: string;
@@ -34,20 +32,6 @@ export const primaryLinks: FooterLink[] = [
     href: EXTERNAL_LINKS.DONATION,
     external: true,
   },
-];
-
-export type FooterSocialLink = {
-  key: keyof typeof SOCIAL_LINKS;
-} & SocialLink;
-
-export const socialLinks: FooterSocialLink[] = [
-  { key: "web", ...SOCIAL_LINKS.web },
-  { key: "youtube", ...SOCIAL_LINKS.youtube },
-  { key: "x", ...SOCIAL_LINKS.x },
-  { key: "line", ...SOCIAL_LINKS.line },
-  { key: "instagram", ...SOCIAL_LINKS.instagram },
-  { key: "facebook", ...SOCIAL_LINKS.facebook },
-  { key: "tiktok", ...SOCIAL_LINKS.tiktok },
 ];
 
 export const policyLinks: FooterPolicyLink[] = [

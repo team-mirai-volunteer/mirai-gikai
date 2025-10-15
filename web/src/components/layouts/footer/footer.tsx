@@ -2,16 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { policyLinks, primaryLinks, socialLinks } from "./footer.config";
+import { policyLinks, primaryLinks } from "./footer.config";
 
 export function Footer() {
   return (
     <footer className="bg-mirai-gradient text-slate-900">
-      <div className="mx-auto flex w-full max-w-[402px] flex-col items-center gap-9 px-6 py-14 text-center">
+      <div className="mx-auto flex w-full max-w-[500px] flex-col items-center px-6 py-14 pb-20 text-center">
         <FooterLogoSection />
         <FooterPrimaryLinks />
         <FooterPolicies />
-        <FooterSocialIcons />
         <FooterCopyright />
       </div>
     </footer>
@@ -20,7 +19,7 @@ export function Footer() {
 
 function FooterLogoSection() {
   return (
-    <div className="flex flex-col items-center text-center">
+    <div className="flex flex-col items-center text-center mb-9">
       <Link href="/" aria-label="みらい議会 トップページ">
         <Image
           src="/img/logo.svg"
@@ -36,8 +35,13 @@ function FooterLogoSection() {
 
 function FooterPrimaryLinks() {
   return (
-    <nav aria-label="主要リンク" className="w-full max-w-[309px]">
-      <ul className="flex flex-col items-center gap-3 text-[14px] font-semibold text-slate-800">
+    <nav aria-label="主要リンク" className="w-full mb-5">
+      <ul
+        className="
+      flex flex-col items-center gap-3 text-[14px] font-semibold text-slate-800
+      md:flex-row md:justify-center md:gap-5
+      "
+      >
         {primaryLinks.map((link) => (
           <li key={link.label}>
             <Link
@@ -57,7 +61,7 @@ function FooterPrimaryLinks() {
 
 function FooterPolicies() {
   return (
-    <div className="mt-2 flex flex-col items-center text-[12px] font-semibold text-slate-800">
+    <div className="flex flex-col items-center text-[12px] font-semibold text-slate-800 mb-5">
       <ul className="flex flex-wrap justify-center gap-x-2 gap-y-1">
         {policyLinks.map((policy, index) => (
           <li key={policy.label} className="flex items-center gap-2">
@@ -70,58 +74,6 @@ function FooterPolicies() {
               {policy.label}
             </Link>
             {index < policyLinks.length - 1 ? <span>｜</span> : null}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function FooterSocialIcons() {
-  const firstRow = socialLinks.slice(0, 4);
-  const secondRow = socialLinks.slice(4);
-
-  return (
-    <div className="flex flex-col items-center">
-      <ul className="grid grid-cols-4 gap-4">
-        {firstRow.map((social) => (
-          <li key={social.name}>
-            <Link
-              href={social.url}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={social.name}
-              className="flex items-center justify-center"
-            >
-              <Image
-                src={social.iconPath}
-                alt={social.name}
-                width={48}
-                height={48}
-                className="h-12 w-12"
-              />
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <ul className="mt-4 flex items-center justify-center gap-4">
-        {secondRow.map((social) => (
-          <li key={social.name}>
-            <Link
-              href={social.url}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={social.name}
-              className="flex items-center justify-center"
-            >
-              <Image
-                src={social.iconPath}
-                alt={social.name}
-                width={48}
-                height={48}
-                className="h-12 w-12"
-              />
-            </Link>
           </li>
         ))}
       </ul>

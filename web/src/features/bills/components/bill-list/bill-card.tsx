@@ -43,13 +43,6 @@ export function BillCard({ bill }: BillCardProps) {
         <div className="flex-1">
           <CardHeader>
             <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
-                {bill.published_at ? (
-                  <time>{formatDateWithDots(bill.published_at)}</time>
-                ) : (
-                  <span>法案提出前</span>
-                )}
-              </div>
               <CardTitle className="text-2xl tracking-normal leading-tight">
                 {displayTitle}
               </CardTitle>
@@ -69,6 +62,13 @@ export function BillCard({ bill }: BillCardProps) {
               <p className="text-xs font-medium text-muted-foreground">
                 {bill.name}
               </p>
+              <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
+                {bill.published_at ? (
+                  <time>{formatDateWithDots(bill.published_at)} 提出</time>
+                ) : (
+                  <span>法案提出前</span>
+                )}
+              </div>
             </div>
           </CardHeader>
         </div>
