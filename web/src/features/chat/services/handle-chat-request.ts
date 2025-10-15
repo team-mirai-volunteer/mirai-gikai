@@ -74,20 +74,30 @@ export async function handleChatRequest({
   // Generate streaming response
   try {
     console.log(
-      `[Chat:${requestId}] Initializing streamText with web_search tool...`
+      `[Chat:${requestId}] Initializing streamText with web_search tool...`,
+      {
+        openaiApiKeyConfigured: !!process.env.OPENAI_API_KEY,
+        messageCount: messages.length,
+      }
     );
+    // NOTE: OpenAI web search requires the Responses API
+    // Use openai.responses() instead of openai() for the model
+    const useWebSearch = process.env.ENABLE_WEB_SEARCH !== "false";
+    console.log(`[Chat:${requestId}] Web search enabled:`, useWebSearch);
+
     const result = streamText({
-      model: openai("gpt-4o"),
-      // gpt-4o with web search tool - Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
-      // "openai/gpt-5-mini" Context 400K Input Tokens $0.25/M Output Tokens $2.00/M Cache Read Tokens $0.03/M
-      // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M Cache Read Tokens $0.07/M
-      // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
+      // OpenAI Responses API supports web_search tool
+      // gpt-4o with Responses API - Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
+      // gpt-4o-mini with Responses API - Context 128K Input Tokens $0.15/M Output Tokens $0.60/M
+      model: openai.responses("gpt-4o"),
       system: buildSystemPromptWithSearchInstruction(promptResult.content),
       messages: convertToModelMessages(messages),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      tools: {
-        web_search: openai.tools.webSearch() as any,
-      },
+      ...(useWebSearch && {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        tools: {
+          web_search: openai.tools.webSearch() as any,
+        },
+      }),
       experimental_telemetry: {
         isEnabled: true,
         functionId: promptName,
