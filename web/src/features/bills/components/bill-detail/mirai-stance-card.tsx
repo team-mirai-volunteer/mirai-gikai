@@ -19,9 +19,9 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
   const getStanceStyles = () => {
     if (isPreparing) {
       return {
-        bg: "bg-[#E8E8E8]",
-        border: "border-gray-400",
-        textColor: "text-black",
+        bg: "bg-white",
+        border: "border-[#8E8E93]",
+        textColor: "text-[#8E8E93]",
         label: "法案提出前",
       };
     }
@@ -30,24 +30,21 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
       case "for":
       case "conditional_for":
         return {
-          bg: "bg-primary",
-          border: "border-primary-accent",
-          textColor: "text-white",
+          bg: "bg-[#ECFCF1]",
+          textColor: "text-[#0F8472]",
           label: STANCE_LABELS[stance.type],
         };
       case "against":
       case "conditional_against":
         return {
-          bg: "bg-[#C9272A]",
-          border: "border-red-700",
-          textColor: "text-white",
+          bg: "bg-[#FFF1F1]",
+          textColor: "text-[#C9272A]",
           label: STANCE_LABELS[stance.type],
         };
       default:
         return {
-          bg: "bg-[#8F8F8F]",
-          border: "border-gray-500",
-          textColor: "text-white",
+          bg: "bg-[#E5E5EA]",
+          textColor: "text-black",
           label: stance != null ? STANCE_LABELS[stance.type] : "中立",
         };
     }
@@ -75,7 +72,7 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
 
               {/* スタンスバッジ */}
               <div
-                className={`w-full py-4 ${styles.bg} border ${styles.border} rounded-lg flex justify-center items-center`}
+                className={`w-full py-4 ${styles.bg} ${styles.border ? `border ${styles.border}` : ""} rounded-lg flex justify-center items-center`}
               >
                 <span className={`${styles.textColor} text-[28px] font-bold`}>
                   {styles.label}
