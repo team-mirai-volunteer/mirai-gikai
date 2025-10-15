@@ -1,8 +1,8 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
+import { invalidateWebCache } from "@/lib/utils/cache-invalidation";
 import type { DeleteTagInput } from "../types";
 
 export async function deleteTag(input: DeleteTagInput) {
@@ -21,7 +21,9 @@ export async function deleteTag(input: DeleteTagInput) {
       return { error: `タグの削除に失敗しました: ${error.message}` };
     }
 
-    revalidatePath("/tags");
+    // web側のキャッシュを無効化
+    await invalidateWebCache();
+
     return { success: true };
   } catch (error) {
     console.error("Delete tag error:", error);

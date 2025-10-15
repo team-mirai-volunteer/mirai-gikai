@@ -34,6 +34,7 @@ export async function BillContent({ bill }: BillContentProps) {
             [&_section]:bg-white [&_section]:px-4 [&_section]:py-8 [&_section]:rounded-md [&_section]:mb-9
             [&_section]:break-all
             [&_section>*:last-child]:mb-0
+            [&_section:has(>iframe)]:p-0
             [&_iframe.youtube-embed]:w-full [&_iframe.youtube-embed]:aspect-video [&_iframe.youtube-embed]:mb-4
             [&_iframe.youtube-embed]:rounded-lg [&_iframe.youtube-embed]:shadow-md
           "

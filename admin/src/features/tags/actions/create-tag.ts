@@ -1,8 +1,8 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
+import { invalidateWebCache } from "@/lib/utils/cache-invalidation";
 import type { CreateTagInput } from "../types";
 
 export async function createTag(input: CreateTagInput) {
@@ -30,7 +30,9 @@ export async function createTag(input: CreateTagInput) {
       return { error: `タグの作成に失敗しました: ${error.message}` };
     }
 
-    revalidatePath("/tags");
+    // web側のキャッシュを無効化
+    await invalidateWebCache();
+
     return { data };
   } catch (error) {
     console.error("Create tag error:", error);

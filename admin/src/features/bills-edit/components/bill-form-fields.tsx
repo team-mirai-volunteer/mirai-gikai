@@ -1,6 +1,7 @@
 "use client";
 
 import type { Control } from "react-hook-form";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
   FormDescription,
@@ -18,7 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   type BillStatus,
   HOUSE_LABELS,

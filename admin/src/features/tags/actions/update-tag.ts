@@ -1,8 +1,8 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
+import { invalidateWebCache } from "@/lib/utils/cache-invalidation";
 import type { UpdateTagInput } from "../types";
 
 export async function updateTag(input: UpdateTagInput) {
@@ -39,7 +39,9 @@ export async function updateTag(input: UpdateTagInput) {
       return { error: `タグの更新に失敗しました: ${error.message}` };
     }
 
-    revalidatePath("/tags");
+    // web側のキャッシュを無効化
+    await invalidateWebCache();
+
     return { data };
   } catch (error) {
     console.error("Update tag error:", error);
