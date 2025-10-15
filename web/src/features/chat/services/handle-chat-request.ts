@@ -1,3 +1,4 @@
+import { openai } from "@ai-sdk/openai";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
@@ -47,15 +48,21 @@ export async function handleChatRequest({
     promptProvider
   );
 
+  // Model configuration
+  // "openai/gpt-4o" Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
+  // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M
+  const model = "openai/gpt-4o";
+
   // Generate streaming response
   try {
     const result = streamText({
-      model: "openai/gpt-4o-mini",
-      // "openai/gpt-5-mini" Context 400K Input Tokens $0.25/M Output Tokens $2.00/M Cache Read Tokens $0.03/M
-      // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M Cache Read Tokens $0.07/M
-      // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
+      model,
       system: promptResult.content,
       messages: convertToModelMessages(messages),
+      tools: {
+        // biome-ignore lint/suspicious/noExplicitAny: OpenAI web_search tool type incompatibility
+        web_search: openai.tools.webSearch() as any,
+      },
       experimental_telemetry: {
         isEnabled: true,
         functionId: promptName,
