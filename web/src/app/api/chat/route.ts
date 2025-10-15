@@ -5,7 +5,7 @@ import {
   handleChatRequest,
 } from "@/features/chat/services/handle-chat-request";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
-import { registerNodeTelemetry } from "../../../../instrumentation.node";
+import { registerNodeTelemetry } from "@/lib/telemetry/register";
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);
