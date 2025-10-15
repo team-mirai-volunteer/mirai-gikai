@@ -341,6 +341,7 @@ export type Database = {
         | "conditional_for"
         | "conditional_against"
         | "considering"
+        | "continued_deliberation"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -490,6 +491,7 @@ export const Constants = {
         "conditional_for",
         "conditional_against",
         "considering",
+        "continued_deliberation",
       ],
     },
   },
