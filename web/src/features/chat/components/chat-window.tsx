@@ -216,10 +216,12 @@ export function ChatWindow({
 
       {/* チャットウィンドウ */}
       <div
+        // xlサイズでは、横幅1180px（メイン + チャット）の中央寄せにする
         className={`fixed inset-x-0 bottom-0 z-50
-          bg-white shadow-md md:bottom-4 md:right-4 md:left-auto md:w-[450px] md:rounded-2xl rounded-t-2xl flex flex-col
-					pc:visible pc:opacity-100
-          h-[80vh] pc:h-[70vh]
+          bg-white shadow-md rounded-t-2xl flex flex-col
+          md:bottom-4 md:right-4 md:left-auto md:w-[450px] md:rounded-2xl 
+					pc:visible pc:opacity-100 h-[80vh] pc:h-[70vh]
+          xl:right-[calc(calc(100%-1180px)/2)]
 					${isOpen ? "visible opacity-100" : "invisible opacity-0 pc:visible pc:opacity-100"}
 				`}
         style={
