@@ -27,12 +27,31 @@ export async function registerNodeTelemetry() {
       return;
     }
 
+    // Next.jsの内部スパンをフィルタリング
+    const shouldExportSpan = (params: {
+      otelSpan: {
+        name: string;
+        instrumentationScope?: { name?: string };
+      };
+    }) => {
+      const spanName = params.otelSpan.name;
+      const scopeName = params.otelSpan.instrumentationScope?.name;
+
+      // Next.jsの内部スパン（fetch、AppRenderなど）を除外
+      if (scopeName === "next.js" || spanName?.startsWith("fetch ")) {
+        return false;
+      }
+
+      return true;
+    };
+
     const langfuseSpanProcessor = new LangfuseSpanProcessor({
       publicKey,
       secretKey,
       baseUrl,
       environment: process.env.VERCEL_ENV || "development",
       exportMode: "immediate", // サーバーレス環境向け
+      shouldExportSpan,
     });
 
     const tracerProvider = new NodeTracerProvider({
