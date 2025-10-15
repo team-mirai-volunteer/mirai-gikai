@@ -44,7 +44,11 @@ export function BillCard({ bill }: BillCardProps) {
           <CardHeader>
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
-                <time>{formatDateWithDots(bill.published_at)}</time>
+                {bill.published_at ? (
+                  <time>{formatDateWithDots(bill.published_at)}</time>
+                ) : (
+                  <span>法案提出前</span>
+                )}
               </div>
               <CardTitle className="text-2xl tracking-normal leading-tight">
                 {displayTitle}

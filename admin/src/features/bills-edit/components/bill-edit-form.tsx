@@ -26,7 +26,9 @@ export function BillEditForm({ bill }: BillEditFormProps) {
       status: bill.status,
       originating_house: bill.originating_house,
       status_note: bill.status_note,
-      published_at: new Date(bill.published_at).toISOString().slice(0, 16),
+      published_at: bill.published_at
+        ? new Date(bill.published_at).toISOString().slice(0, 16)
+        : "",
       thumbnail_url: bill.thumbnail_url,
       is_featured: bill.is_featured,
     },

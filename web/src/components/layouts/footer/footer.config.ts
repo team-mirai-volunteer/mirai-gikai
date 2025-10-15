@@ -51,8 +51,8 @@ export const socialLinks: FooterSocialLink[] = [
 
 export const policyLinks: FooterPolicyLink[] = [
   {
-    label: "よくある質問",
-    href: "https://team-mir.ai/faq",
+    label: "よくあるご質問",
+    href: EXTERNAL_LINKS.FAQ,
     external: true,
   },
   {

@@ -44,7 +44,6 @@ const _getCachedFeaturedBills = unstable_cache(
       )
       .eq("is_featured", true)
       .eq("bill_contents.difficulty_level", difficultyLevel)
-      .lte("published_at", new Date().toISOString())
       .order("published_at", { ascending: false });
 
     if (error) {

@@ -78,7 +78,7 @@ function ChatMessages({
         {/* 初期メッセージ */}
         <div className="flex flex-col gap-1">
           <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
-            なんでも質問してください。
+            国会や法案について、気になることをAIに質問してください。
           </p>
           {billContext && (
             <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
@@ -134,6 +134,9 @@ function ChatMessages({
           />
         );
       })}
+      {status === "submitted" && (
+        <span className="text-sm text-gray-500">考え中...</span>
+      )}
     </>
   );
 }
@@ -163,11 +166,7 @@ export function ChatWindow({
   // チャットが開かれたときにinputにフォーカス（disableAutoFocusがfalseの場合のみ）
   useEffect(() => {
     if (isOpen && textareaRef.current && !disableAutoFocus) {
-      // 少し遅延させてからフォーカスを当てる（アニメーション完了後）
-      const timer = setTimeout(() => {
-        textareaRef.current?.focus();
-      }, 100);
-      return () => clearTimeout(timer);
+      textareaRef.current?.focus();
     }
   }, [isOpen, disableAutoFocus]);
 
