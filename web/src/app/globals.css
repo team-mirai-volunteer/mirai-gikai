@@ -185,7 +185,6 @@
 
 /* カスタムアニメーション */
 @keyframes shake {
-
   0%,
   100% {
     transform: translateX(0);
@@ -208,7 +207,6 @@
 }
 
 @keyframes bounce-gentle {
-
   0%,
   100% {
     transform: translateY(0);

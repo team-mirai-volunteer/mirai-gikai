@@ -8,8 +8,9 @@ import { Header } from "@/components/header";
 import { DesktopMenu } from "@/components/layouts/desktop-menu";
 import { Footer } from "@/components/layouts/footer/footer";
 import { SkipLink } from "@/components/skip-link";
-import { RubyfulInitializer } from "@/lib/rubyful";
 import { useId } from "react";
+import { GoogleAnalytics } from "@next/third-parties/google";
+import { RubyfulInitializer } from "@/lib/rubyful";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-sans-jp",
@@ -68,6 +69,7 @@ export default function RootLayout({
       >
         <NextTopLoader showSpinner={false} color="#2aa693" />
         <SpeedInsights />
+        <GoogleAnalytics gaId={env.analytics.gaTrackingId ?? ""} />
         <RubyfulInitializer />
 
         <SkipLink targetId={mainContentId} />
