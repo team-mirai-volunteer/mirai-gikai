@@ -1,5 +1,5 @@
-import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { openai } from "@ai-sdk/openai";
+import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
@@ -48,37 +48,21 @@ export async function handleChatRequest({
     promptProvider
   );
 
+  // Model configuration
+  // "openai/gpt-4o" Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
+  // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M
+  const model = "openai/gpt-4o";
+
   // Generate streaming response
   try {
-    // Web検索ツールを有効化（環境変数で制御可能）
-    const enableWebSearch = process.env.ENABLE_WEB_SEARCH !== "false";
-
-    // Build system prompt with web search instructions
-    const webSearchInstructions = enableWebSearch
-      ? `
-
-## Web検索の使用について
-- あなたの知識カットオフ（2025年1月）以降の情報や、知らない情報については積極的にWeb検索を使用してください
-- 最新の政治動向、法案の審議状況、統計データ、ニュースなど時事的な情報が必要な場合は検索してください
-- 検索結果を使用する場合は、必ず引用元のURLを明記してください
-- 検索すれば分かる内容でも、政治や政策・チームみらいに関係ない内容については答えないようにしてください。
-`
-      : "";
-
-    const systemPrompt = promptResult.content + webSearchInstructions;
-
     const result = streamText({
-      model: "openai/gpt-4o",
-      // "openai/gpt-4o" Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
-      // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M
-      system: systemPrompt,
+      model,
+      system: promptResult.content,
       messages: convertToModelMessages(messages),
-      ...(enableWebSearch && {
-        tools: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          web_search: openai.tools.webSearch() as any,
-        },
-      }),
+      tools: {
+        // biome-ignore lint/suspicious/noExplicitAny: OpenAI web_search tool type incompatibility
+        web_search: openai.tools.webSearch() as any,
+      },
       experimental_telemetry: {
         isEnabled: true,
         functionId: promptName,
