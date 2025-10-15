@@ -27,6 +27,18 @@ export const metadata: Metadata = {
   metadataBase: new URL(env.webUrl),
   title: "みらい議会",
   description: "議案をわかりやすく解説するプラットフォーム",
+  keywords: [
+    "みらい議会",
+    "議案",
+    "政治",
+    "日本",
+    "政策",
+    "解説",
+    "チームみらい",
+  ],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "みらい議会",
     description: "議案をわかりやすく解説するプラットフォーム",
@@ -45,6 +57,17 @@ export const metadata: Metadata = {
     title: "みらい議会",
     description: "議案をわかりやすく解説するプラットフォーム",
     images: ["/ogp.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
