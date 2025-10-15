@@ -12,12 +12,16 @@ interface HeaderClientProps {
 
 export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
   return (
-    <header className="px-3 mt-4 sticky top-4 left-0 right-0 z-10 pcl:hidden">
-      <div className="rounded-2xl bg-white shadow-md max-w-[660px] mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="px-3 fixed top-3 left-0 right-0 z-10">
+      <div className="rounded-2xl bg-white shadow-sm mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo / Site Title */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link
+              href="/"
+              className="flex items-center space-x-2"
+              aria-label="ホーム"
+            >
               <Image
                 src="/img/logo.svg"
                 alt="みらい議会"
@@ -29,7 +33,10 @@ export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
           </div>
 
           {/* Navigation */}
-          <nav className="flex items-center space-x-2">
+          <nav
+            className="flex items-center space-x-2"
+            aria-label="補助ナビゲーション"
+          >
             <DifficultySelector currentLevel={difficultyLevel} label="詳しく" />
             <HamburgerMenu />
           </nav>

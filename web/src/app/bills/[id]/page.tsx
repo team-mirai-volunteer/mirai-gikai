@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
-import { env } from "@/lib/env";
 import { BillDetailLayout } from "@/features/bills/components/bill-detail/bill-detail-layout";
+import { env } from "@/lib/env";
 
 interface BillDetailPageProps {
   params: Promise<{

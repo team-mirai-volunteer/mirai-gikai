@@ -1,9 +1,14 @@
 import { LangfuseExporter } from "langfuse-vercel";
 import { NodeSDK } from "@opentelemetry/sdk-node";
-import { env } from "./src/lib/env";
+import { env } from "@/lib/env";
 
 let isInitialized = false;
 
+/**
+ * Langfuse telemetryを初期化する
+ * Vercel環境ではinstrumentation.node.tsが自動起動しないため、
+ * 必要な箇所で明示的に呼び出す
+ */
 export async function registerNodeTelemetry() {
   if (isInitialized) {
     return;
@@ -14,7 +19,7 @@ export async function registerNodeTelemetry() {
 
     if (!publicKey || !secretKey) {
       console.warn(
-        "⚠️ Langfuse credentials not configured. Telemetry disabled."
+        "[Telemetry] Langfuse credentials not configured. Telemetry disabled."
       );
       return;
     }
@@ -33,6 +38,6 @@ export async function registerNodeTelemetry() {
     sdk.start();
     isInitialized = true;
   } catch (error) {
-    console.warn("⚠️ Failed to initialize Langfuse telemetry:", error);
+    console.error("[Telemetry] Failed to initialize Langfuse:", error);
   }
 }
