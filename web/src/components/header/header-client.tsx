@@ -12,7 +12,7 @@ interface HeaderClientProps {
 
 export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
   return (
-    <header className="px-3 fixed top-3 left-0 right-0 z-10 max-w-[1204px] mx-auto">
+    <header className="px-3 fixed top-4 left-0 right-0 z-10 max-w-[1440px] mx-auto">
       <div className="rounded-2xl bg-white shadow-sm mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo / Site Title */}
