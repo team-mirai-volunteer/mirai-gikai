@@ -1,5 +1,4 @@
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
-import { after } from "next/server";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
@@ -9,7 +8,6 @@ import {
   createPromptProvider,
   type PromptProvider,
 } from "@/lib/prompt";
-import { flushTelemetry } from "../../../../instrumentation.node";
 
 export type ChatMessageMetadata = {
   billContext?: BillWithContent;
@@ -63,11 +61,6 @@ export async function handleChatRequest({
         functionId: promptName,
         metadata: buildTelemetryMetadata(context, promptResult, userId),
       },
-    });
-
-    // Flush telemetry data after response is sent (important for serverless environments)
-    after(async () => {
-      await flushTelemetry();
     });
 
     return result.toUIMessageStreamResponse();
