@@ -19,7 +19,7 @@ interface DifficultySelectorProps {
 
 export function DifficultySelector({
   currentLevel,
-  label = "より詳しく",
+  label,
   labelStyle,
   scrollToTop,
   maintainScrollFromBottom,
@@ -72,7 +72,13 @@ export function DifficultySelector({
   return (
     <div className="flex items-center gap-2">
       <span className="text-sm font-bold" style={labelStyle}>
-        {label}
+        {label != null ? (
+          label
+        ) : (
+          <span>
+            <span className="hidden md:inline-block">説明をもっと</span>詳しく
+          </span>
+        )}
       </span>
       <Switch
         id={`${uniqueId}-difficulty-toggle`}
