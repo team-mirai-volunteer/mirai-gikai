@@ -7,9 +7,9 @@ import { env } from "@/lib/env";
 import { Header } from "@/components/header";
 import { DesktopMenu } from "@/components/layouts/desktop-menu";
 import { Footer } from "@/components/layouts/footer/footer";
+import { useId } from "react";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { RubyfulInitializer } from "@/lib/rubyful";
-import { env } from "@/lib/env";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-sans-jp",
@@ -82,6 +82,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const mainContentId = useId();
+
   return (
     <html lang="ja">
       <body
@@ -102,7 +104,9 @@ export default function RootLayout({
           "
         >
           <Header />
-          <main className="min-h-screen">{children}</main>
+          <main id={mainContentId} className="min-h-screen">
+            {children}
+          </main>
           <Footer />
         </div>
       </body>
