@@ -61,7 +61,7 @@ export async function handleChatRequest({
       description:
         "最新情報や知らない情報を検索する必要がある場合に使用する。" +
         "政治、法案、ニュース、統計など日々更新される情報の取得に有効。",
-      parameters: z.object({
+      inputSchema: z.object({
         query: z
           .string()
           .min(1)
