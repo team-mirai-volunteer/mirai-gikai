@@ -1,5 +1,6 @@
-import { convertToModelMessages, streamText, type UIMessage } from "ai";
+import { convertToModelMessages, streamText, tool, type UIMessage } from "ai";
 import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
@@ -53,17 +54,69 @@ export async function handleChatRequest({
 
   // Generate streaming response
   try {
-    console.log("[DEBUG] Starting streamText with web search tool");
+    console.log("[DEBUG] Starting streamText with Tavily web search tool");
+
+    // Tavily web search tool
+    const tavilySearchTool = tool({
+      description:
+        "最新情報や知らない情報を検索する必要がある場合に使用する。" +
+        "政治、法案、ニュース、統計など日々更新される情報の取得に有効。",
+      parameters: z.object({
+        query: z
+          .string()
+          .min(1)
+          .max(100)
+          .describe("検索クエリ（日本語でも英語でも可）"),
+      }),
+      execute: async ({ query }: { query: string }) => {
+        console.log("[DEBUG] Tavily search executing:", query);
+        const response = await fetch("https://api.tavily.com/search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            api_key: process.env.TAVILY_API_KEY,
+            query,
+            search_depth: "basic",
+            include_answer: true,
+            include_raw_content: false,
+            max_results: 3,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Tavily API error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log("[DEBUG] Tavily search results:", {
+          answer: data.answer?.substring(0, 100),
+          resultsCount: data.results?.length ?? 0,
+        });
+
+        return {
+          answer: data.answer,
+          results: data.results.map((r: any) => ({
+            title: r.title,
+            url: r.url,
+            content: r.content,
+            score: r.score,
+          })),
+        };
+      },
+    } as any);
+
     const result = streamText({
       model: openai("gpt-4o"),
-      // gpt-4o with web search tool - Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
+      // gpt-4o with Tavily search tool - Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
       // "openai/gpt-5-mini" Context 400K Input Tokens $0.25/M Output Tokens $2.00/M Cache Read Tokens $0.03/M
       // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M Cache Read Tokens $0.07/M
       // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
       system: buildSystemPromptWithSearchInstruction(promptResult.content),
       messages: convertToModelMessages(messages),
       tools: {
-        web_search: openai.tools.webSearch(),
+        web_search: tavilySearchTool as any,
       },
       maxSteps: 5,
       onStepFinish: (step: any) => {
@@ -79,7 +132,6 @@ export async function handleChatRequest({
         functionId: promptName,
         metadata: buildTelemetryMetadata(context, promptResult, userId),
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     console.log("[DEBUG] streamText result created, converting to response");
