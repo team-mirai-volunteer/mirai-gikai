@@ -53,6 +53,7 @@ export async function handleChatRequest({
 
   // Generate streaming response
   try {
+    console.log("[DEBUG] Starting streamText with web search tool");
     const result = streamText({
       model: openai("gpt-4o"),
       // gpt-4o with web search tool - Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
@@ -65,6 +66,14 @@ export async function handleChatRequest({
       tools: {
         web_search: openai.tools.webSearch() as any,
       },
+      onStepFinish: (step) => {
+        console.log("[DEBUG] Step finished:", {
+          toolCalls: step.toolCalls?.length ?? 0,
+          toolResults: step.toolResults?.length ?? 0,
+          finishReason: step.finishReason,
+          hasText: !!step.text,
+        });
+      },
       experimental_telemetry: {
         isEnabled: true,
         functionId: promptName,
@@ -72,6 +81,7 @@ export async function handleChatRequest({
       },
     });
 
+    console.log("[DEBUG] streamText result created, converting to response");
     return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error("LLM generation error:", error);

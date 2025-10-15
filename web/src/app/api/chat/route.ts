@@ -47,6 +47,9 @@ async function _mockResponse(_req: Request) {
   );
 }
 
+// Vercel Functionsのタイムアウトを60秒に設定（Web検索ツール使用のため）
+export const maxDuration = 60;
+
 export async function POST(req: Request) {
   // Vercel node環境でinstrumentationが自動で起動しない問題対応
   // 明示的にtelemetryを初期化
