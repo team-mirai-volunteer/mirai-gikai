@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { BillShareModal } from "../share/bill-share-modal";
 
 interface BillDetailShareButtonProps {
@@ -19,19 +20,20 @@ export function BillDetailShareButton({
 
   return (
     <>
-      <button
-        type="button"
+      <Button
+        variant="outline"
         onClick={() => setIsModalOpen(true)}
-        className="hover:opacity-80 transition-opacity"
+        className="text-xs gap-1"
       >
         <Image
           src="/icons/ios-share.svg"
           alt="共有アイコン"
-          width={28}
-          height={28}
+          width={20}
+          height={20}
           className="shrink-0"
         />
-      </button>
+        共有する
+      </Button>
 
       <BillShareModal
         isOpen={isModalOpen}

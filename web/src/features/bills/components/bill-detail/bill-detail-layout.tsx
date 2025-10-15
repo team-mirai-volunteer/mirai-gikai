@@ -1,3 +1,4 @@
+import { Container } from "@/components/layouts/container";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "../../types";
 import { BillShareButtons } from "../share/bill-share-buttons";
@@ -19,7 +20,7 @@ export function BillDetailLayout({
 }: BillDetailLayoutProps) {
   const showMiraiStance = bill.status === "preparing" || bill.mirai_stance;
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto pb-8 max-w-4xl">
       {/*
         テキスト選択機能とチャット連携の実装パターン:
         - BillContentはServer Componentのまま保持（SSRによる高速な初期レンダリング）
@@ -28,35 +29,39 @@ export function BillDetailLayout({
       */}
       <BillDetailClient bill={bill} currentDifficulty={currentDifficulty}>
         <BillDetailHeader bill={bill} />
-        {/* 議案ステータス進捗 */}
-        <div className="my-8">
-          <BillStatusProgress
-            status={bill.status}
-            originatingHouse={bill.originating_house}
-            statusNote={bill.status_note}
-          />
-        </div>
+        <Container>
+          {/* 議案ステータス進捗 */}
+          <div className="my-8">
+            <BillStatusProgress
+              status={bill.status}
+              originatingHouse={bill.originating_house}
+              statusNote={bill.status_note}
+            />
+          </div>
 
-        <BillContent bill={bill} />
+          <BillContent bill={bill} />
+        </Container>
       </BillDetailClient>
 
-      {showMiraiStance && (
+      <Container>
+        {showMiraiStance && (
+          <div className="my-8">
+            <MiraiStanceCard
+              stance={bill.mirai_stance}
+              billStatus={bill.status}
+            />
+          </div>
+        )}
+        {/* シェアボタン */}
         <div className="my-8">
-          <MiraiStanceCard
-            stance={bill.mirai_stance}
-            billStatus={bill.status}
-          />
+          <BillShareButtons bill={bill} />
         </div>
-      )}
-      {/* シェアボタン */}
-      <div className="my-8">
-        <BillShareButtons bill={bill} />
-      </div>
 
-      {/* データの出典と免責事項 */}
-      <div className="my-8">
-        <BillDisclaimer />
-      </div>
+        {/* データの出典と免責事項 */}
+        <div className="my-8">
+          <BillDisclaimer />
+        </div>
+      </Container>
     </div>
   );
 }

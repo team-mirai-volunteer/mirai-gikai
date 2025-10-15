@@ -217,9 +217,9 @@ export function ChatWindow({
       {/* チャットウィンドウ */}
       <div
         className={`fixed inset-x-0 bottom-0 z-50
-          bg-white shadow-xl md:bottom-4 md:right-4 md:left-auto md:w-[450px] md:rounded-2xl rounded-t-2xl flex flex-col
+          bg-white shadow-md md:bottom-4 md:right-4 md:left-auto md:w-[450px] md:rounded-2xl rounded-t-2xl flex flex-col
 					pc:visible pc:opacity-100
-          h-[80vh] pc:h-[60vh]
+          h-[80vh] pc:h-[70vh]
 					${isOpen ? "visible opacity-100" : "invisible opacity-0 pc:visible pc:opacity-100"}
 				`}
         style={
