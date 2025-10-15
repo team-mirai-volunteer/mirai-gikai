@@ -6,7 +6,9 @@ import NextTopLoader from "nextjs-toploader";
 import { Header } from "@/components/header";
 import { DesktopMenu } from "@/components/layouts/desktop-menu";
 import { Footer } from "@/components/layouts/footer/footer";
+import { SkipLink } from "@/components/skip-link";
 import { RubyfulInitializer } from "@/lib/rubyful";
+import { useId } from "react";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-sans-jp",
@@ -36,6 +38,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const mainContentId = useId();
+
   return (
     <html lang="ja">
       <body
@@ -44,6 +48,8 @@ export default function RootLayout({
         <NextTopLoader showSpinner={false} color="#2aa693" />
         <SpeedInsights />
         <RubyfulInitializer />
+
+        <SkipLink targetId={mainContentId} />
 
         {/* 画面幅1400px以上で表示されるデスクトップメニュー */}
         <DesktopMenu />
@@ -55,7 +61,9 @@ export default function RootLayout({
           "
         >
           <Header />
-          <main className="min-h-screen">{children}</main>
+          <main id={mainContentId} className="min-h-screen">
+            {children}
+          </main>
           <Footer />
         </div>
       </body>

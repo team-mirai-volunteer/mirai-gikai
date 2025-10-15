@@ -17,7 +17,11 @@ export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
         <div className="flex justify-between items-center h-16">
           {/* Logo / Site Title */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link
+              href="/"
+              className="flex items-center space-x-2"
+              aria-label="ホーム"
+            >
               <Image
                 src="/img/logo.svg"
                 alt="みらい議会"
@@ -29,7 +33,10 @@ export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
           </div>
 
           {/* Navigation */}
-          <nav className="flex items-center space-x-2">
+          <nav
+            className="flex items-center space-x-2"
+            aria-label="補助ナビゲーション"
+          >
             <DifficultySelector currentLevel={difficultyLevel} label="詳しく" />
             <HamburgerMenu />
           </nav>
