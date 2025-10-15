@@ -5,6 +5,7 @@ import {
   handleChatRequest,
 } from "@/features/chat/services/handle-chat-request";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
+import { registerNodeTelemetry } from "../../../../instrumentation.node";
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);
@@ -47,6 +48,10 @@ async function _mockResponse(_req: Request) {
 }
 
 export async function POST(req: Request) {
+  // Vercel環境でinstrumentationが起動しない問題のハック対応
+  // 明示的にtelemetryを初期化
+  await registerNodeTelemetry();
+
   const { messages }: { messages: UIMessage<ChatMessageMetadata>[] } =
     await req.json();
 
