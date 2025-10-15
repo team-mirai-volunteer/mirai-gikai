@@ -7,7 +7,7 @@ import { diceTool } from "./dice";
  */
 export function getAvailableTools() {
   const enableWebSearch = process.env.ENABLE_WEB_SEARCH !== "false";
-  const enableDice = process.env.ENABLE_DICE_TOOL === "true";
+  const enableDice = process.env.ENABLE_DICE_TOOL !== "false"; // デフォルトで有効
 
   console.log("[Tools] Tool configuration:", {
     webSearch: enableWebSearch,
