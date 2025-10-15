@@ -40,6 +40,7 @@ interface ChatWindowProps {
     }>;
   };
   disableAutoFocus?: boolean;
+  getSessionId: () => string;
 }
 
 /**
@@ -53,6 +54,7 @@ function ChatMessages({
   sendMessage,
   status,
   pageContext,
+  getSessionId,
 }: {
   billContext?: Bill;
   difficultyLevel: string;
@@ -60,6 +62,7 @@ function ChatMessages({
   sendMessage: ChatWindowProps["chatState"]["sendMessage"];
   status: ChatWindowProps["chatState"]["status"];
   pageContext?: ChatWindowProps["pageContext"];
+  getSessionId: () => string;
 }) {
   const { scrollToBottom } = useStickToBottomContext();
   const userMessageLength = messages.filter((x) => x.role === "user").length;
@@ -104,12 +107,14 @@ function ChatMessages({
                 disabled={isResponding}
                 className="px-3 py-1 text-xs leading-[2] text-[#0F8472] border border-[#2AA693] rounded-2xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => {
+                  const currentSessionId = getSessionId();
                   sendMessage({
                     text: question,
                     metadata: {
                       billContext,
                       difficultyLevel,
                       pageContext,
+                      sessionId: currentSessionId,
                     },
                   });
                 }}
@@ -149,6 +154,7 @@ export function ChatWindow({
   onClose,
   pageContext,
   disableAutoFocus = false,
+  getSessionId,
 }: ChatWindowProps) {
   const [input, setInput] = useState("");
   const [isMounted, setIsMounted] = useState(false);
@@ -189,12 +195,14 @@ export function ChatWindow({
 
     // Send message with context and difficulty level in metadata
     // By default, this sends a HTTP POST request to the /api/chat endpoint.
+    const currentSessionId = getSessionId();
     sendMessage({
       text: message.text ?? "",
       metadata: {
         billContext,
         difficultyLevel,
         pageContext,
+        sessionId: currentSessionId,
       },
     });
 
@@ -219,7 +227,7 @@ export function ChatWindow({
         // xlサイズでは、横幅1180px（メイン + チャット）の中央寄せにする
         className={`fixed inset-x-0 bottom-0 z-50
           bg-white shadow-md rounded-t-2xl flex flex-col
-          md:bottom-4 md:right-4 md:left-auto md:w-[450px] md:rounded-2xl 
+          md:bottom-4 md:right-4 md:left-auto md:w-[450px] md:rounded-2xl
 					pc:visible pc:opacity-100 h-[80vh] pc:h-[70vh]
           xl:right-[calc(calc(100%-1180px)/2)]
 					${isOpen ? "visible opacity-100" : "invisible opacity-0 pc:visible pc:opacity-100"}
@@ -248,6 +256,7 @@ export function ChatWindow({
               sendMessage={sendMessage}
               status={status}
               pageContext={pageContext}
+              getSessionId={getSessionId}
             />
           </ConversationContent>
           <ConversationScrollButton />

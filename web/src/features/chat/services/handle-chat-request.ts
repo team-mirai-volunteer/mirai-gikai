@@ -16,6 +16,7 @@ export type ChatMessageMetadata = {
     bills?: Array<{ id: string; name: string; summary?: string }>;
   };
   difficultyLevel: DifficultyLevelEnum;
+  sessionId: string;
 };
 
 type ChatRequestParams = {
@@ -80,11 +81,13 @@ function extractChatContext(
   messages: UIMessage<ChatMessageMetadata>[]
 ): ChatMessageMetadata {
   const metadata = messages[0]?.metadata;
+
   return {
     billContext: metadata?.billContext,
     pageContext: metadata?.pageContext,
     difficultyLevel: (metadata?.difficultyLevel ||
       "normal") as DifficultyLevelEnum,
+    sessionId: metadata?.sessionId || "",
   };
 }
 
@@ -186,5 +189,6 @@ function buildTelemetryMetadata(
     pageType: context.pageContext?.type || "bill",
     difficultyLevel: context.difficultyLevel,
     userId,
+    sessionId: context.sessionId,
   };
 }

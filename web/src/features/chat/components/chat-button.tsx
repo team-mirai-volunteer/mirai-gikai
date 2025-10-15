@@ -38,12 +38,24 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
     const [isCompact, setIsCompact] = useState(false);
     const [showText, setShowText] = useState(true);
     const [openedWithText, setOpenedWithText] = useState(false);
+    const [sessionId, setSessionId] = useState<string | null>(null);
 
     // Ensure anonymous user is created before using chat
     useAnonymousSupabaseUser();
 
     // Chat state をここで管理することで、モーダルが閉じても状態が保持される
     const chatState = useChat();
+
+    // セッションIDを取得する
+    // 初回メッセージ送信時にセッションIDを発行
+    const getSessionId = () => {
+      if (chatState.messages.length === 0 || !sessionId) {
+        const newSessionId = crypto.randomUUID();
+        setSessionId(newSessionId);
+        return newSessionId;
+      }
+      return sessionId;
+    };
 
     useImperativeHandle(ref, () => ({
       openWithText: (selectedText: string) => {
@@ -56,11 +68,17 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
         }
 
         const questionText = `「${selectedText}」について教えてください。`;
+        const currentSessionId = getSessionId();
         setOpenedWithText(true);
         setIsOpen(true);
         chatState.sendMessage({
           text: questionText,
-          metadata: { billContext, difficultyLevel, pageContext },
+          metadata: {
+            billContext,
+            difficultyLevel,
+            pageContext,
+            sessionId: currentSessionId,
+          },
         });
       },
     }));
@@ -159,6 +177,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
           }}
           pageContext={pageContext}
           disableAutoFocus={openedWithText}
+          getSessionId={getSessionId}
         />
       </>
     );
