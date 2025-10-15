@@ -127,6 +127,47 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  /* フォーカスインジケーター - キーボードナビゲーション用のみ */
+  *:focus {
+    outline: none;
+  }
+
+  *:focus-visible {
+    outline: 2px solid #2aa693;
+    outline-offset: 2px;
+  }
+
+  /* ボタンのフォーカス - キーボードのみ */
+  button:focus {
+    outline: none;
+  }
+
+  button:focus-visible {
+    outline: 2px solid #2aa693;
+    outline-offset: 2px;
+  }
+
+  /* リンクのフォーカス - キーボードのみ */
+  a:focus {
+    outline: none;
+  }
+
+  a:focus-visible {
+    outline: 2px solid #2aa693;
+    outline-offset: 2px;
+  }
+
+  /* テーブルのフォーカス - キーボードのみ */
+  table:focus {
+    outline: none;
+  }
+
+  table:focus-visible {
+    outline: 2px solid #2aa693;
+    outline-offset: 2px;
+  }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -144,14 +185,17 @@
 
 /* カスタムアニメーション */
 @keyframes shake {
+
   0%,
   100% {
     transform: translateX(0);
   }
+
   20%,
   60% {
     transform: translateX(-1px);
   }
+
   40%,
   80% {
     transform: translateX(1px);
@@ -164,10 +208,12 @@
 }
 
 @keyframes bounce-gentle {
+
   0%,
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(5px);
   }
