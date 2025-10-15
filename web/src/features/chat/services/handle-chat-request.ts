@@ -98,9 +98,9 @@ export async function handleChatRequest({
       promptResult.content + buildToolInstructions(hasWebSearch, hasDice);
 
     const result = streamText({
-      model: "openai/gpt-4o-mini",
-      // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M
+      model: "openai/gpt-4o",
       // "openai/gpt-4o" Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
+      // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M
       system: systemPrompt,
       messages: convertToModelMessages(messages),
       ...(tools && { tools }),
