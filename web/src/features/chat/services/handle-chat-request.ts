@@ -89,7 +89,7 @@ export async function handleChatRequest({
       // OpenAI Responses API supports web_search tool
       // gpt-4o with Responses API - Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
       // gpt-4o-mini with Responses API - Context 128K Input Tokens $0.15/M Output Tokens $0.60/M
-      model: openai.responses("gpt-4o"),
+      model: openai("gpt-4o"),
       system: buildSystemPromptWithSearchInstruction(promptResult.content),
       messages: convertToModelMessages(messages),
       ...(useWebSearch && {
