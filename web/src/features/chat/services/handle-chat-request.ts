@@ -144,6 +144,7 @@ export async function handleChatRequest({
         functionId: promptName,
         metadata: buildTelemetryMetadata(context, promptResult, userId),
       },
+      experimental_continueSteps: true,
     } as any);
 
     console.log("[DEBUG] streamText result created, converting to response");
