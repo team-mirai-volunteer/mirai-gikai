@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Instrumentation hookを有効化（Langfuse telemetry用）
+  instrumentationHook: true,
   turbopack: {
     root: "../",
   },
