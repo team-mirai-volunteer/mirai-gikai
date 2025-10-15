@@ -9,6 +9,10 @@ import {
   createPromptProvider,
   type PromptProvider,
 } from "@/lib/prompt";
+import {
+  buildToolInstructions,
+  getAvailableTools,
+} from "@/features/chat/tools";
 
 export type ChatMessageMetadata = {
   billContext?: BillWithContent;
@@ -80,24 +84,29 @@ export async function handleChatRequest({
         messageCount: messages.length,
       }
     );
-    // NOTE: OpenAI web search requires the Responses API
-    // Use openai.responses() instead of openai() for the model
-    const useWebSearch = process.env.ENABLE_WEB_SEARCH !== "false";
-    console.log(`[Chat:${requestId}] Web search enabled:`, useWebSearch);
+    // Get available tools based on environment variables
+    const tools = getAvailableTools();
+    const hasWebSearch = !!tools?.web_search;
+    const hasDice = !!tools?.dice;
+
+    console.log(`[Chat:${requestId}] Tools configured:`, {
+      hasWebSearch,
+      hasDice,
+      toolCount: tools ? Object.keys(tools).length : 0,
+    });
+
+    // Build system prompt with tool-specific instructions
+    const systemPrompt =
+      promptResult.content + buildToolInstructions(hasWebSearch, hasDice);
 
     const result = streamText({
       // OpenAI Responses API supports web_search tool
       // gpt-4o with Responses API - Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
       // gpt-4o-mini with Responses API - Context 128K Input Tokens $0.15/M Output Tokens $0.60/M
       model: openai("gpt-4o"),
-      system: buildSystemPromptWithSearchInstruction(promptResult.content),
+      system: systemPrompt,
       messages: convertToModelMessages(messages),
-      ...(useWebSearch && {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        tools: {
-          web_search: openai.tools.webSearch() as any,
-        },
-      }),
+      ...(tools && { tools }),
       experimental_telemetry: {
         isEnabled: true,
         functionId: promptName,
@@ -270,22 +279,6 @@ function getJstDayRange(): { from: string; to: string } {
     from: startUtc.toISOString(),
     to: endUtc.toISOString(),
   };
-}
-
-/**
- * Web検索の指示をシステムプロンプトに追加
- */
-function buildSystemPromptWithSearchInstruction(basePrompt: string): string {
-  const searchInstruction = `
-
-## Web検索の使用について
-- あなたの知識カットオフ（2025年1月）以降の情報や、知らない情報については積極的にWeb検索を使用してください
-- 最新の政治動向、法案の審議状況、統計データ、ニュースなど時事的な情報が必要な場合は検索してください
-- 検索結果を使用する場合は、必ず引用元のURLを明記してください
-- 検索すれば分かる内容でも、政治や政策・チームみらいに関係ない内容については答えないようにしてください。
-`;
-
-  return basePrompt + searchInstruction;
 }
 
 /**
