@@ -84,17 +84,18 @@ export async function handleChatRequest({
     });
     // Get available tools based on environment variables
     const tools = getAvailableTools();
-    // const hasWebSearch = !!tools?.web_search;
+    const hasWebSearch = !!tools?.web_search;
     const hasDice = !!tools?.dice;
 
     console.log(`[Chat:${requestId}] Tools configured:`, {
-      // hasWebSearch,
+      hasWebSearch,
       hasDice,
       toolCount: tools ? Object.keys(tools).length : 0,
     });
 
     // Build system prompt with tool-specific instructions
-    const systemPrompt = promptResult.content + buildToolInstructions(hasDice);
+    const systemPrompt =
+      promptResult.content + buildToolInstructions(hasWebSearch, hasDice);
 
     const result = streamText({
       model: "openai/gpt-4o-mini",
