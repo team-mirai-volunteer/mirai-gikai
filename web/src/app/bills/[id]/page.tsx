@@ -47,7 +47,7 @@ export async function generateMetadata({
         : {
             images: [
               {
-                url: new URL("/ogp.png", env.webUrl).toString(),
+                url: new URL("/ogp.jpg", env.webUrl).toString(),
                 width: 1200,
                 height: 630,
                 alt: "みらい議会のOGPイメージ",

@@ -45,7 +45,7 @@ export const metadata: Metadata = {
       "国会で今どんな法案が検討されているか、わかりやすく伝えるプラットフォーム",
     images: [
       {
-        url: "/ogp.png",
+        url: "/ogp.jpg",
         width: 1200,
         height: 630,
         alt: "みらい議会のOGPイメージ",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     title: "みらい議会",
     description:
       "国会で今どんな法案が検討されているか、わかりやすく伝えるプラットフォーム",
-    images: ["/ogp.png"],
+    images: ["/ogp.jpg"],
   },
   robots: {
     index: true,
