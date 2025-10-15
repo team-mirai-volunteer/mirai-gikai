@@ -38,10 +38,6 @@ export async function registerNodeTelemetry() {
     sdk.start();
     isInitialized = true;
   } catch (error) {
-    console.error("[Telemetry] Failed to initialize Langfuse:", {
-      error,
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
+    console.error("[Telemetry] Failed to initialize Langfuse:", error);
   }
 }

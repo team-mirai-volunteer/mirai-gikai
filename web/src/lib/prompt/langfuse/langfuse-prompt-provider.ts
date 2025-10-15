@@ -11,6 +11,7 @@ export class LangfusePromptProvider implements PromptProvider {
   ): Promise<CompiledPrompt> {
     try {
       const fetchedPrompt = await this.client.getPrompt(name);
+
       const content = fetchedPrompt.compile(variables || {});
 
       // Langfuse prompt linkingのためのJSON形式データ
@@ -21,12 +22,6 @@ export class LangfusePromptProvider implements PromptProvider {
         metadata,
       };
     } catch (error) {
-      console.error(`[Langfuse] Failed to fetch prompt:`, {
-        name,
-        error,
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-      });
       throw new Error(
         `Failed to fetch prompt "${name}" from Langfuse: ${error instanceof Error ? error.message : String(error)}`
       );
@@ -40,7 +35,6 @@ export class LangfusePromptProvider implements PromptProvider {
   ): Promise<number> {
     try {
       const query = this.buildMetricsQuery(userId, from, to);
-
       const response = await this.client.api.metricsMetrics({
         query: JSON.stringify(query),
       });
