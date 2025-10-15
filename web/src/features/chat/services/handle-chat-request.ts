@@ -121,10 +121,22 @@ export async function handleChatRequest({
       maxSteps: 5,
       onStepFinish: (step: any) => {
         console.log("[DEBUG] Step finished:", {
+          stepNumber: step.stepNumber,
           toolCalls: step.toolCalls?.length ?? 0,
           toolResults: step.toolResults?.length ?? 0,
           finishReason: step.finishReason,
           hasText: !!step.text,
+          textPreview: step.text?.substring(0, 100),
+        });
+        if (step.toolResults) {
+          console.log("[DEBUG] Tool results:", step.toolResults);
+        }
+      },
+      onFinish: (result: any) => {
+        console.log("[DEBUG] Generation finished:", {
+          finishReason: result.finishReason,
+          usage: result.usage,
+          steps: result.steps?.length,
         });
       },
       experimental_telemetry: {
