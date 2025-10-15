@@ -37,7 +37,7 @@ export function HeaderClient({ difficultyLevel }: HeaderClientProps) {
             className="flex items-center space-x-2"
             aria-label="補助ナビゲーション"
           >
-            <DifficultySelector currentLevel={difficultyLevel} label="詳しく" />
+            <DifficultySelector currentLevel={difficultyLevel} />
             <HamburgerMenu />
           </nav>
         </div>
