@@ -6,6 +6,12 @@ export interface SocialLink {
 }
 
 export const SOCIAL_LINKS: Record<string, SocialLink> = {
+  web: {
+    name: "Web",
+    url: "https://team-mir.ai/",
+    iconPath: "/icons/sns/icon_web.svg",
+    hasBorder: false,
+  },
   youtube: {
     name: "YouTube",
     url: "https://youtube.com/channel/UC72A_x2FKHkJ8Nc2eIzqj8Q?si=vfLWFp0hyzEqlzTu",

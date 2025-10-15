@@ -9,7 +9,6 @@ import { DesktopMenu } from "@/components/layouts/desktop-menu";
 import { Footer } from "@/components/layouts/footer/footer";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { RubyfulInitializer } from "@/lib/rubyful";
-import { env } from "@/lib/env";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-sans-jp",
