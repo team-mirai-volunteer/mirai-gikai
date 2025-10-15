@@ -25,7 +25,8 @@ const lexendGiga = Lexend_Giga({
 export const metadata: Metadata = {
   metadataBase: new URL(env.webUrl),
   title: "みらい議会",
-  description: "議案をわかりやすく解説するプラットフォーム",
+  description:
+    "国会で今どんな法案が検討されているか、わかりやすく伝えるプラットフォーム",
   keywords: [
     "みらい議会",
     "議案",
@@ -40,7 +41,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "みらい議会",
-    description: "議案をわかりやすく解説するプラットフォーム",
+    description:
+      "国会で今どんな法案が検討されているか、わかりやすく伝えるプラットフォーム",
     images: [
       {
         url: "/ogp.png",
@@ -54,7 +56,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "みらい議会",
-    description: "議案をわかりやすく解説するプラットフォーム",
+    description:
+      "国会で今どんな法案が検討されているか、わかりやすく伝えるプラットフォーム",
     images: ["/ogp.png"],
   },
   robots: {
