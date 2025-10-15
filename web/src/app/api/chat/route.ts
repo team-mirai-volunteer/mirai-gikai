@@ -6,6 +6,9 @@ import {
 } from "@/features/chat/services/handle-chat-request";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
 
+// Langfuse telemetryのためNode.js Runtimeを使用
+export const runtime = "nodejs";
+
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);
   return new Response(
