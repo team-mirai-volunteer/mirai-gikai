@@ -50,6 +50,9 @@ async function _mockResponse(_req: Request) {
 }
 
 export async function POST(req: Request) {
+  console.log("🔵 /api/chat POST called");
+  console.log(`🔵 NEXT_RUNTIME in route: ${process.env.NEXT_RUNTIME}`);
+
   const { messages }: { messages: UIMessage<ChatMessageMetadata>[] } =
     await req.json();
 
