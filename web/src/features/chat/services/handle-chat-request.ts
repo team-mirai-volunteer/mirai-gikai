@@ -1,10 +1,5 @@
-import {
-  convertToModelMessages,
-  stepCountIs,
-  streamText,
-  type UIMessage,
-} from "ai";
-import { openai } from "@ai-sdk/openai";
+import { convertToModelMessages, streamText, type UIMessage } from "ai";
+// import { openai } from "@ai-sdk/openai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
@@ -98,14 +93,14 @@ export async function handleChatRequest({
     const systemPrompt = promptResult.content + buildToolInstructions(hasDice);
 
     const result = streamText({
-      // gpt-4o with Responses API - Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
-      // gpt-4o-mini with Responses API - Context 128K Input Tokens $0.15/M Output Tokens $0.60/M
-      model: openai("gpt-4o"),
+      model: "openai/gpt-4o-mini",
+      // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M
+      // "openai/gpt-4o" Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
       system: systemPrompt,
       messages: convertToModelMessages(messages),
       ...(tools && { tools }),
       // Multi-step tool calling: tool call後に自動的に次のステップを実行
-      stopWhen: stepCountIs(5),
+      maxSteps: 5,
       experimental_telemetry: {
         isEnabled: true,
         functionId: promptName,
