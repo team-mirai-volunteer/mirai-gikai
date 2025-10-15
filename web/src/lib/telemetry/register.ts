@@ -1,5 +1,5 @@
-import { LangfuseExporter } from "langfuse-vercel";
-import { NodeSDK } from "@opentelemetry/sdk-node";
+import { LangfuseSpanProcessor } from "@langfuse/otel";
+import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
 import { env } from "@/lib/env";
 
 let isInitialized = false;
@@ -8,6 +8,9 @@ let isInitialized = false;
  * Langfuse telemetryを初期化する
  * Vercel環境ではinstrumentation.node.tsが自動起動しないため、
  * 必要な箇所で明示的に呼び出す
+ *
+ * @langfuse/otel + NodeTracerProviderを使用することで、
+ * OpenTelemetry SDKバージョン不整合の問題を回避
  */
 export async function registerNodeTelemetry() {
   if (isInitialized) {
@@ -24,18 +27,19 @@ export async function registerNodeTelemetry() {
       return;
     }
 
-    const langfuseExporter = new LangfuseExporter({
+    const langfuseSpanProcessor = new LangfuseSpanProcessor({
       publicKey,
       secretKey,
       baseUrl,
       environment: process.env.VERCEL_ENV || "development",
+      exportMode: "immediate", // サーバーレス環境向け
     });
 
-    const sdk = new NodeSDK({
-      traceExporter: langfuseExporter,
+    const tracerProvider = new NodeTracerProvider({
+      spanProcessors: [langfuseSpanProcessor],
     });
 
-    sdk.start();
+    tracerProvider.register();
     isInitialized = true;
   } catch (error) {
     console.error("[Telemetry] Failed to initialize Langfuse:", error);
