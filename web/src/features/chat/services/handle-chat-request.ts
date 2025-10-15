@@ -190,7 +190,9 @@ function buildSystemPromptWithSearchInstruction(basePrompt: string): string {
 ## Web検索の使用について
 - あなたの知識カットオフ（2025年1月）以降の情報や、知らない情報については積極的にWeb検索を使用してください
 - 最新の政治動向、法案の審議状況、統計データ、ニュースなど時事的な情報が必要な場合は検索してください
-- 検索結果を使用する場合は、必ず引用元のURLを明記してください`;
+- 検索結果を使用する場合は、必ず引用元のURLを明記してください
+- 検索すれば分かる内容でも、政治や政策・チームみらいに関係ない内容については答えないようにしてください。
+`;
 
   return basePrompt + searchInstruction;
 }
