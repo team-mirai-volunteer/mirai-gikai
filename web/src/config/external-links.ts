@@ -3,9 +3,7 @@
  */
 export const EXTERNAL_LINKS = {
   REPORT: "https://forms.gle/wJXXMt6cv2ZdiCgg6",
-  // TODO: ABOUT_NOTEのリンクは正式公開後に更新する
-  ABOUT_NOTE:
-    "https://note.com/preview/nd1656aa5f86d?prev_access_key=01cccca59a83fa2f75baf06c175e8cf7",
+  ABOUT_NOTE: "https://note.com/team_mirai_jp/n/nd1656aa5f86d",
   DONATION: "https://team-mir.ai/support/donation",
   TEAM_MIRAI_ABOUT: "https://team-mir.ai/about",
   TERMS: "https://team-mir.ai/terms",
