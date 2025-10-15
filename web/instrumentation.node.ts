@@ -3,6 +3,8 @@ import { NodeSDK } from "@opentelemetry/sdk-node";
 import { env } from "./src/lib/env";
 
 let isInitialized = false;
+let langfuseExporter: LangfuseExporter | null = null;
+let sdk: NodeSDK | null = null;
 
 export async function registerNodeTelemetry() {
   if (isInitialized) {
@@ -19,14 +21,14 @@ export async function registerNodeTelemetry() {
       return;
     }
 
-    const langfuseExporter = new LangfuseExporter({
+    langfuseExporter = new LangfuseExporter({
       publicKey,
       secretKey,
       baseUrl,
       environment: process.env.VERCEL_ENV || "development",
     });
 
-    const sdk = new NodeSDK({
+    sdk = new NodeSDK({
       traceExporter: langfuseExporter,
     });
 
@@ -34,5 +36,21 @@ export async function registerNodeTelemetry() {
     isInitialized = true;
   } catch (error) {
     console.warn("⚠️ Failed to initialize Langfuse telemetry:", error);
+  }
+}
+
+/**
+ * Flush telemetry data to Langfuse
+ * Should be called in serverless environments before function termination
+ */
+export async function flushTelemetry(): Promise<void> {
+  if (!langfuseExporter) {
+    return;
+  }
+
+  try {
+    await langfuseExporter.forceFlush();
+  } catch (error) {
+    console.warn("⚠️ Failed to flush telemetry:", error);
   }
 }
