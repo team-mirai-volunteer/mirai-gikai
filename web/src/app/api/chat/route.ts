@@ -5,9 +5,13 @@ import {
   handleChatRequest,
 } from "@/features/chat/services/handle-chat-request";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
+import { initializeLangfuseTelemetry } from "@/lib/telemetry";
 
 // Langfuse telemetryのためNode.js Runtimeを使用
 export const runtime = "nodejs";
+
+// モジュール読み込み時にtelemetryを初期化（instrumentation.tsが動作しないため）
+initializeLangfuseTelemetry();
 
 async function _mockResponse(_req: Request) {
   const randomMessageId = Math.random().toString(36).substring(2, 10);
