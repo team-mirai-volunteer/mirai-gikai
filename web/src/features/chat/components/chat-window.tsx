@@ -40,7 +40,7 @@ interface ChatWindowProps {
     }>;
   };
   disableAutoFocus?: boolean;
-  getSessionId: () => string;
+  sessionId: string;
 }
 
 /**
@@ -54,7 +54,7 @@ function ChatMessages({
   sendMessage,
   status,
   pageContext,
-  getSessionId,
+  sessionId,
 }: {
   billContext?: Bill;
   difficultyLevel: string;
@@ -62,7 +62,7 @@ function ChatMessages({
   sendMessage: ChatWindowProps["chatState"]["sendMessage"];
   status: ChatWindowProps["chatState"]["status"];
   pageContext?: ChatWindowProps["pageContext"];
-  getSessionId: () => string;
+  sessionId: string;
 }) {
   const { scrollToBottom } = useStickToBottomContext();
   const userMessageLength = messages.filter((x) => x.role === "user").length;
@@ -107,14 +107,13 @@ function ChatMessages({
                 disabled={isResponding}
                 className="px-3 py-1 text-xs leading-[2] text-[#0F8472] border border-[#2AA693] rounded-2xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => {
-                  const currentSessionId = getSessionId();
                   sendMessage({
                     text: question,
                     metadata: {
                       billContext,
                       difficultyLevel,
                       pageContext,
-                      sessionId: currentSessionId,
+                      sessionId,
                     },
                   });
                 }}
@@ -154,7 +153,7 @@ export function ChatWindow({
   onClose,
   pageContext,
   disableAutoFocus = false,
-  getSessionId,
+  sessionId,
 }: ChatWindowProps) {
   const [input, setInput] = useState("");
   const [isMounted, setIsMounted] = useState(false);
@@ -195,14 +194,13 @@ export function ChatWindow({
 
     // Send message with context and difficulty level in metadata
     // By default, this sends a HTTP POST request to the /api/chat endpoint.
-    const currentSessionId = getSessionId();
     sendMessage({
       text: message.text ?? "",
       metadata: {
         billContext,
         difficultyLevel,
         pageContext,
-        sessionId: currentSessionId,
+        sessionId,
       },
     });
 
@@ -256,7 +254,7 @@ export function ChatWindow({
               sendMessage={sendMessage}
               status={status}
               pageContext={pageContext}
-              getSessionId={getSessionId}
+              sessionId={sessionId}
             />
           </ConversationContent>
           <ConversationScrollButton />

@@ -2,7 +2,14 @@
 
 import { useChat } from "@ai-sdk/react";
 import Image from "next/image";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { usePathname } from "next/navigation";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from "react";
 import type { Bill } from "@/features/bills/types";
 import { useAnonymousSupabaseUser } from "../hooks/use-anonymous-supabase-user";
 import { ChatWindow } from "./chat-window";
@@ -38,7 +45,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
     const [isCompact, setIsCompact] = useState(false);
     const [showText, setShowText] = useState(true);
     const [openedWithText, setOpenedWithText] = useState(false);
-    const [sessionId, setSessionId] = useState<string | null>(null);
+    const pathname = usePathname();
 
     // Ensure anonymous user is created before using chat
     useAnonymousSupabaseUser();
@@ -46,16 +53,10 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
     // Chat state をここで管理することで、モーダルが閉じても状態が保持される
     const chatState = useChat();
 
-    // セッションIDを取得する
-    // 初回メッセージ送信時にセッションIDを発行
-    const getSessionId = () => {
-      if (chatState.messages.length === 0 || !sessionId) {
-        const newSessionId = crypto.randomUUID();
-        setSessionId(newSessionId);
-        return newSessionId;
-      }
-      return sessionId;
-    };
+    // pathname が変わるたびに新しいセッションIDを発行
+    // ページ遷移時にチャットセッションをリセット
+    // biome-ignore lint/correctness/useExhaustiveDependencies: pathnameが変わるたびに新しいIDを生成するため意図的に依存配列に含めている
+    const sessionId = useMemo(() => crypto.randomUUID(), [pathname]);
 
     useImperativeHandle(ref, () => ({
       openWithText: (selectedText: string) => {
@@ -68,7 +69,6 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
         }
 
         const questionText = `「${selectedText}」について教えてください。`;
-        const currentSessionId = getSessionId();
         setOpenedWithText(true);
         setIsOpen(true);
         chatState.sendMessage({
@@ -77,7 +77,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
             billContext,
             difficultyLevel,
             pageContext,
-            sessionId: currentSessionId,
+            sessionId,
           },
         });
       },
@@ -177,7 +177,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
           }}
           pageContext={pageContext}
           disableAutoFocus={openedWithText}
-          getSessionId={getSessionId}
+          sessionId={sessionId}
         />
       </>
     );
