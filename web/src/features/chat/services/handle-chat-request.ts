@@ -61,10 +61,10 @@ export async function handleChatRequest({
       // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
       system: buildSystemPromptWithSearchInstruction(promptResult.content),
       messages: convertToModelMessages(messages),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       tools: {
-        web_search: openai.tools.webSearch(),
+        web_search: openai.tools.webSearch() as any,
       },
-      maxSteps: 5,
       experimental_telemetry: {
         isEnabled: true,
         functionId: promptName,
