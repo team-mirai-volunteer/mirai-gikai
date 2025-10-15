@@ -7,7 +7,9 @@ import { env } from "@/lib/env";
 import { Header } from "@/components/header";
 import { DesktopMenu } from "@/components/layouts/desktop-menu";
 import { Footer } from "@/components/layouts/footer/footer";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { RubyfulInitializer } from "@/lib/rubyful";
+import { env } from "@/lib/env";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-sans-jp",
@@ -64,6 +66,7 @@ export default function RootLayout({
       >
         <NextTopLoader showSpinner={false} color="#2aa693" />
         <SpeedInsights />
+        <GoogleAnalytics gaId={env.analytics.gaTrackingId ?? ""} />
         <RubyfulInitializer />
 
         {/* 画面幅1400px以上で表示されるデスクトップメニュー */}
