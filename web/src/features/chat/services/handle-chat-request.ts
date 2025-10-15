@@ -1,5 +1,9 @@
-import { convertToModelMessages, streamText, type UIMessage } from "ai";
-// import { openai } from "@ai-sdk/openai";
+import {
+  convertToModelMessages,
+  stepCountIs,
+  streamText,
+  type UIMessage,
+} from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
@@ -100,7 +104,7 @@ export async function handleChatRequest({
       messages: convertToModelMessages(messages),
       ...(tools && { tools }),
       // Multi-step tool calling: tool call後に自動的に次のステップを実行
-      maxSteps: 5,
+      stopWhen: stepCountIs(5),
       experimental_telemetry: {
         isEnabled: true,
         functionId: promptName,
