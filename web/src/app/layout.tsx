@@ -94,9 +94,10 @@ export default function RootLayout({
         <RubyfulInitializer />
 
         <div
+          // xlサイズでは、横幅1180px（メイン + チャット）の中央寄せにする
           className="
             relative max-w-[700px] mx-auto sm:shadow-lg md:mt-22
-            pc:mr-[500px] pcl:mr-[max(calc(50vw-250px),500px)]
+            pc:mr-[500px] xl:ml-[calc(calc(100vw-1180px)/2)]
           "
         >
           <Header />
