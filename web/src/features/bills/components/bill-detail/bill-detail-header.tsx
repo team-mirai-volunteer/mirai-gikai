@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { formatDateWithDots } from "@/lib/utils/date";
 import type { BillWithContent } from "../../types";
 import { getBillShareData } from "../../utils/share";
@@ -17,36 +16,29 @@ export async function BillDetailHeader({ bill }: BillDetailHeaderProps) {
   const { shareUrl, shareMessage, thumbnailUrl } = await getBillShareData(bill);
 
   return (
-    <Card className="mb-8">
-      {bill.thumbnail_url && (
-        <div className="relative w-full h-65 md:h-80">
+    <div className="mb-8 bg-white rounded-b-4xl">
+      {bill.thumbnail_url ? (
+        <div className="relative w-full h-72 md:h-80">
           <Image
             src={bill.thumbnail_url}
             alt={bill.name}
             fill
-            className="object-cover rounded-t-lg"
+            className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority
           />
         </div>
+      ) : (
+        <div className="w-full h-20 bg-white-100" />
       )}
 
-      <CardHeader className="pb-0">
-        <div className="font-bold text-xs text-muted-foreground">
-          {bill.published_at ? (
-            <time dateTime={bill.published_at}>
-              {formatDateWithDots(bill.published_at)}
-            </time>
-          ) : (
-            <span>法案提出前</span>
-          )}
-        </div>
+      <div className="px-4 pt-8">
         {displayTitle && (
           <h1 className="text-2xl font-bold mb-4">{displayTitle}</h1>
         )}
-      </CardHeader>
+      </div>
 
-      <CardContent>
+      <div className="px-4 pb-8">
         {displaySummary && (
           <p className="mb-4 leading-relaxed">{displaySummary}</p>
         )}
@@ -63,12 +55,21 @@ export async function BillDetailHeader({ bill }: BillDetailHeaderProps) {
         <p className="text-sm text-muted-foreground font-medium mb-4">
           {bill.name}
         </p>
+        <div className="font-bold text-xs text-muted-foreground mb-4">
+          {bill.published_at ? (
+            <time dateTime={bill.published_at}>
+              {formatDateWithDots(bill.published_at)} 提出
+            </time>
+          ) : (
+            <span>法案提出前</span>
+          )}
+        </div>
         <BillDetailShareButton
           shareMessage={shareMessage}
           shareUrl={shareUrl}
           thumbnailUrl={thumbnailUrl}
         />
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

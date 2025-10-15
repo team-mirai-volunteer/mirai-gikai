@@ -1,14 +1,13 @@
 import "./globals.css";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Lexend_Giga, Noto_Sans_JP } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
-import { env } from "@/lib/env";
-import { Header } from "@/components/header";
-import { DesktopMenu } from "@/components/layouts/desktop-menu";
-import { Footer } from "@/components/layouts/footer/footer";
 import { useId } from "react";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/layouts/footer/footer";
+import { env } from "@/lib/env";
 import { RubyfulInitializer } from "@/lib/rubyful";
 
 const notoSansJP = Noto_Sans_JP({
@@ -94,12 +93,9 @@ export default function RootLayout({
         <GoogleAnalytics gaId={env.analytics.gaTrackingId ?? ""} />
         <RubyfulInitializer />
 
-        {/* 画面幅1400px以上で表示されるデスクトップメニュー */}
-        <DesktopMenu />
-
         <div
           className="
-            relative max-w-[500px] mx-auto sm:shadow-lg
+            relative max-w-[700px] mx-auto sm:shadow-lg sm:mt-22
             pc:mr-[500px] pcl:mr-[max(calc(50vw-250px),500px)]
           "
         >
