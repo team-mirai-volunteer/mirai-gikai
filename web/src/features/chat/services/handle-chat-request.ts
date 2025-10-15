@@ -1,4 +1,5 @@
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
+import { openai } from "@ai-sdk/openai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
@@ -25,6 +26,9 @@ type ChatRequestParams = {
 
 /**
  * チャットリクエストを処理してストリーミングレスポンスを返す
+ *
+ * NOTE: Web検索機能は実験的実装です。
+ * gpt-4oのweb_searchツールを使用して最新情報を取得します。
  */
 export async function handleChatRequest({
   messages,
@@ -50,12 +54,17 @@ export async function handleChatRequest({
   // Generate streaming response
   try {
     const result = streamText({
-      model: "openai/gpt-4o-mini",
+      model: openai("gpt-4o"),
+      // gpt-4o with web search tool - Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
       // "openai/gpt-5-mini" Context 400K Input Tokens $0.25/M Output Tokens $2.00/M Cache Read Tokens $0.03/M
       // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M Cache Read Tokens $0.07/M
       // "deepseek/deepseek-v3.1" Context 164K Input Tokens $0.20/M Output Tokens $0.80/M
-      system: promptResult.content,
+      system: buildSystemPromptWithSearchInstruction(promptResult.content),
       messages: convertToModelMessages(messages),
+      tools: {
+        web_search: openai.tools.webSearch(),
+      },
+      maxSteps: 5,
       experimental_telemetry: {
         isEnabled: true,
         functionId: promptName,
@@ -170,6 +179,20 @@ function getJstDayRange(): { from: string; to: string } {
     from: startUtc.toISOString(),
     to: endUtc.toISOString(),
   };
+}
+
+/**
+ * Web検索の指示をシステムプロンプトに追加
+ */
+function buildSystemPromptWithSearchInstruction(basePrompt: string): string {
+  const searchInstruction = `
+
+## Web検索の使用について
+- あなたの知識カットオフ（2025年1月）以降の情報や、知らない情報については積極的にWeb検索を使用してください
+- 最新の政治動向、法案の審議状況、統計データ、ニュースなど時事的な情報が必要な場合は検索してください
+- 検索結果を使用する場合は、必ず引用元のURLを明記してください`;
+
+  return basePrompt + searchInstruction;
 }
 
 /**
