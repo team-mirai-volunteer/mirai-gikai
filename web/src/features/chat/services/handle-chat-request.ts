@@ -34,25 +34,48 @@ export async function handleChatRequest({
   messages,
   userId,
 }: ChatRequestParams) {
+  const requestId = generateRequestId();
+  console.log(`[Chat:${requestId}] Starting chat request`, {
+    userId,
+    messageCount: messages.length,
+    environment: process.env.VERCEL_ENV || "development",
+  });
+
   const promptProvider = createPromptProvider();
 
   // Check cost limit before processing
+  console.log(`[Chat:${requestId}] Checking cost limit...`);
   const isWithinLimit = await isWithinCostLimit(userId, promptProvider);
   if (!isWithinLimit) {
+    console.log(`[Chat:${requestId}] Cost limit exceeded for user ${userId}`);
     throw new ChatError(ChatErrorCode.DAILY_COST_LIMIT_REACHED);
   }
+  console.log(`[Chat:${requestId}] Cost limit check passed`);
 
   // Extract context from messages
   const context = extractChatContext(messages);
+  console.log(`[Chat:${requestId}] Extracted context:`, {
+    pageType: context.pageContext?.type,
+    hasBillContext: !!context.billContext,
+    difficultyLevel: context.difficultyLevel,
+  });
 
   // Build prompt configuration
+  console.log(`[Chat:${requestId}] Building prompt...`);
   const { promptName, promptResult } = await buildPrompt(
     context,
     promptProvider
   );
+  console.log(`[Chat:${requestId}] Prompt built:`, {
+    promptName,
+    promptLength: promptResult.content.length,
+  });
 
   // Generate streaming response
   try {
+    console.log(
+      `[Chat:${requestId}] Initializing streamText with web_search tool...`
+    );
     const result = streamText({
       model: openai("gpt-4o"),
       // gpt-4o with web search tool - Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
@@ -70,16 +93,74 @@ export async function handleChatRequest({
         functionId: promptName,
         metadata: buildTelemetryMetadata(context, promptResult, userId),
       },
+      onChunk: ({ chunk }) => {
+        // Log different chunk types for debugging
+        if (chunk.type === "tool-call") {
+          console.log(`[Chat:${requestId}] Tool call:`, {
+            type: chunk.type,
+            toolName: chunk.toolName,
+            toolCallId: chunk.toolCallId,
+            // @ts-expect-error - input/args property may vary
+            input: chunk.input || chunk.args,
+          });
+        } else if (chunk.type === "tool-result") {
+          // @ts-expect-error - output/result property may vary
+          const output = chunk.output || chunk.result;
+          console.log(`[Chat:${requestId}] Tool result:`, {
+            type: chunk.type,
+            toolName: chunk.toolName,
+            toolCallId: chunk.toolCallId,
+            output:
+              typeof output === "string"
+                ? output.substring(0, 300)
+                : JSON.stringify(output).substring(0, 300),
+          });
+        } else if (chunk.type === "text-delta") {
+          // Don't log every text delta to avoid noise
+        } else {
+          console.log(`[Chat:${requestId}] Chunk:`, {
+            type: chunk.type,
+          });
+        }
+      },
+      onFinish: ({ text, finishReason, usage, toolCalls, toolResults }) => {
+        console.log(`[Chat:${requestId}] Stream finished:`, {
+          finishReason,
+          textLength: text.length,
+          generatedText: text,
+          usage,
+          toolCallsCount: toolCalls?.length || 0,
+          toolResultsCount: toolResults?.length || 0,
+          toolCalls: toolCalls?.map((tc) => ({
+            toolName: tc.toolName,
+            toolCallId: tc.toolCallId,
+          })),
+        });
+      },
     });
 
-    return result.toUIMessageStreamResponse();
+    console.log(`[Chat:${requestId}] Converting to UI message stream...`);
+    const response = result.toUIMessageStreamResponse();
+    console.log(`[Chat:${requestId}] Response created successfully`);
+    return response;
   } catch (error) {
-    console.error("LLM generation error:", error);
+    console.error(`[Chat:${requestId}] LLM generation error:`, {
+      error,
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     throw new ChatError(
       ChatErrorCode.LLM_GENERATION_FAILED,
       error instanceof Error ? error.message : String(error)
     );
   }
+}
+
+/**
+ * リクエストIDを生成（ログ追跡用）
+ */
+function generateRequestId(): string {
+  return Math.random().toString(36).substring(2, 10);
 }
 
 /**

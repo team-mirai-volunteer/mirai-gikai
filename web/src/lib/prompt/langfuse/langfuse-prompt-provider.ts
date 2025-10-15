@@ -9,10 +9,24 @@ export class LangfusePromptProvider implements PromptProvider {
     name: string,
     variables?: PromptVariables
   ): Promise<CompiledPrompt> {
+    console.log(`[Langfuse] Fetching prompt:`, {
+      name,
+      hasVariables: !!variables,
+      variableKeys: variables ? Object.keys(variables) : [],
+    });
+
     try {
       const fetchedPrompt = await this.client.getPrompt(name);
+      console.log(`[Langfuse] Prompt fetched successfully:`, {
+        name,
+        promptVersion: fetchedPrompt.version,
+      });
 
       const content = fetchedPrompt.compile(variables || {});
+      console.log(`[Langfuse] Prompt compiled:`, {
+        name,
+        contentLength: content.length,
+      });
 
       // Langfuse prompt linkingのためのJSON形式データ
       const metadata = fetchedPrompt.toJSON();
@@ -22,6 +36,12 @@ export class LangfusePromptProvider implements PromptProvider {
         metadata,
       };
     } catch (error) {
+      console.error(`[Langfuse] Failed to fetch prompt:`, {
+        name,
+        error,
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       throw new Error(
         `Failed to fetch prompt "${name}" from Langfuse: ${error instanceof Error ? error.message : String(error)}`
       );
@@ -33,17 +53,36 @@ export class LangfusePromptProvider implements PromptProvider {
     from: string,
     to: string
   ): Promise<number> {
+    console.log(`[Langfuse] Fetching usage cost:`, {
+      userId,
+      from,
+      to,
+    });
+
     try {
       const query = this.buildMetricsQuery(userId, from, to);
+      console.log(`[Langfuse] Metrics query:`, query);
+
       const response = await this.client.api.metricsMetrics({
         query: JSON.stringify(query),
+      });
+      console.log(`[Langfuse] Metrics response received:`, {
+        dataLength: response?.data?.length,
       });
 
       const totalCost = this.extractCostValue(response?.data);
 
       if (totalCost === null) {
+        console.error(`[Langfuse] Failed to extract cost value:`, {
+          responseData: response?.data,
+        });
         throw new Error("Failed to extract cost value from Langfuse response");
       }
+
+      console.log(`[Langfuse] Usage cost calculated:`, {
+        userId,
+        totalCost,
+      });
 
       return totalCost;
     } catch (error) {
@@ -51,10 +90,19 @@ export class LangfusePromptProvider implements PromptProvider {
       if (error && typeof error === "object" && "status" in error) {
         const response = error as Response;
         const errorBody = await response.text();
+        console.error(`[Langfuse] API error:`, {
+          status: response.status,
+          body: errorBody,
+        });
         throw new Error(
           `Failed to fetch usage cost from Langfuse (${response.status}): ${errorBody}`
         );
       }
+
+      console.error(`[Langfuse] Usage cost fetch error:`, {
+        error,
+        message: error instanceof Error ? error.message : String(error),
+      });
 
       throw new Error(
         `Failed to fetch usage cost from Langfuse: ${error instanceof Error ? error.message : String(error)}`
