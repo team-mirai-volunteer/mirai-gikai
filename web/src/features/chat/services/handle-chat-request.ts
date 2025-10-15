@@ -55,7 +55,7 @@ export async function handleChatRequest({
   try {
     console.log("[DEBUG] Starting streamText with web search tool");
     const result = streamText({
-      model: openai("gpt-4o"),
+      model: openai.responses("gpt-4o"),
       // gpt-4o with web search tool - Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
       // "openai/gpt-5-mini" Context 400K Input Tokens $0.25/M Output Tokens $2.00/M Cache Read Tokens $0.03/M
       // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M Cache Read Tokens $0.07/M
@@ -64,7 +64,7 @@ export async function handleChatRequest({
       messages: convertToModelMessages(messages),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       tools: {
-        web_search: openai.tools.webSearch() as any,
+        web_search_preview: openai.tools.webSearchPreview({}) as any,
       },
       onStepFinish: (step) => {
         console.log("[DEBUG] Step finished:", {
