@@ -7,7 +7,6 @@ import { env } from "@/lib/env";
 import { Header } from "@/components/header";
 import { DesktopMenu } from "@/components/layouts/desktop-menu";
 import { Footer } from "@/components/layouts/footer/footer";
-import { SkipLink } from "@/components/skip-link";
 import { useId } from "react";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { RubyfulInitializer } from "@/lib/rubyful";
@@ -71,8 +70,6 @@ export default function RootLayout({
         <SpeedInsights />
         <GoogleAnalytics gaId={env.analytics.gaTrackingId ?? ""} />
         <RubyfulInitializer />
-
-        <SkipLink targetId={mainContentId} />
 
         {/* 画面幅1400px以上で表示されるデスクトップメニュー */}
         <DesktopMenu />
