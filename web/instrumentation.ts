@@ -4,6 +4,9 @@ import { registerInstrumentations } from "@opentelemetry/instrumentation";
 import { env } from "./src/lib/env";
 
 export async function register() {
+  console.log("🚀 instrumentation.ts register() called");
+  console.log(`📍 NEXT_RUNTIME: ${process.env.NEXT_RUNTIME}`);
+
   // Node.js環境でのみ実行（Edge Runtimeではスキップ）
   if (process.env.NEXT_RUNTIME === "nodejs") {
     try {
