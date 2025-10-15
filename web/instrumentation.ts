@@ -1,5 +1,6 @@
-import { registerOTel } from "@vercel/otel";
-import { LangfuseExporter } from "langfuse-vercel";
+import { LangfuseSpanProcessor } from "@langfuse/otel";
+import { NodeTracerProvider } from "@opentelemetry/sdk-trace-node";
+import { registerInstrumentations } from "@opentelemetry/instrumentation";
 import { env } from "./src/lib/env";
 
 export async function register() {
@@ -15,17 +16,52 @@ export async function register() {
         return;
       }
 
-      registerOTel({
-        serviceName: "mirai-gikai-web",
-        traceExporter: new LangfuseExporter({
-          publicKey,
-          secretKey,
-          baseUrl,
-          environment: process.env.VERCEL_ENV || "development",
-        }),
+      console.log("🔧 Initializing Langfuse telemetry...");
+      console.log(`📍 Environment: ${process.env.VERCEL_ENV || "development"}`);
+      console.log(`📍 Base URL: ${baseUrl}`);
+
+      // Next.jsのインフラストラクチャスパンをフィルタリング（オプション）
+      const shouldExportSpan = (span: any) => {
+        const scopeName = span.otelSpan?.instrumentationScope?.name;
+        // Next.jsの内部スパンは除外
+        if (scopeName === "next.js") {
+          return false;
+        }
+        return true;
+      };
+
+      const langfuseSpanProcessor = new LangfuseSpanProcessor({
+        publicKey,
+        secretKey,
+        baseUrl,
+        environment: process.env.VERCEL_ENV || "development",
+        shouldExportSpan,
+        // サーバーレス環境では即座にエクスポート
+        exportMode: "immediate",
+        // 詳細ログを有効化
+        verbose: true,
       });
+
+      const tracerProvider = new NodeTracerProvider({
+        spanProcessors: [langfuseSpanProcessor],
+      });
+
+      tracerProvider.register();
+
+      // 自動計装を登録
+      registerInstrumentations({
+        tracerProvider,
+        instrumentations: [],
+      });
+
+      console.log("✅ Langfuse telemetry initialized successfully");
     } catch (error) {
-      console.warn("⚠️ Failed to initialize Langfuse telemetry:", error);
+      console.error("❌ Failed to initialize Langfuse telemetry:", error);
+      // エラー詳細を出力
+      if (error instanceof Error) {
+        console.error(`   Error message: ${error.message}`);
+        console.error(`   Stack: ${error.stack}`);
+      }
     }
   }
 }
