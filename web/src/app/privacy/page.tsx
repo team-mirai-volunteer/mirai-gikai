@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
+import { Container } from "@/components/layouts/container";
 import {
   LegalList,
   LegalPageLayout,
   LegalParagraph,
   LegalSectionTitle,
 } from "@/components/layouts/legal-page-layout";
-import { Container } from "@/components/layouts/container";
 
 export const metadata: Metadata = {
   title: "プライバシーポリシー | みらい議会",
@@ -71,11 +71,10 @@ export default function PrivacyPage() {
             Cookieとは、サーバーが利用者の識別を目的として、利用者のブラウザに送信し、端末に保存される情報です。
           </LegalParagraph>
           <LegalParagraph>
-            当ウェブサイトでは、Googleによるアクセス解析ツール「Googleアナリティクス」を使用しており、Googleアナリティクスはデータ収集のためにCookieを使用しています。データは匿名で収集されており、個人を特定するものではありません。この機能はお使いのブラウザの設定でCookieを無効にすることで拒否することができます。Googleアナリティクスでデータが収集および処理される仕組みの詳細は「Google
+            当ウェブサイトでは、Googleによるアクセス解析ツール「Googleアナリティクス」を使用しており、Googleアナリティクスはデータ収集のためにCookieを使用しています。データは匿名で収集されており、個人を特定するものではありません。この機能はお使いのブラウザの設定でCookieを無効にすることで拒否することができます。
           </LegalParagraph>
           <LegalParagraph>
-            のサービスを使用するサイトやアプリから収集した情報の Google
-            による使用」のページをご覧ください。
+            Googleアナリティクスでデータが収集および処理される仕組みの詳細は「Googleのサービスを使用するサイトやアプリから収集した情報のGoogleによる使用」のページをご覧ください。
           </LegalParagraph>
         </section>
 
