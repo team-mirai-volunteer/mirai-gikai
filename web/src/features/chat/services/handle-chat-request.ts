@@ -34,21 +34,28 @@ export async function handleChatRequest({
 }: ChatRequestParams) {
   const promptProvider = createPromptProvider();
 
-  // Check cost limit before processing
-  const isWithinLimit = await isWithinCostLimit(userId, promptProvider);
-  if (!isWithinLimit) {
-    throw new ChatError(ChatErrorCode.DAILY_COST_LIMIT_REACHED);
-  }
-
   // Extract context from messages
   const context = extractChatContext(messages);
+
+  try {
+    // Check cost limit before processing
+    const isWithinLimit = await isWithinCostLimit(userId, promptProvider);
+    if (!isWithinLimit) {
+      throw new ChatError(ChatErrorCode.DAILY_COST_LIMIT_REACHED);
+    }
+  } catch (error) {
+    if (error instanceof ChatError) {
+      throw error;
+    }
+    // コストチェックに失敗した場合はログに記録して続行
+    console.error("Cost limit check error:", error);
+  }
 
   // Build prompt configuration
   const { promptName, promptResult } = await buildPrompt(
     context,
     promptProvider
   );
-
   // Model configuration
   // "openai/gpt-4o" Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
   // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M
