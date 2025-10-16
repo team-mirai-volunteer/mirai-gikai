@@ -3,7 +3,7 @@ import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
-import { env } from "@/lib/env";
+// import { env } from "@/lib/env"; // TEMPORARY: 緊急対応で一時的にコメントアウト
 import {
   type CompiledPrompt,
   createPromptProvider,
@@ -100,20 +100,25 @@ function extractChatContext(
 
 /**
  * ユーザーがコストリミット内かどうかを判定
+ *
+ * TEMPORARY: 緊急対応でレートリミットを無効化中
+ * Langfuse 500エラー回避のため一時的に常にtrueを返す
  */
 async function isWithinCostLimit(
-  userId: string,
-  promptProvider: PromptProvider
+  _userId: string,
+  _promptProvider: PromptProvider
 ): Promise<boolean> {
-  const jstDayRange = getJstDayRange();
-  const usedCost = await promptProvider.getUsageCostUsd(
-    userId,
-    jstDayRange.from,
-    jstDayRange.to
-  );
-  const limitCost = env.chat.dailyCostLimitUsd;
+  // TODO: Langfuse 500エラー解決後に元のロジックに戻す
+  // const jstDayRange = getJstDayRange();
+  // const usedCost = await promptProvider.getUsageCostUsd(
+  //   userId,
+  //   jstDayRange.from,
+  //   jstDayRange.to
+  // );
+  // const limitCost = env.chat.dailyCostLimitUsd;
+  // return usedCost < limitCost;
 
-  return usedCost < limitCost;
+  return true;
 }
 
 /**
@@ -156,7 +161,7 @@ async function buildPrompt(
 /**
  * JST基準の1日の時間範囲を取得（UTC形式で返す）
  */
-function getJstDayRange(): { from: string; to: string } {
+function _getJstDayRange(): { from: string; to: string } {
   const now = new Date();
   const jstOffsetMs = 9 * 60 * 60 * 1000;
   const jstNow = new Date(now.getTime() + jstOffsetMs);
