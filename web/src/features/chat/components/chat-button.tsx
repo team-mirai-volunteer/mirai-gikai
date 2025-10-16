@@ -2,7 +2,14 @@
 
 import { useChat } from "@ai-sdk/react";
 import Image from "next/image";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { usePathname } from "next/navigation";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from "react";
 import type { Bill } from "@/features/bills/types";
 import { useAnonymousSupabaseUser } from "../hooks/use-anonymous-supabase-user";
 import { ChatWindow } from "./chat-window";
@@ -38,12 +45,18 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
     const [isCompact, setIsCompact] = useState(false);
     const [showText, setShowText] = useState(true);
     const [openedWithText, setOpenedWithText] = useState(false);
+    const pathname = usePathname();
 
     // Ensure anonymous user is created before using chat
     useAnonymousSupabaseUser();
 
     // Chat state をここで管理することで、モーダルが閉じても状態が保持される
     const chatState = useChat();
+
+    // pathname が変わるたびに新しいセッションIDを発行
+    // ページ遷移時にチャットセッションをリセット
+    // biome-ignore lint/correctness/useExhaustiveDependencies: pathnameが変わるたびに新しいIDを生成するため意図的に依存配列に含めている
+    const sessionId = useMemo(() => crypto.randomUUID(), [pathname]);
 
     useImperativeHandle(ref, () => ({
       openWithText: (selectedText: string) => {
@@ -60,7 +73,12 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
         setIsOpen(true);
         chatState.sendMessage({
           text: questionText,
-          metadata: { billContext, difficultyLevel, pageContext },
+          metadata: {
+            billContext,
+            difficultyLevel,
+            pageContext,
+            sessionId,
+          },
         });
       },
     }));
@@ -159,6 +177,7 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
           }}
           pageContext={pageContext}
           disableAutoFocus={openedWithText}
+          sessionId={sessionId}
         />
       </>
     );
