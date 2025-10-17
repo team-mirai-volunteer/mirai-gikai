@@ -8,12 +8,10 @@ import { getRubyEnabledFromStorage, setRubyEnabledToStorage } from "./storage";
 // DOM操作用の定数
 const SELECTORS = {
   RUBYFUL_RT: ".rubyful-rt",
-  RUBYFUL_RT_UNPROCESSED: ".rubyful-rt:not(.rubyful-processed)",
 } as const;
 
 const CLASSES = {
   HIDDEN: "hidden",
-  RUBYFUL_PROCESSED: "rubyful-processed",
 } as const;
 
 class RubyfulClient {
@@ -77,10 +75,6 @@ class RubyfulClient {
   getIsEnabledFromStorage(): boolean {
     return getRubyEnabledFromStorage();
   }
-
-  /**
-   * DOM変更を監視してルビの表示状態を維持
-   */
 }
 
 // シングルトンインスタンスをexport

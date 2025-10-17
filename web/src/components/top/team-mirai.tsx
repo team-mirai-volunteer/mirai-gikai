@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ManualRuby } from "@/lib/rubyful/manual-ruby";
 import { SOCIAL_LINKS } from "@/lib/social-links";
 import { LinkButton } from "./link-button";
 
@@ -35,7 +36,9 @@ export function TeamMirai() {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-3">
             <p className="text-[15px] leading-[28px] text-black">
-              参議院議員・AIエンジニアの安野たかひろが立ち上げた政党です。テクノロジーで政治の課題を解決することを目指しています。
+              参議院議員・AIエンジニアの
+              <ManualRuby ruby="あんの">安野</ManualRuby>
+              たかひろが立ち上げた政党です。テクノロジーで政治の課題を解決することを目指しています。
             </p>
           </div>
 
