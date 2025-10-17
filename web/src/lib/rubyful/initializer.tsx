@@ -26,18 +26,16 @@ export function RubyfulInitializer() {
         if (typeof window !== "undefined" && window.RubyfulV2) {
           const isEnabled = rubyfulClient.getIsEnabledFromStorage();
           if (!isEnabled) return;
-          // Rubyful V2を初期化（デフォルトで非表示）
+          // Rubyful V2を初期化
           window.RubyfulV2.init({
             selector:
               "main p, main h1, main h2, main h3, main h4, main h5, main h6, main li, main td, main th, main span, main a",
-            defaultDisplay: isEnabled,
-            observeChanges: isEnabled,
+            defaultDisplay: true,
+            observeChanges: true,
             styles: {
               toggleButtonClass: "ruby-button",
             },
           });
-
-          // クライアントを初期化
         }
       }}
     />
