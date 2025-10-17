@@ -13,10 +13,6 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
   );
 }
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error("環境変数 OPENAI_API_KEY が設定されていません");
-}
-
 const chatDailyCostLimitUsdRaw = process.env.CHAT_DAILY_COST_LIMIT_USD || "0.5";
 
 const chatDailyCostLimitUsd = Number(chatDailyCostLimitUsdRaw);
