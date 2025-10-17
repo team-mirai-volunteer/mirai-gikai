@@ -1,5 +1,6 @@
 import { LinkButton } from "@/components/top/link-button";
 import { EXTERNAL_LINKS } from "@/config/external-links";
+import { ManualRuby } from "@/lib/rubyful/manual-ruby";
 
 export function BillDisclaimer() {
   return (
@@ -8,7 +9,9 @@ export function BillDisclaimer() {
       <div className="space-y-3">
         <h3 className="text-sm font-bold text-black">掲載コンテンツについて</h3>
         <p className="text-xs leading-relaxed text-[#4C4C4C]">
-          掲載されている法案情報は、国会に提出された議案などの公開情報を基に、チームみらいがAIを活用しながら背景情報を整理したものです。主に内閣提出法案（閣法）を対象としており、議員立法については既に実質的な審議が開始されたものや、される見込みが高いものを対象にしています。
+          掲載されている法案情報は、国会に提出された議案などの公開情報を基に、チームみらいがAIを活用しながら背景情報を整理したものです。主に内閣提出法案（
+          <ManualRuby ruby="かくほう">閣法</ManualRuby>
+          ）を対象としており、議員立法については既に実質的な審議が開始されたものや、される見込みが高いものを対象にしています。
         </p>
       </div>
 
