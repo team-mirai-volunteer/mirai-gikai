@@ -1,5 +1,7 @@
 # みらい議会
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/team-mirai-volunteer/mirai-gikai)
+
 ## セットアップ
 
 ```bash
