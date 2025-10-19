@@ -1,6 +1,6 @@
 import type { LanguageModelUsage } from "ai";
 
-type ModelPricing = {
+export type ModelPricing = {
   inputTokensPerMillionUsd: number;
   outputTokensPerMillionUsd: number;
 };
@@ -11,7 +11,7 @@ export type SanitizedUsage = {
   totalTokens: number;
 };
 
-const DEFAULT_MODEL_PRICING: Record<string, ModelPricing> = {
+export const modelPricing: Record<string, ModelPricing> = {
   "openai/gpt-4o": {
     inputTokensPerMillionUsd: 2.5,
     outputTokensPerMillionUsd: 10,
@@ -24,13 +24,7 @@ const DEFAULT_MODEL_PRICING: Record<string, ModelPricing> = {
 
 const COST_DECIMALS = 6;
 
-export function sanitizeUsage(
-  usage?: LanguageModelUsage | null
-): SanitizedUsage {
-  if (!usage) {
-    return { inputTokens: 0, outputTokens: 0, totalTokens: 0 };
-  }
-
+export function sanitizeUsage(usage: LanguageModelUsage): SanitizedUsage {
   const inputTokens = ensureInteger(usage.inputTokens);
   const outputTokens = ensureInteger(usage.outputTokens);
   let totalTokens = ensureInteger(usage.totalTokens);
@@ -56,10 +50,9 @@ export function sanitizeUsage(
 
 export function calculateUsageCostUsd(
   model: string,
-  usage: SanitizedUsage,
-  pricingMap: Record<string, ModelPricing> = DEFAULT_MODEL_PRICING
+  usage: SanitizedUsage
 ): number {
-  const pricing = pricingMap[model];
+  const pricing = modelPricing[model];
   if (!pricing) {
     throw new Error(`Unknown pricing for model "${model}"`);
   }
@@ -88,5 +81,3 @@ function ensureInteger(value: unknown): number {
 
   return Math.max(0, Math.trunc(value));
 }
-
-export const modelPricing = DEFAULT_MODEL_PRICING;

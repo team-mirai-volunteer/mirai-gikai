@@ -18,7 +18,7 @@ type RecordChatUsageParams = {
   sessionId?: string;
   promptName?: string;
   model: string;
-  usage?: LanguageModelUsage;
+  usage: LanguageModelUsage;
   occurredAt?: string;
   metadata?: ChatUsageInsert["metadata"];
 };
