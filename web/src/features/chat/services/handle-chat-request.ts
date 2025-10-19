@@ -1,4 +1,5 @@
 import { openai } from "@ai-sdk/openai";
+import type { Database } from "@mirai-gikai/supabase";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
@@ -9,6 +10,7 @@ import {
   createPromptProvider,
   type PromptProvider,
 } from "@/lib/prompt";
+import { getUsageCostUsd, recordChatUsage } from "./cost-tracker";
 
 export type ChatMessageMetadata = {
   billContext?: BillWithContent;
@@ -25,6 +27,9 @@ type ChatRequestParams = {
   userId: string;
 };
 
+type ChatUsageMetadata =
+  Database["public"]["Tables"]["chat_usage_events"]["Insert"]["metadata"];
+
 /**
  * チャットリクエストを処理してストリーミングレスポンスを返す
  */
@@ -39,7 +44,7 @@ export async function handleChatRequest({
 
   try {
     // Check cost limit before processing
-    const isWithinLimit = await isWithinCostLimit(userId, promptProvider);
+    const isWithinLimit = await isWithinCostLimit(userId);
     if (!isWithinLimit) {
       throw new ChatError(ChatErrorCode.DAILY_COST_LIMIT_REACHED);
     }
@@ -70,6 +75,20 @@ export async function handleChatRequest({
       tools: {
         // biome-ignore lint/suspicious/noExplicitAny: OpenAI web_search tool type incompatibility
         web_search: openai.tools.webSearch() as any,
+      },
+      onFinish: async (event) => {
+        try {
+          await recordChatUsage({
+            userId,
+            sessionId: context.sessionId || undefined,
+            promptName,
+            model,
+            usage: event.totalUsage,
+            metadata: buildUsageMetadata(context, event),
+          });
+        } catch (usageError) {
+          console.error("Failed to record chat usage:", usageError);
+        }
       },
       experimental_telemetry: {
         isEnabled: true,
@@ -108,12 +127,9 @@ function extractChatContext(
 /**
  * ユーザーがコストリミット内かどうかを判定
  */
-async function isWithinCostLimit(
-  userId: string,
-  promptProvider: PromptProvider
-): Promise<boolean> {
+async function isWithinCostLimit(userId: string): Promise<boolean> {
   const jstDayRange = getJstDayRange();
-  const usedCost = await promptProvider.getUsageCostUsd(
+  const usedCost = await getUsageCostUsd(
     userId,
     jstDayRange.from,
     jstDayRange.to
@@ -204,5 +220,26 @@ function buildTelemetryMetadata(
     difficultyLevel: context.difficultyLevel,
     userId,
     sessionId: context.sessionId,
+  };
+}
+
+function buildUsageMetadata(
+  context: ChatMessageMetadata,
+  finishEvent: { finishReason?: unknown; steps?: unknown[] }
+): ChatUsageMetadata {
+  const finishReason =
+    typeof finishEvent.finishReason === "string"
+      ? finishEvent.finishReason
+      : null;
+  const stepCount = Array.isArray(finishEvent.steps)
+    ? finishEvent.steps.length
+    : 0;
+
+  return {
+    pageType: context.pageContext?.type ?? null,
+    difficultyLevel: context.difficultyLevel,
+    billId: context.billContext?.id ?? null,
+    finishReason,
+    stepCount,
   };
 }
