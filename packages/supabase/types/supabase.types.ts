@@ -150,6 +150,51 @@ export type Database = {
           },
         ]
       }
+      chat_usage_events: {
+        Row: {
+          cost_usd: number
+          created_at: string
+          id: string
+          input_tokens: number
+          metadata: Json | null
+          model: string
+          occurred_at: string
+          output_tokens: number
+          prompt_name: string | null
+          session_id: string | null
+          total_tokens: number
+          user_id: string
+        }
+        Insert: {
+          cost_usd?: number
+          created_at?: string
+          id?: string
+          input_tokens?: number
+          metadata?: Json | null
+          model: string
+          occurred_at?: string
+          output_tokens?: number
+          prompt_name?: string | null
+          session_id?: string | null
+          total_tokens?: number
+          user_id: string
+        }
+        Update: {
+          cost_usd?: number
+          created_at?: string
+          id?: string
+          input_tokens?: number
+          metadata?: Json | null
+          model?: string
+          occurred_at?: string
+          output_tokens?: number
+          prompt_name?: string | null
+          session_id?: string | null
+          total_tokens?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       chats: {
         Row: {
           bill_id: string
