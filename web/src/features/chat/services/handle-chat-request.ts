@@ -260,7 +260,7 @@ function extractGatewayCost(event: {
     }
   ).gateway?.cost;
 
-  return typeof gatewayCost === "number" && Number.isFinite(gatewayCost)
-    ? gatewayCost
-    : undefined;
+  const numericCost = Number(gatewayCost);
+
+  return Number.isFinite(numericCost) ? numericCost : undefined;
 }
