@@ -23,12 +23,12 @@ export function TextSelectionTooltip({
     return null;
   }
 
-  const buttonSize = "text-xs h-7 px-2";
+  const buttonSize = "text-xs h-11 !px-4";
   const iconSize = "h-3 w-3";
 
   return (
     <div
-      className={`fixed z-10 bg-white border border-gray-200 rounded-md shadow-lg p-1`}
+      className={`fixed z-10 bg-white border border-gray-200 rounded-md shadow-lg`}
       style={position}
     >
       <div className="flex items-center gap-1">
