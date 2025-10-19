@@ -1,5 +1,6 @@
 import { MessageCircleQuestion } from "lucide-react";
 import Image from "next/image";
+import { ManualRuby } from "@/lib/rubyful/manual-ruby";
 
 export function LongPressSection() {
   return (
@@ -13,7 +14,10 @@ export function LongPressSection() {
             <span className="inline-block px-1">わからない言葉を</span>
             <br className="pc:hidden" />
             <span className="inline-block bg-[#B2D3E8] px-1">
-              <span className="pc:hidden">長押しで</span>選択する
+              <span className="pc:hidden">
+                <ManualRuby ruby="なが">長</ManualRuby>押しで
+              </span>
+              選択する
             </span>
             と
           </p>
