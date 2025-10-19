@@ -1,0 +1,92 @@
+import type { LanguageModelUsage } from "ai";
+
+type ModelPricing = {
+  inputTokensPerMillionUsd: number;
+  outputTokensPerMillionUsd: number;
+};
+
+export type SanitizedUsage = {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+};
+
+const DEFAULT_MODEL_PRICING: Record<string, ModelPricing> = {
+  "openai/gpt-4o": {
+    inputTokensPerMillionUsd: 2.5,
+    outputTokensPerMillionUsd: 10,
+  },
+  "openai/gpt-4o-mini": {
+    inputTokensPerMillionUsd: 0.15,
+    outputTokensPerMillionUsd: 0.6,
+  },
+};
+
+const COST_DECIMALS = 6;
+
+export function sanitizeUsage(
+  usage?: LanguageModelUsage | null
+): SanitizedUsage {
+  if (!usage) {
+    return { inputTokens: 0, outputTokens: 0, totalTokens: 0 };
+  }
+
+  const inputTokens = ensureInteger(usage.inputTokens);
+  const outputTokens = ensureInteger(usage.outputTokens);
+  let totalTokens = ensureInteger(usage.totalTokens);
+
+  if (inputTokens > 0 || outputTokens > 0) {
+    if (totalTokens <= 0) {
+      totalTokens = ensureInteger(inputTokens + outputTokens);
+    }
+    return { inputTokens, outputTokens, totalTokens };
+  }
+
+  if (totalTokens > 0) {
+    const half = Math.floor(totalTokens / 2);
+    return {
+      inputTokens: half,
+      outputTokens: totalTokens - half,
+      totalTokens,
+    };
+  }
+
+  return { inputTokens: 0, outputTokens: 0, totalTokens: 0 };
+}
+
+export function calculateUsageCostUsd(
+  model: string,
+  usage: SanitizedUsage,
+  pricingMap: Record<string, ModelPricing> = DEFAULT_MODEL_PRICING
+): number {
+  const pricing = pricingMap[model];
+  if (!pricing) {
+    throw new Error(`Unknown pricing for model "${model}"`);
+  }
+
+  const inputCost =
+    (pricing.inputTokensPerMillionUsd * usage.inputTokens) / 1_000_000;
+  const outputCost =
+    (pricing.outputTokensPerMillionUsd * usage.outputTokens) / 1_000_000;
+
+  return roundCost(inputCost + outputCost);
+}
+
+export function roundCost(value: number): number {
+  if (!Number.isFinite(value) || value <= 0) {
+    return 0;
+  }
+
+  const scale = 10 ** COST_DECIMALS;
+  return Math.round(value * scale) / scale;
+}
+
+function ensureInteger(value: unknown): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return 0;
+  }
+
+  return Math.max(0, Math.trunc(value));
+}
+
+export const modelPricing = DEFAULT_MODEL_PRICING;
