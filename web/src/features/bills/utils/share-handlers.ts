@@ -18,6 +18,14 @@ export function shareOnLine(message: string, url: string) {
   window.open(shareUrl, "_blank", "noopener,noreferrer");
 }
 
+export function shareOnThreads(message: string, url: string) {
+  const text = `${message} ${url}`;
+  const shareUrl = `https://www.threads.net/intent/post?text=${encodeURIComponent(
+    text
+  )}`;
+  window.open(shareUrl, "_blank", "noopener,noreferrer");
+}
+
 export async function shareNative(message: string, url: string) {
   // Web Share API が利用可能な場合
   if (navigator.share) {
