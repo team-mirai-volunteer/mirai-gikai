@@ -6,6 +6,8 @@ import type { LanguageModelUsage } from "ai";
 
 import {
   calculateUsageCostUsd,
+  roundCost,
+  type SanitizedUsage,
   sanitizeUsage,
 } from "@/lib/ai/calculate-ai-cost";
 
@@ -21,6 +23,7 @@ type RecordChatUsageParams = {
   usage: LanguageModelUsage;
   occurredAt?: string;
   metadata?: ChatUsageInsert["metadata"];
+  costUsd?: number | null;
 };
 
 export async function recordChatUsage({
@@ -31,11 +34,12 @@ export async function recordChatUsage({
   usage,
   occurredAt,
   metadata,
+  costUsd,
 }: RecordChatUsageParams) {
   const supabase = createAdminClient();
 
-  const sanitizedUsage = sanitizeUsage(usage);
-  const costUsdNumber = calculateUsageCostUsd(model, sanitizedUsage);
+  const sanitizedUsage = sanitizeUsage(usage ?? undefined);
+  const costUsdNumber = resolveCostUsd(model, sanitizedUsage, costUsd);
   const payload: ChatUsageInsert = {
     user_id: userId,
     session_id: sessionId ?? null,
@@ -84,4 +88,24 @@ export async function getUsageCostUsd(
 function parseCost(row: Pick<ChatUsageRow, "cost_usd">): number {
   const value = Number(row.cost_usd);
   return Number.isFinite(value) ? value : 0;
+}
+
+function resolveCostUsd(
+  model: string,
+  usage: SanitizedUsage,
+  costOverride?: number | null
+): number {
+  if (typeof costOverride === "number" && Number.isFinite(costOverride)) {
+    return roundCost(costOverride);
+  }
+
+  if (usage.inputTokens > 0 || usage.outputTokens > 0) {
+    try {
+      return calculateUsageCostUsd(model, usage);
+    } catch (error) {
+      console.error("Failed to calculate usage cost:", error);
+    }
+  }
+
+  return 0;
 }

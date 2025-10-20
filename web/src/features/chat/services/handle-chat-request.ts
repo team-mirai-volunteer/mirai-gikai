@@ -78,12 +78,14 @@ export async function handleChatRequest({
       },
       onFinish: async (event) => {
         try {
+          const providerCost = extractGatewayCost(event);
           await recordChatUsage({
             userId,
             sessionId: context.sessionId || undefined,
             promptName,
             model,
             usage: event.totalUsage,
+            costUsd: providerCost,
             metadata: buildUsageMetadata(context, event),
           });
         } catch (usageError) {
@@ -242,4 +244,23 @@ function buildUsageMetadata(
     finishReason,
     stepCount,
   };
+}
+
+function extractGatewayCost(event: {
+  providerMetadata?: unknown;
+}): number | undefined {
+  const providerMetadata = event.providerMetadata;
+  if (!providerMetadata || typeof providerMetadata !== "object") {
+    return undefined;
+  }
+
+  const gatewayCost = (
+    providerMetadata as {
+      gateway?: { cost?: unknown };
+    }
+  ).gateway?.cost;
+
+  const numericCost = Number(gatewayCost);
+
+  return Number.isFinite(numericCost) ? numericCost : undefined;
 }
