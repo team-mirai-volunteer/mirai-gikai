@@ -31,7 +31,7 @@ export function RubySafeLineClamp({
     <p
       className={cn(
         "has-[ruby]:line-clamp-none",
-        lineClamp ? `line-clamp-${lineClamp}` : undefined,
+        resolveLineClampClass(lineClamp),
         className
       )}
       {...paragraphProps}
@@ -39,4 +39,22 @@ export function RubySafeLineClamp({
       {displayText}
     </p>
   );
+}
+
+// Tailwind needs static class names, so we map the supported clamp levels manually.
+const LINE_CLAMP_CLASS_MAP: Record<number, string> = {
+  1: "line-clamp-1",
+  2: "line-clamp-2",
+  3: "line-clamp-3",
+  4: "line-clamp-4",
+  5: "line-clamp-5",
+  6: "line-clamp-6",
+};
+
+function resolveLineClampClass(lineClamp?: number): string | undefined {
+  if (typeof lineClamp !== "number" || lineClamp <= 0) {
+    return undefined;
+  }
+
+  return LINE_CLAMP_CLASS_MAP[lineClamp];
 }
