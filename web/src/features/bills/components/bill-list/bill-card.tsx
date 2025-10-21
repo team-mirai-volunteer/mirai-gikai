@@ -49,7 +49,7 @@ export function BillCard({ bill }: BillCardProps) {
               </CardTitle>
               <RubySafeLineClamp
                 text={summary}
-                maxLength={172}
+                maxLength={132}
                 lineClamp={4}
                 className="text-sm mt-1 leading-relaxed"
               />
