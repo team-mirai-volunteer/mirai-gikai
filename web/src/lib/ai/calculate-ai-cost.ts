@@ -65,7 +65,7 @@ export function calculateUsageCostUsd(
   return roundCost(inputCost + outputCost);
 }
 
-function roundCost(value: number): number {
+export function roundCost(value: number): number {
   if (!Number.isFinite(value) || value <= 0) {
     return 0;
   }
