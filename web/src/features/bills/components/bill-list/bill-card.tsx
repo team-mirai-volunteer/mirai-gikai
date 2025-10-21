@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { RubySafeLineClamp } from "@/components/ruby-safe-line-clamp";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDateWithDots } from "@/lib/utils/date";
 import type { BillWithContent } from "../../types";
@@ -10,7 +11,7 @@ interface BillCardProps {
 
 export function BillCard({ bill }: BillCardProps) {
   const displayTitle = bill.bill_content?.title;
-  const displaySummary = bill.bill_content?.summary;
+  const summary = bill.bill_content?.summary;
 
   return (
     <Card className="hover:bg-muted/50 transition-colors relative overflow-hidden">
@@ -46,11 +47,12 @@ export function BillCard({ bill }: BillCardProps) {
               <CardTitle className="text-2xl tracking-normal leading-tight">
                 {displayTitle}
               </CardTitle>
-              {displaySummary && (
-                <p className="text-sm line-clamp-4 mt-1 leading-relaxed">
-                  {displaySummary}
-                </p>
-              )}
+              <RubySafeLineClamp
+                text={summary}
+                maxLength={172}
+                lineClamp={4}
+                className="text-sm mt-1 leading-relaxed"
+              />
               {/* タグ表示 */}
               {bill.tags && bill.tags.length > 0 && (
                 <div className="flex flex-wrap gap-3 mt-2">
