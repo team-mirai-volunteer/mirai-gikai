@@ -17,6 +17,7 @@ export default function TermsPage() {
     <LegalPageLayout
       title="利用規約"
       description="みらい議会をご利用いただくにあたっての基本的なルールを定めています。"
+      className="pt-24 md:pt-12"
     >
       <Container className="space-y-10">
         <LegalParagraph>
