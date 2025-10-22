@@ -39,6 +39,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+
+  manifest: "/site.webmanifest",
+
   openGraph: {
     title: "みらい議会",
     description:
