@@ -55,6 +55,14 @@ export async function generateMetadata({
             ],
           }),
     },
+    twitter: {
+      card: "summary_large_image",
+      title: bill.name,
+      description: description,
+      images: [
+        bill.thumbnail_url || new URL("/ogp.jpg", env.webUrl).toString(),
+      ],
+    },
   };
 }
 
