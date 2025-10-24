@@ -6,6 +6,7 @@ import {
   shareOnFacebook,
   shareOnLine,
   shareOnTwitter,
+  shareOnThreads,
 } from "@/features/bills/utils/share-handlers";
 
 interface BillShareModalProps {
@@ -41,6 +42,12 @@ export function BillShareModal({
       name: "LINE",
       iconPath: "/icons/sns/icon_line.png",
       onClick: () => shareOnLine(shareMessage, shareUrl),
+      className: "md:hidden",
+    },
+    {
+      name: "Threads",
+      iconPath: "/icons/sns/icon_threads.png",
+      onClick: () => shareOnThreads(shareMessage, shareUrl),
       className: "md:hidden",
     },
     {
@@ -105,7 +112,9 @@ export function BillShareModal({
                 key={button.name}
                 type="button"
                 onClick={button.onClick}
-                className={`w-12 h-12 flex items-center justify-center ${button.className || ""}`}
+                className={`w-12 h-12 flex items-center justify-center ${
+                  button.className || ""
+                }`}
               >
                 <Image
                   src={button.iconPath}
