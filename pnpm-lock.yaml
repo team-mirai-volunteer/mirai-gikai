@@ -287,6 +287,9 @@ importers:
       use-stick-to-bottom:
         specifier: ^1.1.1
         version: 1.1.1(react@19.1.0)
+      zod:
+        specifier: ^4.1.5
+        version: 4.1.12
     devDependencies:
       '@next/third-parties':
         specifier: ^15.5.5
