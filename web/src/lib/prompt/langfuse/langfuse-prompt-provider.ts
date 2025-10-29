@@ -1,4 +1,5 @@
 import type { Langfuse } from "langfuse";
+import { env } from "@/lib/env";
 import type { PromptProvider } from "../interface/prompt-provider";
 import type { CompiledPrompt, PromptVariables } from "../interface/types";
 
@@ -10,7 +11,9 @@ export class LangfusePromptProvider implements PromptProvider {
     variables?: PromptVariables
   ): Promise<CompiledPrompt> {
     try {
-      const fetchedPrompt = await this.client.getPrompt(name);
+      const fetchedPrompt = await this.client.getPrompt(name, {
+        label: env.langfuse.promptLabel,
+      });
 
       const content = fetchedPrompt.compile(variables || {});
 
