@@ -1,8 +1,14 @@
 import { openai } from "@ai-sdk/openai";
 import type { Database } from "@mirai-gikai/supabase";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
+import { z } from "zod";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
+import {
+  getProjectContext,
+  PROJECT_CONTEXT_SECTIONS,
+  type ProjectContextSection,
+} from "@/features/chat/tools/project-context";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
 import { env } from "@/lib/env";
 import {
@@ -29,6 +35,26 @@ type ChatRequestParams = {
 
 type ChatUsageMetadata =
   Database["public"]["Tables"]["chat_usage_events"]["Insert"]["metadata"];
+
+const projectContextToolParameters = z.object({
+  query: z
+    .string()
+    .max(200)
+    .describe(
+      "Keywords or a short question to look up Team Mirai or Mirai Gikai context from the internal knowledge base."
+    )
+    .optional(),
+  section: z
+    .string()
+    .describe(
+      `Return a specific section id from the internal knowledge base. Available sections: ${PROJECT_CONTEXT_SECTIONS.join(", ")}.`
+    )
+    .refine(
+      (value) => PROJECT_CONTEXT_SECTIONS.includes(value),
+      "section must be one of the documented project context ids"
+    )
+    .optional(),
+});
 
 /**
  * チャットリクエストを処理してストリーミングレスポンスを返す
@@ -73,6 +99,26 @@ export async function handleChatRequest({
       system: promptResult.content,
       messages: convertToModelMessages(messages),
       tools: {
+        project_context: {
+          description:
+            "Retrieve canonical information about Team Mirai and the Mirai Gikai platform from the internal knowledge base.",
+          parameters: projectContextToolParameters,
+          execute: async ({ query, section }) => {
+            const normalizedQuery = query?.trim();
+            const targetSection =
+              section && PROJECT_CONTEXT_SECTIONS.includes(section)
+                ? (section as ProjectContextSection)
+                : undefined;
+
+            return getProjectContext({
+              query:
+                normalizedQuery && normalizedQuery.length > 0
+                  ? normalizedQuery
+                  : undefined,
+              section: targetSection,
+            });
+          },
+        },
         // biome-ignore lint/suspicious/noExplicitAny: OpenAI web_search tool type incompatibility
         web_search: openai.tools.webSearch() as any,
       },
