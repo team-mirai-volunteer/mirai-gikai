@@ -70,7 +70,3 @@ CursorやDevinも10名規模のチームで運営されている
 最終的に、「みらい議会」で生まれた市民の声や議論が、チームみらいの議席を通じて永田町に届く――そんな“参加型の民主主義のアップデート”を実現します。
 
 `;
-
-export function getMiraiContext(): string {
-  return miraiKnowledgeText;
-}

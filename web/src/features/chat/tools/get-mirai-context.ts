@@ -3,12 +3,6 @@ import { z } from "zod";
 
 import { miraiKnowledgeText } from "./mirai-knowledge";
 
-type MiraiKnowledge = {
-  context: string;
-};
-
-const knowledge = getMiraiContext() as MiraiKnowledge;
-
 export function getMiraiContext(): string {
   return miraiKnowledgeText;
 }
