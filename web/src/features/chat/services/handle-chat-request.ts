@@ -4,6 +4,7 @@ import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import type { BillWithContent } from "@/features/bills/types";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
+import { projectContextTool } from "@/features/chat/tools/get-mirai-context";
 import { env } from "@/lib/env";
 import {
   type CompiledPrompt,
@@ -73,6 +74,7 @@ export async function handleChatRequest({
       system: promptResult.content,
       messages: convertToModelMessages(messages),
       tools: {
+        project_context: projectContextTool,
         // biome-ignore lint/suspicious/noExplicitAny: OpenAI web_search tool type incompatibility
         web_search: openai.tools.webSearch() as any,
       },
