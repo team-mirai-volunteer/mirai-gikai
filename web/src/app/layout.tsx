@@ -39,11 +39,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-  icons: {
-    icon: "/icons/pwa/icon_android_192.png",
-    apple: "/icons/pwa/icon_ios.png",
-  },
-  manifest: "/manifest.json",
   openGraph: {
     title: "みらい議会",
     description:
@@ -82,7 +77,6 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#2aa693",
 };
 
 export default function RootLayout({
