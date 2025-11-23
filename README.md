@@ -11,11 +11,11 @@ npx supabase start
 # 環境変数の設定（必要に応じて.envの内容を変更してください）
 cp .env.example .env
 
-# SupabaseのDB初期化, 開発用シードデータのセットアップ
-pnpm db:reset
-
 # パッケージインストール
 pnpm install
+
+# SupabaseのDB初期化, 開発用シードデータのセットアップ
+pnpm db:reset
 
 # サーバー起動
 pnpm dev
