@@ -36,9 +36,6 @@ export const metadata: Metadata = {
     "解説",
     "チームみらい",
   ],
-  alternates: {
-    canonical: "/",
-  },
   icons: {
     icon: "/icons/pwa/icon_android_192.png",
     apple: "/icons/pwa/icon_ios.png",
