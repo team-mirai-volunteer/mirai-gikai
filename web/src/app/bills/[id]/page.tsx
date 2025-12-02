@@ -27,8 +27,9 @@ export async function generateMetadata({
   const description = bill.bill_content?.summary || "議案の詳細情報";
   const defaultOgpUrl = new URL("/ogp.jpg", env.webUrl).toString();
 
-  // Twitter/シェア用OGP画像（share_thumbnail_url > thumbnail_url > デフォルト）
-  const twitterImageUrl =
+  // シェア用OGP画像（share_thumbnail_url > thumbnail_url > デフォルト）
+  // ページ表示用のthumbnail_urlとは別に、SNSシェア用の画像を優先
+  const shareImageUrl =
     bill.share_thumbnail_url || bill.thumbnail_url || defaultOgpUrl;
 
   return {
@@ -43,31 +44,18 @@ export async function generateMetadata({
       type: "article",
       publishedTime: bill.published_at ?? undefined,
       modifiedTime: bill.updated_at,
-      ...(bill.thumbnail_url
-        ? {
-            images: [
-              {
-                url: bill.thumbnail_url,
-                alt: `${bill.name} のサムネイル`,
-              },
-            ],
-          }
-        : {
-            images: [
-              {
-                url: defaultOgpUrl,
-                width: 1200,
-                height: 630,
-                alt: "みらい議会のOGPイメージ",
-              },
-            ],
-          }),
+      images: [
+        {
+          url: shareImageUrl,
+          alt: `${bill.name} のOGPイメージ`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: bill.name,
       description: description,
-      images: [twitterImageUrl],
+      images: [shareImageUrl],
     },
   };
 }
