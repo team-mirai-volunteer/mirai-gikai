@@ -25,6 +25,11 @@ export async function generateMetadata({
 
   // bill_contentのsummaryがあればそれを使用、なければデフォルト値を使用
   const description = bill.bill_content?.summary || "議案の詳細情報";
+  const defaultOgpUrl = new URL("/ogp.jpg", env.webUrl).toString();
+
+  // Twitter/シェア用OGP画像（share_thumbnail_url > thumbnail_url > デフォルト）
+  const twitterImageUrl =
+    bill.share_thumbnail_url || bill.thumbnail_url || defaultOgpUrl;
 
   return {
     title: bill.name,
@@ -50,7 +55,7 @@ export async function generateMetadata({
         : {
             images: [
               {
-                url: new URL("/ogp.jpg", env.webUrl).toString(),
+                url: defaultOgpUrl,
                 width: 1200,
                 height: 630,
                 alt: "みらい議会のOGPイメージ",
@@ -62,9 +67,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: bill.name,
       description: description,
-      images: [
-        bill.thumbnail_url || new URL("/ogp.jpg", env.webUrl).toString(),
-      ],
+      images: [twitterImageUrl],
     },
   };
 }

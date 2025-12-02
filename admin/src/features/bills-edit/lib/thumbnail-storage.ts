@@ -15,7 +15,8 @@ export interface DeleteResult {
  */
 export async function uploadThumbnail(
   file: File,
-  billId?: string
+  billId?: string,
+  storagePrefix?: string
 ): Promise<UploadResult> {
   const supabase = createBrowserClient();
 
@@ -32,7 +33,8 @@ export async function uploadThumbnail(
   try {
     // 新しいファイル名を生成
     const fileExt = file.name.split(".").pop();
-    const fileName = `${billId || "new"}_${Date.now()}.${fileExt}`;
+    const prefix = storagePrefix ? `${storagePrefix}_` : "";
+    const fileName = `${prefix}${billId || "new"}_${Date.now()}.${fileExt}`;
 
     // ファイルをアップロード
     const { data, error } = await supabase.storage
