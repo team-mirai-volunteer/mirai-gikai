@@ -84,6 +84,7 @@ export type Database = {
           originating_house: Database["public"]["Enums"]["house_enum"]
           publish_status: Database["public"]["Enums"]["bill_publish_status"]
           published_at: string | null
+          share_thumbnail_url: string | null
           status: Database["public"]["Enums"]["bill_status_enum"]
           status_note: string | null
           thumbnail_url: string | null
@@ -97,6 +98,7 @@ export type Database = {
           originating_house: Database["public"]["Enums"]["house_enum"]
           publish_status?: Database["public"]["Enums"]["bill_publish_status"]
           published_at?: string | null
+          share_thumbnail_url?: string | null
           status: Database["public"]["Enums"]["bill_status_enum"]
           status_note?: string | null
           thumbnail_url?: string | null
@@ -110,6 +112,7 @@ export type Database = {
           originating_house?: Database["public"]["Enums"]["house_enum"]
           publish_status?: Database["public"]["Enums"]["bill_publish_status"]
           published_at?: string | null
+          share_thumbnail_url?: string | null
           status?: Database["public"]["Enums"]["bill_status_enum"]
           status_note?: string | null
           thumbnail_url?: string | null

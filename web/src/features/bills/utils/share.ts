@@ -46,6 +46,7 @@ export async function getBillShareData(bill: BillWithContent) {
   return {
     shareUrl: createBillShareUrl(origin, bill.id, difficulty),
     shareMessage: createShareMessage(bill),
-    thumbnailUrl: bill.thumbnail_url,
+    // シェア用OGP画像を優先的に使用、なければ通常のサムネイル
+    thumbnailUrl: bill.share_thumbnail_url || bill.thumbnail_url,
   };
 }

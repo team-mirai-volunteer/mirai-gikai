@@ -11,12 +11,14 @@ interface ThumbnailUploadProps {
   value?: string | null;
   onChange: (url: string | null) => void;
   billId?: string;
+  storagePrefix?: string;
 }
 
 export function ThumbnailUpload({
   value,
   onChange,
   billId,
+  storagePrefix,
 }: ThumbnailUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
 
@@ -33,7 +35,7 @@ export function ThumbnailUpload({
       }
 
       // 新しいファイルをアップロード
-      const result = await uploadThumbnail(file, billId);
+      const result = await uploadThumbnail(file, billId, storagePrefix);
 
       if (result.error) {
         alert(result.error);

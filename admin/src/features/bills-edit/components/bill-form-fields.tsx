@@ -187,6 +187,28 @@ export function BillFormFields({ control, billId }: BillFormFieldsProps) {
 
       <FormField
         control={control}
+        name="share_thumbnail_url"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>シェア用OGP画像</FormLabel>
+            <FormControl>
+              <ThumbnailUpload
+                value={field.value}
+                onChange={field.onChange}
+                billId={billId}
+                storagePrefix="share"
+              />
+            </FormControl>
+            <FormDescription>
+              Twitter等のSNSでシェアされた際に表示される画像を設定してください（任意）。設定しない場合はサムネイル画像が使用されます。
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
         name="is_featured"
         render={({ field }) => (
           <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
