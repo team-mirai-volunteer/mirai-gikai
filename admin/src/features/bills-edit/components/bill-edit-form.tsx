@@ -30,6 +30,7 @@ export function BillEditForm({ bill }: BillEditFormProps) {
         ? new Date(bill.published_at).toISOString().slice(0, 16)
         : "",
       thumbnail_url: bill.thumbnail_url,
+      share_thumbnail_url: bill.share_thumbnail_url,
       is_featured: bill.is_featured,
     },
   });

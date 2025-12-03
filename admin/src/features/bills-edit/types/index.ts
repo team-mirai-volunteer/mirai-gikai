@@ -30,6 +30,7 @@ const billBaseSchema = z.object({
     .nullable(),
   published_at: z.string().optional(),
   thumbnail_url: z.string().nullable().optional(),
+  share_thumbnail_url: z.string().nullable().optional(),
   is_featured: z.boolean(),
 });
 
