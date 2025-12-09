@@ -19,7 +19,15 @@ export type BillStatusEnum = Database["public"]["Enums"]["bill_status_enum"];
 export type StanceTypeEnum = Database["public"]["Enums"]["stance_type_enum"];
 
 // 公開ステータス型（議案の公開/非公開を管理）
-export type BillPublishStatus = "draft" | "published";
+export type BillPublishStatus = "draft" | "published" | "coming_soon";
+
+// Coming Soon議案の型（最小限の情報のみ）
+export type ComingSoonBill = {
+  id: string;
+  name: string;
+  originating_house: HouseEnum;
+  shugiin_url: string | null;
+};
 
 // Combined types for UI
 export type BillWithStance = Bill & {

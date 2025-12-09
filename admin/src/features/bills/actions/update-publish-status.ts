@@ -12,6 +12,26 @@ interface UpdatePublishStatusResult {
 }
 
 // フォームアクション用のラッパー関数
+export async function updatePublishStatusAction(formData: FormData) {
+  await requireAdmin();
+
+  const billId = formData.get("billId") as string;
+  const newStatus = formData.get("newStatus") as BillPublishStatus;
+
+  if (!billId || !newStatus) {
+    throw new Error("必要なパラメータが不足しています");
+  }
+
+  const result = await _updateBillPublishStatus(billId, newStatus);
+
+  if (!result.success) {
+    throw new Error(result.error || "ステータスの更新に失敗しました");
+  }
+
+  revalidatePath("/bills");
+}
+
+// 後方互換性のためのエイリアス（toggleからupdateへ移行）
 export async function togglePublishStatusAction(formData: FormData) {
   await requireAdmin();
 

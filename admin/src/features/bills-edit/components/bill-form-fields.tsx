@@ -209,6 +209,28 @@ export function BillFormFields({ control, billId }: BillFormFieldsProps) {
 
       <FormField
         control={control}
+        name="shugiin_url"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>衆議院URL</FormLabel>
+            <FormControl>
+              <Input
+                {...field}
+                value={field.value || ""}
+                placeholder="https://www.shugiin.go.jp/..."
+              />
+            </FormControl>
+            <FormDescription>
+              衆議院の議案ページURLを入力してください（Coming
+              Soon表示時に外部リンクとして使用）
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
         name="is_featured"
         render={({ field }) => (
           <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">

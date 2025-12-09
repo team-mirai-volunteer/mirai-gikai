@@ -15,7 +15,7 @@ import { CurrentDietSession } from "@/features/diet-sessions/components/current-
 import { getJapanTime } from "@/lib/utils/date";
 
 export default async function Home() {
-  const { billsByTag, featuredBills } = await loadHomeData();
+  const { billsByTag, featuredBills, comingSoonBills } = await loadHomeData();
 
   // ゆくゆくタグ機能がマージされたらBFFに統合する
   const [currentSession, currentDifficulty] = await Promise.all([
@@ -50,7 +50,7 @@ export default async function Home() {
             <BillsByTagSection billsByTag={billsByTag} />
 
             {/* Coming soonセクション */}
-            <ComingSoonSection />
+            <ComingSoonSection bills={comingSoonBills} />
           </main>
         </div>
 
