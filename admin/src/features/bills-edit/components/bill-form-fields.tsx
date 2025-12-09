@@ -221,8 +221,7 @@ export function BillFormFields({ control, billId }: BillFormFieldsProps) {
               />
             </FormControl>
             <FormDescription>
-              衆議院の議案ページURLを入力してください（Coming
-              Soon表示時に外部リンクとして使用）
+              衆議院の議案ページURLを入力してください（「これから掲載される法案」表示時に外部リンクとして使用）
             </FormDescription>
             <FormMessage />
           </FormItem>
