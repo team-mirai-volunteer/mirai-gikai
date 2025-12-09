@@ -19,7 +19,7 @@ export function ComingSoonSection({ bills }: ComingSoonSectionProps) {
       {/* ヘッダー */}
       <div className="flex flex-col gap-2">
         <h2 className="text-[22px] font-bold text-black leading-[1.48]">
-          これから追加される法案
+          これから掲載される法案
         </h2>
         <p className="text-xs text-[#404040]">
           みらい議会は、順次更新されていきます
