@@ -180,6 +180,10 @@
     background-image: linear-gradient(to bottom right, #64d8c6, #bcecd3);
   }
 
+  .bg-mirai-light-gradient {
+    background-image: linear-gradient(to bottom, #E2F6F3, #EEF6E2);
+  }
+
   .font-lexend {
     font-family: var(--font-lexend-giga), system-ui, sans-serif;
   }

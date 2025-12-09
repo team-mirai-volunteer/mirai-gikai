@@ -21,7 +21,7 @@ const badgeVariants = cva(
           "border-muted-foreground/50 bg-white text-muted-foreground [a&]:hover:bg-gray-50",
         dark: "border-transparent bg-gray-300 text-black [a&]:hover:bg-gray-400",
         light:
-          "border-primary bg-primary/20 text-foreground [a&]:hover:bg-primary/30",
+          "border-[#9ECFC5] bg-mirai-light-gradient text-foreground [a&]:hover:opacity-90",
       },
     },
     defaultVariants: {
