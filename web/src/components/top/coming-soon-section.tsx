@@ -40,7 +40,8 @@ export function ComingSoonSection({ bills }: ComingSoonSectionProps) {
           rel="noopener noreferrer"
           className="hover:opacity-80 inline-flex items-center gap-1"
         >
-          国会に提出されているすべての法案は 国会議案情報へ
+          国会に提出されているすべての法案は{" "}
+          <span className="underline">国会議案情報へ</span>
           <ExternalLink className="h-3 w-3" />
         </Link>
       </div>
