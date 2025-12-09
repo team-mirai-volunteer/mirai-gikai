@@ -22,45 +22,38 @@ const lexendGiga = Lexend_Giga({
   weight: ["400", "500", "700", "800", "900"],
 });
 
+const siteTitle = "みらい議会｜チームみらい";
+const siteDescription =
+  "国会で今どんな法案が検討されているか、わかりやすく伝えるプラットフォーム";
+const siteName = "みらい議会";
+const ogImage = {
+  url: "/ogp.jpg",
+  width: 1200,
+  height: 630,
+  alt: "みらい議会のOGPイメージ",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(env.webUrl),
-  title: "みらい議会",
-  description:
-    "国会で今どんな法案が検討されているか、わかりやすく伝えるプラットフォーム",
-  keywords: [
-    "みらい議会",
-    "議案",
-    "政治",
-    "日本",
-    "政策",
-    "解説",
-    "チームみらい",
-  ],
+  title: siteTitle,
+  description: siteDescription,
+  keywords: [siteName, "議案", "政治", "日本", "政策", "解説", "チームみらい"],
   icons: {
     icon: "/icons/pwa/icon_android_192.png",
     apple: "/icons/pwa/icon_ios.png",
   },
   manifest: "/manifest.json",
   openGraph: {
-    title: "みらい議会",
-    description:
-      "国会で今どんな法案が検討されているか、わかりやすく伝えるプラットフォーム",
-    images: [
-      {
-        url: "/ogp.jpg",
-        width: 1200,
-        height: 630,
-        alt: "みらい議会のOGPイメージ",
-      },
-    ],
-    siteName: "みらい議会",
+    title: siteTitle,
+    description: siteDescription,
+    images: [ogImage],
+    siteName,
   },
   twitter: {
     card: "summary_large_image",
-    title: "みらい議会",
-    description:
-      "国会で今どんな法案が検討されているか、わかりやすく伝えるプラットフォーム",
-    images: ["/ogp.jpg"],
+    title: siteTitle,
+    description: siteDescription,
+    images: [ogImage.url],
   },
   robots: {
     index: true,
