@@ -15,9 +15,21 @@ const _getCachedComingSoonBills = unstable_cache(
   async (): Promise<ComingSoonBill[]> => {
     const supabase = createAdminClient();
 
+    // bill_contentsからタイトルも取得（normalレベルを優先）
     const { data, error } = await supabase
       .from("bills")
-      .select("id, name, originating_house, shugiin_url")
+      .select(
+        `
+        id,
+        name,
+        originating_house,
+        shugiin_url,
+        bill_contents (
+          title,
+          difficulty_level
+        )
+      `
+      )
       .eq("publish_status", "coming_soon")
       .order("created_at", { ascending: false });
 
@@ -30,7 +42,25 @@ const _getCachedComingSoonBills = unstable_cache(
       return [];
     }
 
-    return data;
+    // bill_contentsからtitleを抽出（normalを優先）
+    return data.map((bill) => {
+      const contents = bill.bill_contents as Array<{
+        title: string;
+        difficulty_level: string;
+      }> | null;
+      const normalContent = contents?.find(
+        (c) => c.difficulty_level === "normal"
+      );
+      const anyContent = contents?.[0];
+
+      return {
+        id: bill.id,
+        name: bill.name,
+        title: normalContent?.title || anyContent?.title || null,
+        originating_house: bill.originating_house,
+        shugiin_url: bill.shugiin_url,
+      };
+    });
   },
   ["coming-soon-bills-list"],
   {
