@@ -51,6 +51,9 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
   };
 
   const styles = getStanceStyles();
+  const comment = isPreparing
+    ? "法案提出後に賛否を表明します。"
+    : stance?.comment;
 
   return (
     <>
@@ -81,13 +84,11 @@ export function MiraiStanceCard({ stance, billStatus }: MiraiStanceCardProps) {
             </div>
 
             {/* コメント部分 */}
-            {(isPreparing || stance?.comment) && (
+            {comment != null && (
               <div className="flex flex-col gap-2">
                 <h3 className="text-lg font-bold">コメント・理由</h3>
                 <p className="text-base font-medium leading-relaxed whitespace-pre-wrap">
-                  {isPreparing
-                    ? "法案提出後に賛否を表明します。"
-                    : stance?.comment}
+                  {comment}
                 </p>
               </div>
             )}
