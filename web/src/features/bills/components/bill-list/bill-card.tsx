@@ -48,11 +48,7 @@ export function BillCard({ bill }: BillCardProps) {
               <CardTitle className="text-2xl tracking-normal leading-tight">
                 {displayTitle}
               </CardTitle>
-              <BillStatusBadge
-                status={bill.status}
-                originatingHouse={bill.originating_house}
-                className="w-fit"
-              />
+              <BillStatusBadge status={bill.status} className="w-fit" />
               <RubySafeLineClamp
                 text={summary}
                 maxLength={132}
