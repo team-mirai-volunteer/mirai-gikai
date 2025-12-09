@@ -28,13 +28,13 @@ export function BillStatusBadge({ status, className }: BillStatusBadgeProps) {
     switch (status) {
       case "in_originating_house":
       case "in_receiving_house":
-        return "outline";
+        return "success-light";
       case "enacted":
         return "default";
       case "rejected":
-        return "destructive";
-      default:
         return "secondary";
+      default:
+        return "outline";
     }
   };
 
