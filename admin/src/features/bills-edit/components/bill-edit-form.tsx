@@ -31,6 +31,7 @@ export function BillEditForm({ bill }: BillEditFormProps) {
         : "",
       thumbnail_url: bill.thumbnail_url,
       share_thumbnail_url: bill.share_thumbnail_url,
+      shugiin_url: bill.shugiin_url,
       is_featured: bill.is_featured,
     },
   });

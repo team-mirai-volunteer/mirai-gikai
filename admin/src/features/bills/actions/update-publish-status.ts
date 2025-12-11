@@ -12,18 +12,15 @@ interface UpdatePublishStatusResult {
 }
 
 // フォームアクション用のラッパー関数
-export async function togglePublishStatusAction(formData: FormData) {
+export async function updatePublishStatusAction(formData: FormData) {
   await requireAdmin();
 
   const billId = formData.get("billId") as string;
-  const currentStatus = formData.get("currentStatus") as BillPublishStatus;
+  const newStatus = formData.get("newStatus") as BillPublishStatus;
 
-  if (!billId || !currentStatus) {
+  if (!billId || !newStatus) {
     throw new Error("必要なパラメータが不足しています");
   }
-
-  const newStatus: BillPublishStatus =
-    currentStatus === "published" ? "draft" : "published";
 
   const result = await _updateBillPublishStatus(billId, newStatus);
 

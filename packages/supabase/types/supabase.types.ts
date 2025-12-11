@@ -85,6 +85,7 @@ export type Database = {
           publish_status: Database["public"]["Enums"]["bill_publish_status"]
           published_at: string | null
           share_thumbnail_url: string | null
+          shugiin_url: string | null
           status: Database["public"]["Enums"]["bill_status_enum"]
           status_note: string | null
           thumbnail_url: string | null
@@ -99,6 +100,7 @@ export type Database = {
           publish_status?: Database["public"]["Enums"]["bill_publish_status"]
           published_at?: string | null
           share_thumbnail_url?: string | null
+          shugiin_url?: string | null
           status: Database["public"]["Enums"]["bill_status_enum"]
           status_note?: string | null
           thumbnail_url?: string | null
@@ -113,6 +115,7 @@ export type Database = {
           publish_status?: Database["public"]["Enums"]["bill_publish_status"]
           published_at?: string | null
           share_thumbnail_url?: string | null
+          shugiin_url?: string | null
           status?: Database["public"]["Enums"]["bill_status_enum"]
           status_note?: string | null
           thumbnail_url?: string | null
@@ -371,7 +374,7 @@ export type Database = {
       }
     }
     Enums: {
-      bill_publish_status: "draft" | "published"
+      bill_publish_status: "draft" | "published" | "coming_soon"
       bill_status_enum:
         | "introduced"
         | "in_originating_house"
@@ -520,7 +523,7 @@ export const Constants = {
   },
   public: {
     Enums: {
-      bill_publish_status: ["draft", "published"],
+      bill_publish_status: ["draft", "published", "coming_soon"],
       bill_status_enum: [
         "introduced",
         "in_originating_house",

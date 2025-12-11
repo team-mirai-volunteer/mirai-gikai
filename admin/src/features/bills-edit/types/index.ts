@@ -7,7 +7,7 @@ export type BillUpdate = Database["public"]["Tables"]["bills"]["Update"];
 export type BillInsert = Database["public"]["Tables"]["bills"]["Insert"];
 
 // 公開ステータス型
-export type BillPublishStatus = "draft" | "published";
+export type BillPublishStatus = "draft" | "published" | "coming_soon";
 
 // 共通のバリデーションスキーマ
 const billBaseSchema = z.object({
@@ -31,6 +31,14 @@ const billBaseSchema = z.object({
   published_at: z.string().optional(),
   thumbnail_url: z.string().nullable().optional(),
   share_thumbnail_url: z.string().nullable().optional(),
+  shugiin_url: z
+    .string()
+    .transform((val) => (val === "" ? null : val))
+    .nullable()
+    .refine((val) => val === null || val.startsWith("http"), {
+      message: "有効なURLを入力してください",
+    })
+    .optional(),
   is_featured: z.boolean(),
 });
 
