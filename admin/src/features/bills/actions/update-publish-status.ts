@@ -31,29 +31,6 @@ export async function updatePublishStatusAction(formData: FormData) {
   revalidatePath("/bills");
 }
 
-// 後方互換性のためのエイリアス（toggleからupdateへ移行）
-export async function togglePublishStatusAction(formData: FormData) {
-  await requireAdmin();
-
-  const billId = formData.get("billId") as string;
-  const currentStatus = formData.get("currentStatus") as BillPublishStatus;
-
-  if (!billId || !currentStatus) {
-    throw new Error("必要なパラメータが不足しています");
-  }
-
-  const newStatus: BillPublishStatus =
-    currentStatus === "published" ? "draft" : "published";
-
-  const result = await _updateBillPublishStatus(billId, newStatus);
-
-  if (!result.success) {
-    throw new Error(result.error || "ステータスの更新に失敗しました");
-  }
-
-  revalidatePath("/bills");
-}
-
 async function _updateBillPublishStatus(
   billId: string,
   publishStatus: BillPublishStatus
