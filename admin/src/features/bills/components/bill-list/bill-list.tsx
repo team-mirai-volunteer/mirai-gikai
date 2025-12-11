@@ -53,7 +53,8 @@ function BillCard({ bill }: { bill: Bill }) {
             billId={bill.id}
             publishStatus={bill.publish_status}
           />
-          {bill.publish_status === "draft" && (
+          {(bill.publish_status === "draft" ||
+            bill.publish_status === "coming_soon") && (
             <PreviewButton billId={bill.id} />
           )}
           {bill.publish_status === "published" && (
