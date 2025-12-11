@@ -8,11 +8,6 @@ interface ComingSoonSectionProps {
 }
 
 export function ComingSoonSection({ bills }: ComingSoonSectionProps) {
-  // bills が空の場合は何も表示しない
-  if (bills.length === 0) {
-    return null;
-  }
-
   return (
     <section className="flex flex-col gap-6">
       {/* ヘッダー */}
@@ -26,11 +21,19 @@ export function ComingSoonSection({ bills }: ComingSoonSectionProps) {
       </div>
 
       {/* Coming soonカードリスト */}
-      <div className="flex flex-col gap-3">
-        {bills.map((bill) => (
-          <ComingSoonBillCard key={bill.id} bill={bill} />
-        ))}
-      </div>
+      {bills.length === 0 ? (
+        <Card>
+          <CardContent className="flex items-center justify-center py-20">
+            <p className="text-2xl font-bold text-gray-300">Coming soon</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {bills.map((bill) => (
+            <ComingSoonBillCard key={bill.id} bill={bill} />
+          ))}
+        </div>
+      )}
 
       {/* 国会議案情報へのリンク */}
       <div className="text-right text-sm text-[#404040]">
