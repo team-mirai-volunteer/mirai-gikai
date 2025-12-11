@@ -1,4 +1,5 @@
 import { getBillsByFeaturedTags } from "@/features/bills/api/get-bills-by-featured-tags";
+import { getComingSoonBills } from "../api/get-coming-soon-bills";
 import { getFeaturedBills } from "../api/get-featured-bills";
 
 /**
@@ -6,13 +7,15 @@ import { getFeaturedBills } from "../api/get-featured-bills";
  * BFF (Backend For Frontend) パターン
  */
 export async function loadHomeData() {
-  const [featuredBills, billsByTag] = await Promise.all([
+  const [featuredBills, billsByTag, comingSoonBills] = await Promise.all([
     getFeaturedBills(),
     getBillsByFeaturedTags(),
+    getComingSoonBills(),
   ]);
 
   return {
     billsByTag,
     featuredBills,
+    comingSoonBills,
   };
 }

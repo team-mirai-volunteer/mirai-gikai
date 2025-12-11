@@ -25,6 +25,7 @@ export function BillCreateForm() {
       published_at: new Date().toISOString().slice(0, 16),
       thumbnail_url: null,
       share_thumbnail_url: null,
+      shugiin_url: null,
       is_featured: false,
     },
   });

@@ -1,35 +1,47 @@
 import { Badge } from "@/components/ui/badge";
-import type { BillStatusEnum, HouseEnum } from "../../types";
-import { getBillStatusLabel } from "../../types";
+import type { BillStatusEnum } from "../../types";
 
 interface BillStatusBadgeProps {
   status: BillStatusEnum;
-  originatingHouse?: HouseEnum | null;
   className?: string;
 }
 
-export function BillStatusBadge({
-  status,
-  originatingHouse,
-  className,
-}: BillStatusBadgeProps) {
+// カード用の簡略化されたステータスラベルを取得
+function getCardStatusLabel(status: BillStatusEnum): string {
+  switch (status) {
+    case "introduced":
+    case "in_originating_house":
+    case "in_receiving_house":
+      return "国会審議中";
+    case "enacted":
+      return "法案成立";
+    case "rejected":
+      return "否決";
+    case "preparing":
+    default:
+      return "法案提出前";
+  }
+}
+
+export function BillStatusBadge({ status, className }: BillStatusBadgeProps) {
   const getStatusVariant = (status: BillStatusEnum) => {
     switch (status) {
       case "introduced":
       case "in_originating_house":
       case "in_receiving_house":
-        return "outline";
+        return "light";
       case "enacted":
-      case "rejected":
         return "default";
+      case "rejected":
+        return "dark";
       default:
-        return "secondary";
+        return "muted";
     }
   };
 
   return (
     <Badge variant={getStatusVariant(status)} className={className}>
-      {getBillStatusLabel(status, originatingHouse)}
+      {getCardStatusLabel(status)}
     </Badge>
   );
 }
