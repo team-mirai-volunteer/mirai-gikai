@@ -44,35 +44,34 @@ export function BillCard({ bill }: BillCardProps) {
         {/* コンテンツエリア */}
         <div className="flex-1">
           <CardHeader>
-            <div className="flex flex-col gap-2">
-              <CardTitle className="text-2xl tracking-normal leading-tight">
+            <div className="flex flex-col gap-3">
+              <CardTitle className="text-2xl/8 tracking-normal">
                 {displayTitle}
               </CardTitle>
-              <BillStatusBadge status={bill.status} className="w-fit" />
+              <div className="flex flex-row gap-4">
+                <BillStatusBadge status={bill.status} className="w-fit" />
+                <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                  {bill.published_at ? (
+                    <time>{formatDateWithDots(bill.published_at)} 提出</time>
+                  ) : (
+                    <span>法案提出前</span>
+                  )}
+                </div>
+              </div>
               <RubySafeLineClamp
                 text={summary}
                 maxLength={132}
                 lineClamp={4}
-                className="text-sm mt-1 leading-relaxed"
+                className="text-sm leading-relaxed"
               />
               {/* タグ表示 */}
               {bill.tags && bill.tags.length > 0 && (
-                <div className="flex flex-wrap gap-3 mt-2">
+                <div className="flex flex-wrap gap-3">
                   {bill.tags.map((tag) => (
                     <BillTag key={tag.id} tag={tag} />
                   ))}
                 </div>
               )}
-              <p className="text-xs font-medium text-muted-foreground">
-                {bill.name}
-              </p>
-              <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
-                {bill.published_at ? (
-                  <time>{formatDateWithDots(bill.published_at)} 提出</time>
-                ) : (
-                  <span>法案提出前</span>
-                )}
-              </div>
             </div>
           </CardHeader>
         </div>
