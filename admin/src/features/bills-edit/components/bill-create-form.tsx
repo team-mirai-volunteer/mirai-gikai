@@ -7,13 +7,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 
+import type { DietSession } from "@/features/diet-sessions/types";
 import { createBill } from "../actions/create-bill";
 import { useBillForm } from "../hooks/use-bill-form";
 import { type BillCreateInput, billCreateSchema } from "../types";
 import { BillFormFields } from "./bill-form-fields";
 
-export function BillCreateForm() {
+interface BillCreateFormProps {
+  dietSessions: DietSession[];
+}
+
+export function BillCreateForm({ dietSessions }: BillCreateFormProps) {
   const { isSubmitting, error, handleSubmit, handleCancel } = useBillForm();
+
+  // Default to the latest session (first in the list, sorted by start_date desc)
+  const defaultDietSessionId =
+    dietSessions.length > 0 ? dietSessions[0].id : null;
 
   const form = useForm<BillCreateInput>({
     resolver: zodResolver(billCreateSchema),
@@ -27,6 +36,7 @@ export function BillCreateForm() {
       share_thumbnail_url: null,
       shugiin_url: null,
       is_featured: false,
+      diet_session_id: defaultDietSessionId,
     },
   });
 
@@ -42,7 +52,10 @@ export function BillCreateForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <BillFormFields control={form.control} />
+            <BillFormFields
+              control={form.control}
+              dietSessions={dietSessions}
+            />
 
             {error && (
               <div className="rounded-md bg-red-50 p-4 text-sm text-red-800">

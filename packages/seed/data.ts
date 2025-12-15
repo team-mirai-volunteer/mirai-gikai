@@ -5,6 +5,17 @@ type MiraiStanceInsert =
   Database["public"]["Tables"]["mirai_stances"]["Insert"];
 type TagInsert = Database["public"]["Tables"]["tags"]["Insert"];
 type BillsTagsInsert = Database["public"]["Tables"]["bills_tags"]["Insert"];
+type DietSessionInsert =
+  Database["public"]["Tables"]["diet_sessions"]["Insert"];
+
+// 国会会期データ
+export const dietSessions: DietSessionInsert[] = [
+  {
+    name: "第219回国会（臨時会）",
+    start_date: "2025-10-21",
+    end_date: "2025-12-17",
+  },
+];
 
 // タグデータ
 export const tags: TagInsert[] = [
