@@ -13,6 +13,8 @@ export const dietSessions: DietSessionInsert[] = [
   {
     name: "第219回国会（臨時会）",
     slug: "219-rinji",
+    shugiin_url:
+      "https://www.shugiin.go.jp/internet/itdb_gian.nsf/html/gian/menu.htm",
     start_date: "2025-10-21",
     end_date: "2025-12-17",
   },
