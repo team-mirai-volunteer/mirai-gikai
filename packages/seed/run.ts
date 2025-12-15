@@ -1,4 +1,10 @@
-import { bills, tags, createMiraiStances, createBillsTags } from "./data";
+import {
+  bills,
+  tags,
+  dietSessions,
+  createMiraiStances,
+  createBillsTags,
+} from "./data";
 import { createBillContents } from "./bill-contents-data";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@mirai-gikai/supabase";
@@ -42,6 +48,10 @@ async function seedDatabase() {
       .from("tags")
       .delete()
       .neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase
+      .from("diet_sessions")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
 
     // Insert tags
     console.log("🏷️  Inserting tags...");
@@ -59,6 +69,23 @@ async function seedDatabase() {
     }
 
     console.log(`✅ Inserted ${insertedTags.length} tags`);
+
+    // Insert diet sessions
+    console.log("🏛️  Inserting diet sessions...");
+    const { data: insertedDietSessions, error: dietSessionsError } =
+      await supabase.from("diet_sessions").insert(dietSessions).select("id");
+
+    if (dietSessionsError) {
+      throw new Error(
+        `Failed to insert diet sessions: ${dietSessionsError.message}`
+      );
+    }
+
+    if (!insertedDietSessions) {
+      throw new Error("No diet sessions were inserted");
+    }
+
+    console.log(`✅ Inserted ${insertedDietSessions.length} diet sessions`);
 
     // Insert bills
     console.log("📄 Inserting bills...");
@@ -142,6 +169,7 @@ async function seedDatabase() {
 
     console.log("🎉 Database seeding completed successfully!");
     console.log("\n📊 Summary:");
+    console.log(`  Diet Sessions: ${insertedDietSessions.length}`);
     console.log(`  Tags: ${insertedTags.length}`);
     console.log(`  Bills: ${insertedBills.length}`);
     console.log(`  Bill Contents: ${insertedContents.length}`);
