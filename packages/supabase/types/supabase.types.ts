@@ -78,6 +78,7 @@ export type Database = {
       bills: {
         Row: {
           created_at: string
+          diet_session_id: string | null
           id: string
           is_featured: boolean
           name: string
@@ -93,6 +94,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          diet_session_id?: string | null
           id?: string
           is_featured?: boolean
           name: string
@@ -108,6 +110,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          diet_session_id?: string | null
           id?: string
           is_featured?: boolean
           name?: string
@@ -121,7 +124,15 @@ export type Database = {
           thumbnail_url?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "bills_diet_session_id_fkey"
+            columns: ["diet_session_id"]
+            isOneToOne: false
+            referencedRelation: "diet_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       bills_tags: {
         Row: {
@@ -368,10 +379,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       bill_publish_status: "draft" | "published" | "coming_soon"

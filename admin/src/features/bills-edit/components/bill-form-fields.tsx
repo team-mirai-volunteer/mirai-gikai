@@ -24,6 +24,7 @@ import {
   HOUSE_LABELS,
   type OriginatingHouse,
 } from "@/features/bills/types";
+import type { DietSession } from "@/features/diet-sessions/types";
 import type { BillCreateInput } from "../types";
 import { ThumbnailUpload } from "./thumbnail-upload";
 
@@ -46,11 +47,47 @@ const ORIGINATING_HOUSE_OPTIONS = Object.entries(HOUSE_LABELS).map(
 interface BillFormFieldsProps {
   control: Control<BillCreateInput>;
   billId?: string;
+  dietSessions: DietSession[];
 }
 
-export function BillFormFields({ control, billId }: BillFormFieldsProps) {
+export function BillFormFields({
+  control,
+  billId,
+  dietSessions,
+}: BillFormFieldsProps) {
   return (
     <>
+      <FormField
+        control={control}
+        name="diet_session_id"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>国会会期</FormLabel>
+            <Select
+              onValueChange={field.onChange}
+              value={field.value ?? undefined}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="国会会期を選択" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {dietSessions.map((session) => (
+                  <SelectItem key={session.id} value={session.id}>
+                    {session.name}（{session.start_date}〜{session.end_date}）
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormDescription>
+              議案が提出された国会会期を選択してください
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
       <FormField
         control={control}
         name="name"
