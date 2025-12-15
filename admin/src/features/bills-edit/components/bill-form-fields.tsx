@@ -59,37 +59,6 @@ export function BillFormFields({
     <>
       <FormField
         control={control}
-        name="diet_session_id"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>国会会期</FormLabel>
-            <Select
-              onValueChange={field.onChange}
-              value={field.value ?? undefined}
-            >
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="国会会期を選択" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {dietSessions.map((session) => (
-                  <SelectItem key={session.id} value={session.id}>
-                    {session.name}（{session.start_date}〜{session.end_date}）
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormDescription>
-              議案が提出された国会会期を選択してください
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={control}
         name="name"
         render={({ field }) => (
           <FormItem>
@@ -259,6 +228,37 @@ export function BillFormFields({
             </FormControl>
             <FormDescription>
               衆議院の議案ページURLを入力してください（「これから掲載される法案」表示時に外部リンクとして使用）
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name="diet_session_id"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>国会会期</FormLabel>
+            <Select
+              onValueChange={field.onChange}
+              value={field.value ?? undefined}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="国会会期を選択" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {dietSessions.map((session) => (
+                  <SelectItem key={session.id} value={session.id}>
+                    {session.name}（{session.start_date}〜{session.end_date}）
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormDescription>
+              議案が提出された国会会期を選択してください
             </FormDescription>
             <FormMessage />
           </FormItem>
