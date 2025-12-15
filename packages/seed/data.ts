@@ -12,6 +12,7 @@ type DietSessionInsert =
 export const dietSessions: DietSessionInsert[] = [
   {
     name: "第219回国会（臨時会）",
+    slug: "219-rinji",
     start_date: "2025-10-21",
     end_date: "2025-12-17",
   },

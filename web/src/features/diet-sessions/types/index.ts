@@ -1,6 +1,7 @@
 export type DietSession = {
   id: string;
   name: string;
+  slug: string | null;
   start_date: string;
   end_date: string;
   created_at: string;

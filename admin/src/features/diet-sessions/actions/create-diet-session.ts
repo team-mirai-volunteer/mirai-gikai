@@ -24,6 +24,13 @@ export async function createDietSession(input: CreateDietSessionInput) {
       return { error: "終了日を入力してください" };
     }
 
+    // slug のバリデーション（半角英数字とハイフンのみ）
+    if (input.slug && !/^[a-z0-9-]+$/.test(input.slug)) {
+      return {
+        error: "スラッグは半角英小文字、数字、ハイフンのみ使用できます",
+      };
+    }
+
     // 日付の妥当性チェック
     const startDate = new Date(input.start_date);
     const endDate = new Date(input.end_date);
@@ -36,6 +43,7 @@ export async function createDietSession(input: CreateDietSessionInput) {
       .from("diet_sessions")
       .insert({
         name: input.name.trim(),
+        slug: input.slug?.trim() || null,
         start_date: input.start_date,
         end_date: input.end_date,
       })

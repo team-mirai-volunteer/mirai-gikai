@@ -26,6 +26,7 @@ type DietSessionItemProps = {
 export function DietSessionItem({ session }: DietSessionItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(session.name);
+  const [editSlug, setEditSlug] = useState(session.slug ?? "");
   const [editStartDate, setEditStartDate] = useState(session.start_date);
   const [editEndDate, setEditEndDate] = useState(session.end_date);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,6 +50,7 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
     // 変更がない場合は編集モードを終了
     if (
       editName === session.name &&
+      editSlug === (session.slug ?? "") &&
       editStartDate === session.start_date &&
       editEndDate === session.end_date
     ) {
@@ -62,6 +64,7 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
       const result = await updateDietSession({
         id: session.id,
         name: editName,
+        slug: editSlug,
         start_date: editStartDate,
         end_date: editEndDate,
       });
@@ -101,6 +104,7 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
 
   const handleCancel = () => {
     setEditName(session.name);
+    setEditSlug(session.slug ?? "");
     setEditStartDate(session.start_date);
     setEditEndDate(session.end_date);
     setIsEditing(false);
@@ -117,12 +121,19 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
   return (
     <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
       {isEditing ? (
-        <div className="flex-1 grid gap-4 md:grid-cols-3">
+        <div className="flex-1 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Input
             type="text"
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
             placeholder="国会名"
+            disabled={isSubmitting}
+          />
+          <Input
+            type="text"
+            value={editSlug}
+            onChange={(e) => setEditSlug(e.target.value)}
+            placeholder="スラッグ（例: 219-rinji）"
             disabled={isSubmitting}
           />
           <Input
@@ -142,6 +153,9 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
         <div className="flex-1">
           <div className="font-medium">{session.name}</div>
           <div className="text-sm text-gray-500">
+            {session.slug && (
+              <span className="mr-2 text-blue-600">/{session.slug}</span>
+            )}
             {formatDate(session.start_date)} 〜 {formatDate(session.end_date)}
           </div>
         </div>
