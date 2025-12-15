@@ -17,7 +17,6 @@ function getCardStatusLabel(status: BillStatusEnum): string {
       return "法案成立";
     case "rejected":
       return "否決";
-    case "preparing":
     default:
       return "法案提出前";
   }
