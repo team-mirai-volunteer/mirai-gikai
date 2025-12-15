@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { env } from "@/lib/env";
 import { deleteDietSession } from "../actions/delete-diet-session";
 import { updateDietSession } from "../actions/update-diet-session";
 import type { DietSession } from "../types";
@@ -154,7 +156,14 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
           <div className="font-medium">{session.name}</div>
           <div className="text-sm text-gray-500">
             {session.slug && (
-              <span className="mr-2 text-blue-600">/{session.slug}</span>
+              <Link
+                href={`${env.webUrl}/kokkai/${session.slug}/bills`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mr-2 text-blue-600 hover:underline"
+              >
+                /{session.slug}
+              </Link>
             )}
             {formatDate(session.start_date)} 〜 {formatDate(session.end_date)}
           </div>
