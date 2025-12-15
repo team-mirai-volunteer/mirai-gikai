@@ -1,8 +1,7 @@
-import Link from "next/link";
 import type { DietSession } from "../types";
 import type { BillWithContent } from "@/features/bills/types";
-import { BillCard } from "@/features/bills/components/bill-list/bill-card";
 import { formatDateWithDots } from "@/lib/utils/date";
+import { BillStatusFilter } from "./bill-status-filter";
 
 type Props = {
   session: DietSession;
@@ -21,33 +20,24 @@ export function DietSessionBillList({ session, bills }: Props) {
         </p>
       </div>
 
-      {/* 議案件数 */}
-      <div className="text-sm text-muted-foreground">全 {bills.length} 件</div>
-
-      {/* 法案リスト */}
+      {/* フィルター付き法案リスト */}
       {bills.length === 0 ? (
         <p className="text-center py-12 text-muted-foreground">
           この会期の法案はまだありません
         </p>
       ) : (
-        <div className="grid gap-4">
-          {bills.map((bill) => (
-            <Link key={bill.id} href={`/bills/${bill.id}`}>
-              <BillCard bill={bill} />
-            </Link>
-          ))}
-        </div>
+        <BillStatusFilter bills={bills} />
       )}
 
       {/* 衆議院リンク */}
       {session.shugiin_url && (
-        <div className="text-center text-sm text-muted-foreground pt-4">
+        <div className="text-right text-sm pt-4">
           {session.name}に提出された全ての法案は{" "}
           <a
             href={session.shugiin_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:underline inline-flex items-center gap-1"
+            className="underline inline-flex items-center gap-1"
           >
             国会議案情報へ
             <span className="text-xs">↗</span>
