@@ -10,11 +10,13 @@ import { createDietSession } from "../actions/create-diet-session";
 export function DietSessionForm() {
   const nameId = useId();
   const slugId = useId();
+  const shugiinUrlId = useId();
   const startDateId = useId();
   const endDateId = useId();
 
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
+  const [shugiinUrl, setShugiinUrl] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,6 +45,7 @@ export function DietSessionForm() {
       const result = await createDietSession({
         name,
         slug,
+        shugiin_url: shugiinUrl,
         start_date: startDate,
         end_date: endDate,
       });
@@ -53,6 +56,7 @@ export function DietSessionForm() {
         toast.success("国会会期を作成しました");
         setName("");
         setSlug("");
+        setShugiinUrl("");
         setStartDate("");
         setEndDate("");
       }
@@ -109,6 +113,17 @@ export function DietSessionForm() {
             disabled={isSubmitting}
           />
         </div>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor={shugiinUrlId}>衆議院URL</Label>
+        <Input
+          id={shugiinUrlId}
+          type="url"
+          value={shugiinUrl}
+          onChange={(e) => setShugiinUrl(e.target.value)}
+          placeholder="https://www.shugiin.go.jp/..."
+          disabled={isSubmitting}
+        />
       </div>
       <div className="flex justify-end">
         <Button type="submit" disabled={isSubmitting}>

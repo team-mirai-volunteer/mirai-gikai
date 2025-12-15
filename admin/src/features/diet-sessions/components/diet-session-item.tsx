@@ -29,6 +29,9 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(session.name);
   const [editSlug, setEditSlug] = useState(session.slug ?? "");
+  const [editShugiinUrl, setEditShugiinUrl] = useState(
+    session.shugiin_url ?? ""
+  );
   const [editStartDate, setEditStartDate] = useState(session.start_date);
   const [editEndDate, setEditEndDate] = useState(session.end_date);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,6 +56,7 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
     if (
       editName === session.name &&
       editSlug === (session.slug ?? "") &&
+      editShugiinUrl === (session.shugiin_url ?? "") &&
       editStartDate === session.start_date &&
       editEndDate === session.end_date
     ) {
@@ -67,6 +71,7 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
         id: session.id,
         name: editName,
         slug: editSlug,
+        shugiin_url: editShugiinUrl,
         start_date: editStartDate,
         end_date: editEndDate,
       });
@@ -107,6 +112,7 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
   const handleCancel = () => {
     setEditName(session.name);
     setEditSlug(session.slug ?? "");
+    setEditShugiinUrl(session.shugiin_url ?? "");
     setEditStartDate(session.start_date);
     setEditEndDate(session.end_date);
     setIsEditing(false);
@@ -121,104 +127,131 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
   };
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
-      {isEditing ? (
-        <div className="flex-1 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Input
-            type="text"
-            value={editName}
-            onChange={(e) => setEditName(e.target.value)}
-            placeholder="国会名"
-            disabled={isSubmitting}
-          />
-          <Input
-            type="text"
-            value={editSlug}
-            onChange={(e) => setEditSlug(e.target.value)}
-            placeholder="スラッグ（例: 219-rinji）"
-            disabled={isSubmitting}
-          />
-          <Input
-            type="date"
-            value={editStartDate}
-            onChange={(e) => setEditStartDate(e.target.value)}
-            disabled={isSubmitting}
-          />
-          <Input
-            type="date"
-            value={editEndDate}
-            onChange={(e) => setEditEndDate(e.target.value)}
-            disabled={isSubmitting}
-          />
-        </div>
-      ) : (
-        <div className="flex-1">
-          <div className="font-medium">{session.name}</div>
-          <div className="text-sm text-gray-500">
-            {session.slug && (
-              <Link
-                href={`${env.webUrl}/kokkai/${session.slug}/bills`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mr-2 text-blue-600 hover:underline"
-              >
-                /{session.slug}
-              </Link>
-            )}
-            {formatDate(session.start_date)} 〜 {formatDate(session.end_date)}
-          </div>
-        </div>
-      )}
-
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col gap-2 rounded-lg border p-4">
+      <div className="flex items-center justify-between gap-4">
         {isEditing ? (
-          <>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleCancel}
+          <div className="flex-1 space-y-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <Input
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                placeholder="国会名"
+                disabled={isSubmitting}
+              />
+              <Input
+                type="text"
+                value={editSlug}
+                onChange={(e) => setEditSlug(e.target.value)}
+                placeholder="スラッグ（例: 219-rinji）"
+                disabled={isSubmitting}
+              />
+              <Input
+                type="date"
+                value={editStartDate}
+                onChange={(e) => setEditStartDate(e.target.value)}
+                disabled={isSubmitting}
+              />
+              <Input
+                type="date"
+                value={editEndDate}
+                onChange={(e) => setEditEndDate(e.target.value)}
+                disabled={isSubmitting}
+              />
+            </div>
+            <Input
+              type="url"
+              value={editShugiinUrl}
+              onChange={(e) => setEditShugiinUrl(e.target.value)}
+              placeholder="衆議院URL（https://www.shugiin.go.jp/...）"
               disabled={isSubmitting}
-            >
-              キャンセル
-            </Button>
-            <Button size="sm" onClick={handleUpdate} disabled={isSubmitting}>
-              {isSubmitting ? "保存中..." : "保存"}
-            </Button>
-          </>
+            />
+          </div>
         ) : (
-          <>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsEditing(true)}
-              disabled={isSubmitting}
-            >
-              編集
-            </Button>
-
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm" disabled={isSubmitting}>
-                  削除
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>国会会期の削除</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    この国会会期を削除しますか？この操作は取り消せません。
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>キャンセル</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete}>
-                    削除
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </>
+          <div className="flex-1">
+            <div className="font-medium">{session.name}</div>
+            <div className="text-sm text-gray-500">
+              {session.slug && (
+                <Link
+                  href={`${env.webUrl}/kokkai/${session.slug}/bills`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mr-2 text-blue-600 hover:underline"
+                >
+                  /{session.slug}
+                </Link>
+              )}
+              {formatDate(session.start_date)} 〜 {formatDate(session.end_date)}
+            </div>
+            {session.shugiin_url && (
+              <div className="text-sm text-gray-500 mt-1">
+                <a
+                  href={session.shugiin_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  衆議院ページ ↗
+                </a>
+              </div>
+            )}
+          </div>
         )}
+
+        <div className="flex items-center gap-2">
+          {isEditing ? (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCancel}
+                disabled={isSubmitting}
+              >
+                キャンセル
+              </Button>
+              <Button size="sm" onClick={handleUpdate} disabled={isSubmitting}>
+                {isSubmitting ? "保存中..." : "保存"}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditing(true)}
+                disabled={isSubmitting}
+              >
+                編集
+              </Button>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    disabled={isSubmitting}
+                  >
+                    削除
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>国会会期の削除</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      この国会会期を削除しますか？この操作は取り消せません。
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete}>
+                      削除
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

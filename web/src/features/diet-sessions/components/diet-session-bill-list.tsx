@@ -38,6 +38,22 @@ export function DietSessionBillList({ session, bills }: Props) {
           ))}
         </div>
       )}
+
+      {/* 衆議院リンク */}
+      {session.shugiin_url && (
+        <div className="text-center text-sm text-muted-foreground pt-4">
+          {session.name}に提出された全ての法案は{" "}
+          <a
+            href={session.shugiin_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline inline-flex items-center gap-1"
+          >
+            国会議案情報へ
+            <span className="text-xs">↗</span>
+          </a>
+        </div>
+      )}
     </div>
   );
 }

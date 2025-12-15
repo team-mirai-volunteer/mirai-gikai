@@ -44,6 +44,7 @@ export async function updateDietSession(input: UpdateDietSessionInput) {
       .update({
         name: input.name.trim(),
         slug: input.slug?.trim() || null,
+        shugiin_url: input.shugiin_url?.trim() || null,
         start_date: input.start_date,
         end_date: input.end_date,
       })
