@@ -65,22 +65,26 @@ export function PreviousSessionSection({
 
       {/* 議案カードリスト */}
       <div className="relative flex flex-col gap-3 overflow-hidden pb-16">
-        {previewBills.map((bill, index) => (
-          <Link key={bill.id} href={`/bills/${bill.id}`}>
-            <PreviousSessionBillCard
-              bill={bill}
-              // 5件目は少し淡く表示して「続きを見る」感を出す
-              className={
-                !hasFade || index < VISIBLE_BILLS ? undefined : "opacity-70"
-              }
-            />
-          </Link>
-        ))}
+        {previewBills.map((bill, index) => {
+          const isFifthCard = hasFade && index === VISIBLE_BILLS;
+          // 5件目はセッションページへのリンク（もっと読むボタンとして機能）
+          const href = isFifthCard ? sessionBillsUrl : `/bills/${bill.id}`;
+
+          return (
+            <Link key={bill.id} href={href}>
+              <PreviousSessionBillCard
+                bill={bill}
+                // 5件目は少し淡く表示して「続きを見る」感を出す
+                className={isFifthCard ? "opacity-60" : undefined}
+              />
+            </Link>
+          );
+        })}
 
         {/* もっと読むリンク（グラデーションオーバーレイ付き） */}
         {hasFade && (
           <div className="pointer-events-none absolute inset-x-0 bottom-0">
-            <div className="h-32 bg-gradient-to-t from-white to-white/30" />
+            <div className="h-32 bg-gradient-to-t from-white to-white/20" />
             <div className="bg-white pt-2 pb-4 flex justify-center pointer-events-auto">
               <Button
                 variant="outline"
