@@ -85,14 +85,14 @@ export function PreviousSessionSection({
         {hasFade && (
           <div className="pointer-events-none absolute inset-x-0 -bottom-4 h-24">
             {/* 上部: グラデーション */}
-            <div className="h-8 bg-gradient-to-t from-white to-white/20" />
+            <div className="h-16 bg-gradient-to-t from-white to-white/10" />
             {/* 下部: 完全に白 + ボタン */}
-            <div className="h-16 bg-white flex items-start justify-center pointer-events-auto">
+            <div className="h-8 bg-white flex items-start justify-center pointer-events-auto">
               <Button
                 variant="outline"
                 size="lg"
                 asChild
-                className="px-12 py-3 text-base font-medium border-black rounded-full hover:bg-gray-50 bg-white mt-1"
+                className="px-12 py-3 text-base font-medium border-black rounded-full hover:bg-gray-50 bg-white -mt-3"
               >
                 <Link href={sessionBillsUrl}>もっと読む</Link>
               </Button>
