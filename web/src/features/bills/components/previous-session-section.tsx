@@ -64,7 +64,7 @@ export function PreviousSessionSection({
       </Link>
 
       {/* 議案カードリスト */}
-      <div className="relative flex flex-col gap-3 overflow-hidden pb-16">
+      <div className="relative flex flex-col gap-3">
         {previewBills.map((bill, index) => {
           const isFifthCard = hasFade && index === VISIBLE_BILLS;
           // 5件目はセッションページへのリンク（もっと読むボタンとして機能）
@@ -83,14 +83,16 @@ export function PreviousSessionSection({
 
         {/* もっと読むリンク（グラデーションオーバーレイ付き） */}
         {hasFade && (
-          <div className="pointer-events-none absolute inset-x-0 bottom-0">
-            <div className="h-32 bg-gradient-to-t from-white to-white/20" />
-            <div className="bg-white pt-2 pb-4 flex justify-center pointer-events-auto">
+          <div className="pointer-events-none absolute inset-x-0 -bottom-4 h-24">
+            {/* 上部: グラデーション */}
+            <div className="h-8 bg-gradient-to-t from-white to-white/20" />
+            {/* 下部: 完全に白 + ボタン */}
+            <div className="h-16 bg-white flex items-start justify-center pointer-events-auto">
               <Button
                 variant="outline"
                 size="lg"
                 asChild
-                className="px-12 py-3 text-base font-medium border-black rounded-full hover:bg-gray-50"
+                className="px-12 py-3 text-base font-medium border-black rounded-full hover:bg-gray-50 bg-white -mt-3"
               >
                 <Link href={sessionBillsUrl}>もっと読む</Link>
               </Button>
