@@ -23,14 +23,12 @@ export function PreviousSessionSection({
   const hasFade = bills.length > VISIBLE_BILLS;
   const previewBills = bills.slice(0, PREVIEW_BILLS);
 
-  if (bills.length === 0) {
+  // slugがない場合はセクションを表示しない
+  if (!session.slug || bills.length === 0) {
     return null;
   }
 
-  // 会期のURLを生成（slugがあればそれを使用）
-  const sessionBillsUrl = session.slug
-    ? `/kokkai/${session.slug}/bills`
-    : `/kokkai/${session.id}/bills`;
+  const sessionBillsUrl = `/kokkai/${session.slug}/bills`;
 
   return (
     <section className="flex flex-col gap-6">
