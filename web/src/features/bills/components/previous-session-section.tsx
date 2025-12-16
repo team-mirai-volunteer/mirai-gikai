@@ -74,7 +74,7 @@ export function PreviousSessionSection({
         {/* もっと読むリンク（グラデーションオーバーレイ付き） */}
         {hasFade && (
           <div className="pointer-events-none absolute inset-x-0 bottom-0">
-            <div className="h-32 bg-gradient-to-t from-white via-white/90 to-transparent" />
+            <div className="h-32 bg-gradient-to-t from-white to-white/30" />
             <div className="bg-white pt-2 pb-4 flex justify-center pointer-events-auto">
               <Button
                 variant="outline"
