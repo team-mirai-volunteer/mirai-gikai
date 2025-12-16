@@ -50,17 +50,11 @@ export function PreviousSessionSection({
 
       {/* セクションヘッダー（リンク付き） */}
       <Link href={sessionBillsUrl} className="group">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-1.5">
-            <h3 className="text-[22px] font-bold text-[#1F2937] leading-[1.48] flex items-center gap-1">
-              前回の国会に提出された法案✅
-              <ChevronRight className="h-5 w-5 text-gray-600 group-hover:translate-x-0.5 transition-transform" />
-            </h3>
-            <p className="text-xs font-medium text-[#404040] leading-[1.67]">
-              {session.name}
-            </p>
-          </div>
-        </div>
+        <h3 className="text-[22px] font-bold text-[#1F2937] leading-[1.48] flex items-center gap-2">
+          {new Date(session.start_date).getFullYear()}年 {session.name}の法案
+          <span className="text-[#404040]">{bills.length}件</span>
+          <ChevronRight className="h-5 w-5 text-gray-600 group-hover:translate-x-0.5 transition-transform" />
+        </h3>
       </Link>
 
       {/* 議案カードリスト */}
