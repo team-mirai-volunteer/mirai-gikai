@@ -53,16 +53,18 @@ export default async function Home() {
 
             {/* Coming soonセクション */}
             <ComingSoonSection bills={comingSoonBills} />
-
-            {/* 前回の国会セクション */}
-            {previousSessionData && (
-              <PreviousSessionSection
-                session={previousSessionData.session}
-                bills={previousSessionData.bills}
-              />
-            )}
           </main>
         </div>
+
+        {/* 前回の国会セクション（Archive） */}
+        {previousSessionData && (
+          <div className="bg-white -mx-4 sm:-mx-6 px-4 sm:px-6 py-8">
+            <PreviousSessionSection
+              session={previousSessionData.session}
+              bills={previousSessionData.bills}
+            />
+          </div>
+        )}
 
         {/* みらい議会とは セクション */}
         <About />

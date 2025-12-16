@@ -14,13 +14,14 @@ interface PreviousSessionSectionProps {
 }
 
 const VISIBLE_BILLS = 4;
+const PREVIEW_BILLS = 5; // 5件目をうっすら見せる
 
 export function PreviousSessionSection({
   session,
   bills,
 }: PreviousSessionSectionProps) {
-  const hasMoreBills = bills.length > VISIBLE_BILLS;
-  const visibleBills = bills.slice(0, VISIBLE_BILLS);
+  const hasFade = bills.length > VISIBLE_BILLS;
+  const previewBills = bills.slice(0, PREVIEW_BILLS);
 
   if (bills.length === 0) {
     return null;
@@ -33,14 +34,22 @@ export function PreviousSessionSection({
 
   return (
     <section className="flex flex-col gap-6">
-      {/* セクションヘッダー */}
+      {/* Archiveヘッダー */}
+      <div className="flex flex-col gap-1">
+        <h2 className="text-2xl font-bold text-[#0F172A]">Archive</h2>
+        <p className="text-xs font-medium text-[#2F9F5F]">
+          過去の国会に提出された法案
+        </p>
+      </div>
+
+      {/* セクションヘッダー（リンク付き） */}
       <Link href={sessionBillsUrl} className="group">
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-1.5">
-            <h2 className="text-[22px] font-bold text-[#1F2937] leading-[1.48] flex items-center gap-1">
+            <h3 className="text-[22px] font-bold text-[#1F2937] leading-[1.48] flex items-center gap-1">
               前回の国会に提出された法案✅
               <ChevronRight className="h-5 w-5 text-gray-600 group-hover:translate-x-0.5 transition-transform" />
-            </h2>
+            </h3>
             <p className="text-xs font-medium text-[#404040] leading-[1.67]">
               {session.name}
             </p>
@@ -49,17 +58,23 @@ export function PreviousSessionSection({
       </Link>
 
       {/* 議案カードリスト */}
-      <div className="flex flex-col gap-3 relative">
-        {visibleBills.map((bill) => (
+      <div className="relative flex flex-col gap-3 overflow-hidden pb-16">
+        {previewBills.map((bill, index) => (
           <Link key={bill.id} href={`/bills/${bill.id}`}>
-            <PreviousSessionBillCard bill={bill} />
+            <PreviousSessionBillCard
+              bill={bill}
+              // 5件目は少し淡く表示して「続きを見る」感を出す
+              className={
+                !hasFade || index < VISIBLE_BILLS ? undefined : "opacity-70"
+              }
+            />
           </Link>
         ))}
 
         {/* もっと読むリンク（グラデーションオーバーレイ付き） */}
-        {hasMoreBills && (
-          <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
-            <div className="h-32 bg-gradient-to-t from-white via-white/95 to-transparent" />
+        {hasFade && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0">
+            <div className="h-32 bg-gradient-to-t from-white via-white/90 to-transparent" />
             <div className="bg-white pt-2 pb-4 flex justify-center pointer-events-auto">
               <Button
                 variant="outline"
@@ -77,11 +92,19 @@ export function PreviousSessionSection({
   );
 }
 
-function PreviousSessionBillCard({ bill }: { bill: BillWithContent }) {
+function PreviousSessionBillCard({
+  bill,
+  className,
+}: {
+  bill: BillWithContent;
+  className?: string;
+}) {
   const displayTitle = bill.bill_content?.title || bill.name;
 
   return (
-    <Card className="border border-black hover:bg-muted/50 transition-colors overflow-hidden">
+    <Card
+      className={`border border-black hover:bg-muted/50 transition-colors overflow-hidden ${className ?? ""}`}
+    >
       <div className="flex">
         {/* コンテンツエリア */}
         <div className="flex-1 p-4 flex flex-col gap-2">
