@@ -1,9 +1,6 @@
-"use client";
-
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { DietSession } from "@/features/diet-sessions/types";
@@ -16,29 +13,28 @@ interface PreviousSessionSectionProps {
   bills: BillWithContent[];
 }
 
-const INITIAL_VISIBLE_BILLS = 4;
+const VISIBLE_BILLS = 4;
 
 export function PreviousSessionSection({
   session,
   bills,
 }: PreviousSessionSectionProps) {
-  const [showAll, setShowAll] = useState(false);
-  const visibleBills = showAll ? bills : bills.slice(0, INITIAL_VISIBLE_BILLS);
-  const hasMoreBills = bills.length > INITIAL_VISIBLE_BILLS;
+  const hasMoreBills = bills.length > VISIBLE_BILLS;
+  const visibleBills = bills.slice(0, VISIBLE_BILLS);
 
   if (bills.length === 0) {
     return null;
   }
 
   // 会期のURLを生成（slugがあればそれを使用）
-  const sessionUrl = session.slug
-    ? `/diet-sessions/${session.slug}`
-    : `/diet-sessions/${session.id}`;
+  const sessionBillsUrl = session.slug
+    ? `/kokkai/${session.slug}/bills`
+    : `/kokkai/${session.id}/bills`;
 
   return (
     <section className="flex flex-col gap-6">
       {/* セクションヘッダー */}
-      <Link href={sessionUrl} className="group">
+      <Link href={sessionBillsUrl} className="group">
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-1.5">
             <h2 className="text-[22px] font-bold text-[#1F2937] leading-[1.48] flex items-center gap-1">
@@ -60,18 +56,18 @@ export function PreviousSessionSection({
           </Link>
         ))}
 
-        {/* もっと読むボタン（グラデーションオーバーレイ付き） */}
-        {hasMoreBills && !showAll && (
-          <div className="absolute bottom-0 left-0 right-0">
-            <div className="h-24 bg-gradient-to-t from-white via-white/90 to-transparent" />
-            <div className="bg-white pt-2 pb-4 flex justify-center">
+        {/* もっと読むリンク（グラデーションオーバーレイ付き） */}
+        {hasMoreBills && (
+          <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
+            <div className="h-32 bg-gradient-to-t from-white via-white/95 to-transparent" />
+            <div className="bg-white pt-2 pb-4 flex justify-center pointer-events-auto">
               <Button
                 variant="outline"
                 size="lg"
-                onClick={() => setShowAll(true)}
+                asChild
                 className="px-12 py-3 text-base font-medium border-black rounded-full hover:bg-gray-50"
               >
-                もっと読む
+                <Link href={sessionBillsUrl}>もっと読む</Link>
               </Button>
             </div>
           </div>
