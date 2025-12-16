@@ -18,6 +18,14 @@ export const dietSessions: DietSessionInsert[] = [
     start_date: "2025-10-21",
     end_date: "2025-12-17",
   },
+  {
+    name: "第218回国会（臨時会）",
+    slug: "218-rinji",
+    shugiin_url:
+      "https://www.shugiin.go.jp/internet/itdb_gian.nsf/html/gian/menu.htm",
+    start_date: "2025-08-01",
+    end_date: "2025-08-05",
+  },
 ];
 
 // タグデータ
