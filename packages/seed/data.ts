@@ -52,8 +52,8 @@ export const bills: BillInsert[] = [
   {
     name: "こども家庭庁予算大幅増額法案",
     originating_house: "HC",
-    status: "in_receiving_house",
-    status_note: "参議院で可決、衆議院へ送付",
+    status: "enacted",
+    status_note: "両院で可決、成立",
     published_at: "2025-01-20T10:00:00+09:00",
     publish_status: "published",
     is_featured: true,
@@ -61,8 +61,8 @@ export const bills: BillInsert[] = [
   {
     name: "18歳選挙権完全実施法案",
     originating_house: "HR",
-    status: "introduced",
-    status_note: "衆議院に提出済み",
+    status: "rejected",
+    status_note: "衆議院で否決",
     published_at: "2025-02-01T09:00:00+09:00",
     publish_status: "published",
     is_featured: false,
