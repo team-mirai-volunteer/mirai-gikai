@@ -35,9 +35,17 @@ export function PreviousSessionSection({
   return (
     <section className="flex flex-col gap-6">
       {/* Archiveヘッダー */}
-      <div className="flex flex-col gap-1">
-        <h2 className="text-2xl font-bold text-[#0F172A]">Archive</h2>
-        <p className="text-xs font-medium text-[#2F9F5F]">
+      <div className="flex flex-col gap-4">
+        <h2>
+          <Image
+            src="/icons/archive-typography.svg"
+            alt="Archive"
+            width={156}
+            height={36}
+            priority
+          />
+        </h2>
+        <p className="text-sm font-bold text-primary-accent">
           過去の国会に提出された法案
         </p>
       </div>
