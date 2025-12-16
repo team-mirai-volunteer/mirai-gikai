@@ -92,7 +92,7 @@ export function PreviousSessionSection({
                 variant="outline"
                 size="lg"
                 asChild
-                className="px-12 py-3 text-base font-medium border-black rounded-full hover:bg-gray-50 bg-white -mt-3"
+                className="px-12 py-3 text-base font-medium border-black rounded-full hover:bg-gray-50 bg-white mt-1"
               >
                 <Link href={sessionBillsUrl}>もっと読む</Link>
               </Button>
