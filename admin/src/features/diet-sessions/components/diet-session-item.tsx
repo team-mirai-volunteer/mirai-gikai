@@ -70,8 +70,8 @@ export function DietSessionItem({ session }: DietSessionItemProps) {
       const result = await updateDietSession({
         id: session.id,
         name: editName,
-        slug: editSlug,
-        shugiin_url: editShugiinUrl,
+        slug: editSlug || null,
+        shugiin_url: editShugiinUrl || null,
         start_date: editStartDate,
         end_date: editEndDate,
       });

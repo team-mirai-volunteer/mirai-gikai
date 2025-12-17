@@ -44,8 +44,8 @@ export function DietSessionForm() {
     try {
       const result = await createDietSession({
         name,
-        slug,
-        shugiin_url: shugiinUrl,
+        slug: slug || null,
+        shugiin_url: shugiinUrl || null,
         start_date: startDate,
         end_date: endDate,
       });
