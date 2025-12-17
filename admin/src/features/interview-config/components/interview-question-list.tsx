@@ -88,11 +88,7 @@ export function InterviewQuestionList({
             <div className="space-y-4">
               {questions.map((question, index) => {
                 const isEditing = editingIndex === index;
-                // 既存の質問のIDがあればそれを使い、なければ質問文とインデックスを組み合わせたkeyを使用
-                const existingQuestion = initialQuestions[index];
-                const questionKey =
-                  existingQuestion?.id ||
-                  `question-${index}-${question.question}`;
+                const questionKey = `question-${index}-${question.question}`;
                 return (
                   <div key={questionKey}>
                     {isEditing ? (
