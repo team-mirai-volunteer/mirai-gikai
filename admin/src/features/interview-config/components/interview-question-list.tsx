@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { saveInterviewQuestions } from "../actions/save-interview-questions";
 import type { InterviewQuestion, InterviewQuestionInput } from "../types";
 import { InterviewQuestionForm } from "./interview-question-form";
