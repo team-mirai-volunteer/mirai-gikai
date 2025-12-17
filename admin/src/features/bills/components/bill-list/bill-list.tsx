@@ -1,4 +1,4 @@
-import { Calendar, Edit, FileText, Plus } from "lucide-react";
+import { Calendar, Edit, FileText, MessageCircle, Plus } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -99,6 +99,12 @@ function BillCard({ bill }: { bill: Bill }) {
               <Button variant="outline" size="sm">
                 <FileText className="h-4 w-4 mr-1" />
                 コンテンツ
+              </Button>
+            </Link>
+            <Link href={`/bills/${bill.id}/interview/edit`}>
+              <Button variant="outline" size="sm">
+                <MessageCircle className="h-4 w-4 mr-1" />
+                インタビュー設定
               </Button>
             </Link>
           </div>
