@@ -1,5 +1,7 @@
 import { Container } from "@/components/layouts/container";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
+import { getInterviewConfig } from "@/features/interview-config/api/get-interview-config";
+import { InterviewLandingSection } from "@/features/interview-config/components/interview-landing-section";
 import type { BillWithContent } from "../../types";
 import { BillShareButtons } from "../share/bill-share-buttons";
 import { BillContent } from "./bill-content";
@@ -14,11 +16,13 @@ interface BillDetailLayoutProps {
   currentDifficulty: DifficultyLevelEnum;
 }
 
-export function BillDetailLayout({
+export async function BillDetailLayout({
   bill,
   currentDifficulty,
 }: BillDetailLayoutProps) {
   const showMiraiStance = bill.status === "preparing" || bill.mirai_stance;
+  const interviewConfig = await getInterviewConfig(bill.id);
+
   return (
     <div className="container mx-auto pb-8 max-w-4xl">
       {/*
@@ -44,6 +48,12 @@ export function BillDetailLayout({
       </BillDetailClient>
 
       <Container>
+        {/* リリース近づくまでは開発環境でのみ表示 */}
+        {interviewConfig != null && process.env.NODE_ENV === "development" && (
+          <div className="my-8">
+            <InterviewLandingSection billId={bill.id} />
+          </div>
+        )}
         {showMiraiStance && (
           <div className="my-8">
             <MiraiStanceCard

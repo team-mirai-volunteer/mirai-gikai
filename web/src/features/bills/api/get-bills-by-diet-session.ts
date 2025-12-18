@@ -6,18 +6,24 @@ import { CACHE_TAGS } from "@/lib/cache-tags";
 import type { BillWithContent } from "../types";
 import { fetchTagsByBillIds } from "./helpers/get-bill-tags";
 
-export async function getBills(): Promise<BillWithContent[]> {
-  // キャッシュ外でcookiesにアクセス
+/**
+ * 国会会期IDに紐づく議案一覧を取得
+ */
+export async function getBillsByDietSession(
+  dietSessionId: string
+): Promise<BillWithContent[]> {
   const difficultyLevel = await getDifficultyLevel();
-  return _getCachedBills(difficultyLevel);
+  return _getCachedBillsByDietSession(dietSessionId, difficultyLevel);
 }
 
-const _getCachedBills = unstable_cache(
-  async (difficultyLevel: DifficultyLevelEnum): Promise<BillWithContent[]> => {
+const _getCachedBillsByDietSession = unstable_cache(
+  async (
+    dietSessionId: string,
+    difficultyLevel: DifficultyLevelEnum
+  ): Promise<BillWithContent[]> => {
     const supabase = createAdminClient();
 
-    // JOINを使用して一度のクエリでbill_contentsも取得
-    // 公開ステータスの議案のみを取得
+    // 会期IDに紐づく公開済み議案を取得
     const { data, error } = await supabase
       .from("bills")
       .select(
@@ -35,12 +41,19 @@ const _getCachedBills = unstable_cache(
         )
       `
       )
-      .eq("publish_status", "published") // 公開済み議案のみ
+      .eq("diet_session_id", dietSessionId)
+      .eq("publish_status", "published")
       .eq("bill_contents.difficulty_level", difficultyLevel)
       .order("published_at", { ascending: false });
 
     if (error) {
-      throw new Error(`Failed to fetch bills: ${error.message}`);
+      throw new Error(
+        `Failed to fetch bills by diet session: ${error.message}`
+      );
+    }
+
+    if (!data || data.length === 0) {
+      return [];
     }
 
     // タグ情報を一括取得
@@ -60,9 +73,9 @@ const _getCachedBills = unstable_cache(
 
     return billsWithContent;
   },
-  ["bills-list"],
+  ["bills-by-diet-session"],
   {
-    revalidate: 600, // 10分（600秒）
+    revalidate: 600, // 10分
     tags: [CACHE_TAGS.BILLS],
   }
 );

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 
+import type { DietSession } from "@/features/diet-sessions/types";
 import { updateBill } from "../actions/update-bill";
 import { useBillForm } from "../hooks/use-bill-form";
 import { type Bill, type BillUpdateInput, billUpdateSchema } from "../types";
@@ -14,10 +15,16 @@ import { BillFormFields } from "./bill-form-fields";
 
 interface BillEditFormProps {
   bill: Bill;
+  dietSessions: DietSession[];
 }
 
-export function BillEditForm({ bill }: BillEditFormProps) {
+export function BillEditForm({ bill, dietSessions }: BillEditFormProps) {
   const { isSubmitting, error, handleSubmit, handleCancel } = useBillForm();
+
+  // If bill has no diet_session_id, default to the latest session (first in the list)
+  const defaultDietSessionId =
+    bill.diet_session_id ??
+    (dietSessions.length > 0 ? dietSessions[0].id : null);
 
   const form = useForm<BillUpdateInput>({
     resolver: zodResolver(billUpdateSchema),
@@ -33,6 +40,7 @@ export function BillEditForm({ bill }: BillEditFormProps) {
       share_thumbnail_url: bill.share_thumbnail_url,
       shugiin_url: bill.shugiin_url,
       is_featured: bill.is_featured,
+      diet_session_id: defaultDietSessionId,
     },
   });
 
@@ -51,7 +59,11 @@ export function BillEditForm({ bill }: BillEditFormProps) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <BillFormFields control={form.control} billId={bill.id} />
+            <BillFormFields
+              control={form.control}
+              billId={bill.id}
+              dietSessions={dietSessions}
+            />
 
             {error && (
               <div className="rounded-md bg-red-50 p-4 text-sm text-red-800">

@@ -78,6 +78,7 @@ export type Database = {
       bills: {
         Row: {
           created_at: string
+          diet_session_id: string | null
           id: string
           is_featured: boolean
           name: string
@@ -93,6 +94,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          diet_session_id?: string | null
           id?: string
           is_featured?: boolean
           name: string
@@ -108,6 +110,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          diet_session_id?: string | null
           id?: string
           is_featured?: boolean
           name?: string
@@ -121,7 +124,15 @@ export type Database = {
           thumbnail_url?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "bills_diet_session_id_fkey"
+            columns: ["diet_session_id"]
+            isOneToOne: false
+            referencedRelation: "diet_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       bills_tags: {
         Row: {
@@ -245,6 +256,8 @@ export type Database = {
           end_date: string
           id: string
           name: string
+          shugiin_url: string | null
+          slug: string | null
           start_date: string
           updated_at: string
         }
@@ -253,6 +266,8 @@ export type Database = {
           end_date: string
           id?: string
           name: string
+          shugiin_url?: string | null
+          slug?: string | null
           start_date: string
           updated_at?: string
         }
@@ -261,10 +276,208 @@ export type Database = {
           end_date?: string
           id?: string
           name?: string
+          shugiin_url?: string | null
+          slug?: string | null
           start_date?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      interview_configs: {
+        Row: {
+          bill_id: string
+          created_at: string
+          id: string
+          knowledge_source: string | null
+          status: Database["public"]["Enums"]["interview_config_status_enum"]
+          themes: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          bill_id: string
+          created_at?: string
+          id?: string
+          knowledge_source?: string | null
+          status?: Database["public"]["Enums"]["interview_config_status_enum"]
+          themes?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          bill_id?: string
+          created_at?: string
+          id?: string
+          knowledge_source?: string | null
+          status?: Database["public"]["Enums"]["interview_config_status_enum"]
+          themes?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_configs_bill_id_fkey"
+            columns: ["bill_id"]
+            isOneToOne: true
+            referencedRelation: "bills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interview_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          interview_session_id: string
+          role: Database["public"]["Enums"]["interview_role_enum"]
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          interview_session_id: string
+          role: Database["public"]["Enums"]["interview_role_enum"]
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          interview_session_id?: string
+          role?: Database["public"]["Enums"]["interview_role_enum"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_messages_interview_session_id_fkey"
+            columns: ["interview_session_id"]
+            isOneToOne: false
+            referencedRelation: "interview_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interview_questions: {
+        Row: {
+          created_at: string
+          id: string
+          instruction: string | null
+          interview_config_id: string
+          question: string
+          question_order: number
+          quick_replies: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          instruction?: string | null
+          interview_config_id: string
+          question: string
+          question_order: number
+          quick_replies?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          instruction?: string | null
+          interview_config_id?: string
+          question?: string
+          question_order?: number
+          quick_replies?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_questions_interview_config_id_fkey"
+            columns: ["interview_config_id"]
+            isOneToOne: false
+            referencedRelation: "interview_configs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interview_report: {
+        Row: {
+          created_at: string
+          id: string
+          interview_session_id: string
+          opinions: Json | null
+          role: string | null
+          role_description: string | null
+          stance: Database["public"]["Enums"]["stance_type_enum"] | null
+          summary: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interview_session_id: string
+          opinions?: Json | null
+          role?: string | null
+          role_description?: string | null
+          stance?: Database["public"]["Enums"]["stance_type_enum"] | null
+          summary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interview_session_id?: string
+          opinions?: Json | null
+          role?: string | null
+          role_description?: string | null
+          stance?: Database["public"]["Enums"]["stance_type_enum"] | null
+          summary?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_report_interview_session_id_fkey"
+            columns: ["interview_session_id"]
+            isOneToOne: true
+            referencedRelation: "interview_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interview_sessions: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          interview_config_id: string
+          langfuse_session_id: string | null
+          started_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          interview_config_id: string
+          langfuse_session_id?: string | null
+          started_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          interview_config_id?: string
+          langfuse_session_id?: string | null
+          started_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_sessions_interview_config_id_fkey"
+            columns: ["interview_config_id"]
+            isOneToOne: false
+            referencedRelation: "interview_configs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mirai_stances: {
         Row: {
@@ -368,10 +581,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       bill_publish_status: "draft" | "published" | "coming_soon"
@@ -385,6 +595,8 @@ export type Database = {
       chat_role_enum: "user" | "system" | "assistant"
       difficulty_level_enum: "normal" | "hard"
       house_enum: "HR" | "HC"
+      interview_config_status_enum: "public" | "closed"
+      interview_role_enum: "assistant" | "user"
       stance_type_enum:
         | "for"
         | "against"
@@ -535,6 +747,8 @@ export const Constants = {
       chat_role_enum: ["user", "system", "assistant"],
       difficulty_level_enum: ["normal", "hard"],
       house_enum: ["HR", "HC"],
+      interview_config_status_enum: ["public", "closed"],
+      interview_role_enum: ["assistant", "user"],
       stance_type_enum: [
         "for",
         "against",

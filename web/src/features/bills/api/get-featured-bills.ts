@@ -4,6 +4,7 @@ import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficult
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import type { BillWithContent } from "../types";
+import { fetchTagsByBillIds } from "./helpers/get-bill-tags";
 
 /**
  * 注目の議案を取得する
@@ -55,27 +56,9 @@ const _getCachedFeaturedBills = unstable_cache(
       return [];
     }
 
-    // すべての議案のタグを一度に取得（N+1回避）
+    // タグ情報を一括取得
     const billIds = data.map((item: { id: string }) => item.id);
-    const { data: allBillTags } = await supabase
-      .from("bills_tags")
-      .select("bill_id, tags(id, label)")
-      .in("bill_id", billIds);
-
-    // bill_id ごとにタグをグループ化
-    const tagsByBillId = new Map<
-      string,
-      Array<{ id: string; label: string }>
-    >();
-    allBillTags?.forEach((bt: { bill_id: string; tags: unknown }) => {
-      if (bt.tags) {
-        const existing = tagsByBillId.get(bt.bill_id) || [];
-        tagsByBillId.set(bt.bill_id, [
-          ...existing,
-          bt.tags as { id: string; label: string },
-        ]);
-      }
-    });
+    const tagsByBillId = await fetchTagsByBillIds(supabase, billIds);
 
     // データ構造を整形
     return data.map((item) => {
