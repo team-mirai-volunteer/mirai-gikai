@@ -1,7 +1,7 @@
 import type { DietSession } from "../types";
 import type { BillWithContent } from "@/features/bills/types";
 import { formatDateWithDots } from "@/lib/utils/date";
-import { BillStatusFilter } from "./bill-status-filter";
+import { BillListWithStatusFilter } from "./bill-list-with-status-filter";
 
 type Props = {
   session: DietSession;
@@ -26,7 +26,7 @@ export function DietSessionBillList({ session, bills }: Props) {
           この会期の法案はまだありません
         </p>
       ) : (
-        <BillStatusFilter bills={bills} />
+        <BillListWithStatusFilter bills={bills} />
       )}
 
       {/* 衆議院リンク */}
