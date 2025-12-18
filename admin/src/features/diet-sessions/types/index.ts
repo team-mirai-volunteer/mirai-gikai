@@ -1,6 +1,8 @@
 export type DietSession = {
   id: string;
   name: string;
+  slug: string | null;
+  shugiin_url: string | null;
   start_date: string;
   end_date: string;
   created_at: string;
@@ -9,6 +11,8 @@ export type DietSession = {
 
 export type CreateDietSessionInput = {
   name: string;
+  slug: string | null;
+  shugiin_url: string | null;
   start_date: string;
   end_date: string;
 };
@@ -16,6 +20,8 @@ export type CreateDietSessionInput = {
 export type UpdateDietSessionInput = {
   id: string;
   name: string;
+  slug: string | null;
+  shugiin_url: string | null;
   start_date: string;
   end_date: string;
 };

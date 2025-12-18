@@ -9,10 +9,14 @@ import { createDietSession } from "../actions/create-diet-session";
 
 export function DietSessionForm() {
   const nameId = useId();
+  const slugId = useId();
+  const shugiinUrlId = useId();
   const startDateId = useId();
   const endDateId = useId();
 
   const [name, setName] = useState("");
+  const [slug, setSlug] = useState("");
+  const [shugiinUrl, setShugiinUrl] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,6 +44,8 @@ export function DietSessionForm() {
     try {
       const result = await createDietSession({
         name,
+        slug: slug || null,
+        shugiin_url: shugiinUrl || null,
         start_date: startDate,
         end_date: endDate,
       });
@@ -49,6 +55,8 @@ export function DietSessionForm() {
       } else {
         toast.success("国会会期を作成しました");
         setName("");
+        setSlug("");
+        setShugiinUrl("");
         setStartDate("");
         setEndDate("");
       }
@@ -62,7 +70,7 @@ export function DietSessionForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-2">
           <Label htmlFor={nameId}>国会名</Label>
           <Input
@@ -70,7 +78,18 @@ export function DietSessionForm() {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="例: 第218回 臨時国会"
+            placeholder="例: 第219回国会（臨時会）"
+            disabled={isSubmitting}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor={slugId}>スラッグ（URL用）</Label>
+          <Input
+            id={slugId}
+            type="text"
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            placeholder="例: 219-rinji"
             disabled={isSubmitting}
           />
         </div>
@@ -94,6 +113,17 @@ export function DietSessionForm() {
             disabled={isSubmitting}
           />
         </div>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor={shugiinUrlId}>衆議院URL</Label>
+        <Input
+          id={shugiinUrlId}
+          type="url"
+          value={shugiinUrl}
+          onChange={(e) => setShugiinUrl(e.target.value)}
+          placeholder="https://www.shugiin.go.jp/..."
+          disabled={isSubmitting}
+        />
       </div>
       <div className="flex justify-end">
         <Button type="submit" disabled={isSubmitting}>

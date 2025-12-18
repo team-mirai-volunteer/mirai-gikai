@@ -256,6 +256,8 @@ export type Database = {
           end_date: string
           id: string
           name: string
+          shugiin_url: string | null
+          slug: string | null
           start_date: string
           updated_at: string
         }
@@ -264,6 +266,8 @@ export type Database = {
           end_date: string
           id?: string
           name: string
+          shugiin_url?: string | null
+          slug?: string | null
           start_date: string
           updated_at?: string
         }
@@ -272,6 +276,8 @@ export type Database = {
           end_date?: string
           id?: string
           name?: string
+          shugiin_url?: string | null
+          slug?: string | null
           start_date?: string
           updated_at?: string
         }

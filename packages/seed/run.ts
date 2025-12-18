@@ -104,6 +104,19 @@ async function seedDatabase() {
 
     console.log(`✅ Inserted ${insertedBills.length} bills`);
 
+    // Link first 3 bills to the 219 diet session
+    const dietSessionId = insertedDietSessions[0]?.id;
+    if (dietSessionId) {
+      const billsToLink = insertedBills.slice(0, 3);
+      for (const bill of billsToLink) {
+        await supabase
+          .from("bills")
+          .update({ diet_session_id: dietSessionId })
+          .eq("id", bill.id);
+      }
+      console.log(`🔗 Linked ${billsToLink.length} bills to diet session`);
+    }
+
     // Insert bill_contents
     console.log("📚 Inserting bill contents...");
     const billContents = createBillContents(insertedBills);
