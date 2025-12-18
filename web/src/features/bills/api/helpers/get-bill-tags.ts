@@ -10,7 +10,7 @@ type BillTag = {
 /**
  * bill_idごとにタグをグループ化する
  */
-export function groupTagsByBillId(
+function groupTagsByBillId(
   billTags: BillTag[]
 ): Map<string, Array<{ id: string; label: string }>> {
   return billTags.reduce((acc, bt) => {
