@@ -117,12 +117,10 @@ async function seedDatabase() {
       console.log(`🔗 Linked ${billsToLink.length} bills to 219 diet session`);
     }
 
-    // Link all 学校給食無償化促進法案 bills to the 218 diet session (previous session)
+    // Link remaining bills to the 218 diet session (previous session)
     const session218Id = insertedDietSessions[1]?.id;
     if (session218Id) {
-      const bills218 = insertedBills.filter((b) =>
-        b.name.includes("学校給食無償化")
-      );
+      const bills218 = insertedBills.slice(3);
       for (const bill of bills218) {
         await supabase
           .from("bills")
