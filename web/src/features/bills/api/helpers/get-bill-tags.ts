@@ -34,10 +34,14 @@ export async function fetchTagsByBillIds(
     return new Map();
   }
 
-  const { data: allBillTags } = await supabase
+  const { data: allBillTags, error } = await supabase
     .from("bills_tags")
     .select("bill_id, tags(id, label)")
     .in("bill_id", billIds);
+
+  if (error) {
+    throw new Error(`Failed to fetch tags: ${error.message}`);
+  }
 
   return groupTagsByBillId(allBillTags ?? []);
 }
