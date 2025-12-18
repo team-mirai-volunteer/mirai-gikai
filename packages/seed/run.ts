@@ -117,10 +117,10 @@ async function seedDatabase() {
       console.log(`🔗 Linked ${billsToLink.length} bills to 219 diet session`);
     }
 
-    // Link remaining bills to the 218 diet session (previous session)
+    // Link last 5 bills to the 218 diet session (previous session)
     const session218Id = insertedDietSessions[1]?.id;
     if (session218Id) {
-      const bills218 = insertedBills.slice(3);
+      const bills218 = insertedBills.slice(-5);
       for (const bill of bills218) {
         await supabase
           .from("bills")
