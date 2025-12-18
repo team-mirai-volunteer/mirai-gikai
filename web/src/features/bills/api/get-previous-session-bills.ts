@@ -2,20 +2,39 @@ import { createAdminClient } from "@mirai-gikai/supabase";
 import { unstable_cache } from "next/cache";
 import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
+import { getPreviousDietSession } from "@/features/diet-sessions/api/get-previous-diet-session";
+import type { DietSession } from "@/features/diet-sessions/types";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import type { BillWithContent } from "../types";
 import { fetchTagsByBillIds } from "./helpers/get-bill-tags";
 
 const MAX_PREVIEW_BILLS = 5;
 
+export type PreviousSessionBillsResult = {
+  session: DietSession;
+  bills: BillWithContent[];
+} | null;
+
 /**
- * 前回の国会会期の議案を取得（プレビュー用、最大5件）
+ * 前回の国会会期とその議案を取得（プレビュー用、最大5件）
+ * 前回の会期がない場合はnullを返す
  */
-export async function getPreviousSessionBills(
-  dietSessionId: string
-): Promise<BillWithContent[]> {
+export async function getPreviousSessionBills(): Promise<PreviousSessionBillsResult> {
+  const previousSession = await getPreviousDietSession();
+  if (!previousSession) {
+    return null;
+  }
+
   const difficultyLevel = await getDifficultyLevel();
-  return _getCachedPreviousSessionBills(dietSessionId, difficultyLevel);
+  const bills = await _getCachedPreviousSessionBills(
+    previousSession.id,
+    difficultyLevel
+  );
+
+  return {
+    session: previousSession,
+    bills,
+  };
 }
 
 const _getCachedPreviousSessionBills = unstable_cache(
