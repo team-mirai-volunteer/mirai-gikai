@@ -4,6 +4,7 @@ import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficult
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import type { BillWithContent } from "../types";
+import { fetchTagsByBillIds } from "./helpers/get-bill-tags";
 
 export async function getBills(): Promise<BillWithContent[]> {
   // キャッシュ外でcookiesにアクセス
@@ -42,13 +43,9 @@ const _getCachedBills = unstable_cache(
       throw new Error(`Failed to fetch bills: ${error.message}`);
     }
 
+    // タグ情報を一括取得
     const billIds = data.map((item) => item.id);
-    const { data: allBillTags } = await supabase
-      .from("bills_tags")
-      .select("bill_id, tags(id, label)")
-      .in("bill_id", billIds);
-
-    const tagsByBillId = groupTagsByBillId(allBillTags ?? []);
+    const tagsByBillId = await fetchTagsByBillIds(supabase, billIds);
 
     const billsWithContent: BillWithContent[] = data.map((item) => {
       const { bill_contents, ...bill } = item;
@@ -69,18 +66,3 @@ const _getCachedBills = unstable_cache(
     tags: [CACHE_TAGS.BILLS],
   }
 );
-
-function groupTagsByBillId(
-  billTags: Array<{
-    bill_id: string;
-    tags: { id: string; label: string } | null;
-  }>
-): Map<string, Array<{ id: string; label: string }>> {
-  return billTags.reduce((acc, bt) => {
-    if (bt.tags) {
-      const existing = acc.get(bt.bill_id) ?? [];
-      acc.set(bt.bill_id, [...existing, bt.tags]);
-    }
-    return acc;
-  }, new Map<string, Array<{ id: string; label: string }>>());
-}
