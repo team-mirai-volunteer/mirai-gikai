@@ -1,7 +1,6 @@
 import { CheckCircle2, Clock, ExternalLink, XCircle } from "lucide-react";
 import Link from "next/link";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -13,32 +12,12 @@ import {
 } from "@/components/ui/table";
 import type { InterviewSessionWithDetails } from "../types";
 import { formatDuration, getSessionStatus } from "../types";
+import { SessionStatusBadge } from "./session-status-badge";
 
 interface SessionListProps {
   billId: string;
   sessions: InterviewSessionWithDetails[];
   totalCount: number;
-}
-
-function StatusBadge({ status }: { status: "completed" | "in_progress" }) {
-  if (status === "completed") {
-    return (
-      <Badge
-        variant="outline"
-        className="bg-green-50 text-green-700 border-green-200"
-      >
-        完了
-      </Badge>
-    );
-  }
-  return (
-    <Badge
-      variant="outline"
-      className="bg-yellow-50 text-yellow-700 border-yellow-200"
-    >
-      進行中
-    </Badge>
-  );
 }
 
 function BooleanIcon({ value }: { value: boolean }) {
@@ -103,7 +82,7 @@ export function SessionList({
                     {session.id.substring(0, 8)}...
                   </TableCell>
                   <TableCell>
-                    <StatusBadge status={status} />
+                    <SessionStatusBadge status={status} />
                   </TableCell>
                   <TableCell className="text-center">
                     <BooleanIcon value={hasReport} />
