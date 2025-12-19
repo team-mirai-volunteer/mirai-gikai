@@ -4,6 +4,8 @@ import {
   dietSessions,
   createMiraiStances,
   createBillsTags,
+  createInterviewConfig,
+  createInterviewQuestions,
 } from "./data";
 import { createBillContents } from "./bill-contents-data";
 import { createClient } from "@supabase/supabase-js";
@@ -24,6 +26,14 @@ async function seedDatabase() {
     // Clear existing data (in reverse order due to foreign key constraints)
     console.log("🧹 Clearing existing data...");
 
+    await supabase
+      .from("interview_questions")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase
+      .from("interview_configs")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
     await supabase
       .from("mirai_stances")
       .delete()
@@ -180,6 +190,52 @@ async function seedDatabase() {
 
     console.log(`✅ Inserted ${insertedBillsTags.length} bills-tags relations`);
 
+    // Insert interview config (for first bill)
+    console.log("💬 Inserting interview config...");
+    const interviewConfigData = createInterviewConfig(insertedBills);
+    let insertedQuestionsCount = 0;
+
+    if (interviewConfigData) {
+      const { data: insertedConfig, error: configError } = await supabase
+        .from("interview_configs")
+        .insert(interviewConfigData)
+        .select("id")
+        .single();
+
+      if (configError) {
+        throw new Error(
+          `Failed to insert interview config: ${configError.message}`
+        );
+      }
+
+      if (insertedConfig) {
+        console.log(`✅ Inserted interview config`);
+
+        // Insert interview questions
+        console.log("❓ Inserting interview questions...");
+        const questionsData = createInterviewQuestions(insertedConfig.id);
+
+        const { data: insertedQuestions, error: questionsError } =
+          await supabase
+            .from("interview_questions")
+            .insert(questionsData)
+            .select("id");
+
+        if (questionsError) {
+          throw new Error(
+            `Failed to insert interview questions: ${questionsError.message}`
+          );
+        }
+
+        if (insertedQuestions) {
+          insertedQuestionsCount = insertedQuestions.length;
+          console.log(`✅ Inserted ${insertedQuestionsCount} interview questions`);
+        }
+      }
+    } else {
+      console.log("⚠️ Skipped interview config (no bills found)");
+    }
+
     console.log("🎉 Database seeding completed successfully!");
     console.log("\n📊 Summary:");
     console.log(`  Diet Sessions: ${insertedDietSessions.length}`);
@@ -188,6 +244,8 @@ async function seedDatabase() {
     console.log(`  Bill Contents: ${insertedContents.length}`);
     console.log(`  Mirai Stances: ${insertedStances.length}`);
     console.log(`  Bills-Tags Relations: ${insertedBillsTags.length}`);
+    console.log(`  Interview Config: ${interviewConfigData ? 1 : 0}`);
+    console.log(`  Interview Questions: ${insertedQuestionsCount}`);
   } catch (error) {
     console.error("❌ Error seeding database:", error);
     process.exit(1);

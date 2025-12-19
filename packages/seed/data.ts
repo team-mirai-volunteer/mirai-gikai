@@ -7,6 +7,10 @@ type TagInsert = Database["public"]["Tables"]["tags"]["Insert"];
 type BillsTagsInsert = Database["public"]["Tables"]["bills_tags"]["Insert"];
 type DietSessionInsert =
   Database["public"]["Tables"]["diet_sessions"]["Insert"];
+type InterviewConfigInsert =
+  Database["public"]["Tables"]["interview_configs"]["Insert"];
+type InterviewQuestionInsert =
+  Database["public"]["Tables"]["interview_questions"]["Insert"];
 
 // 国会会期データ
 export const dietSessions: DietSessionInsert[] = [
@@ -167,4 +171,41 @@ export function createMiraiStances(
     ...stance,
     bill_id: insertedBills[index]?.id || "",
   }));
+}
+
+// インタビュー設定を作成（最初の法案用）
+export function createInterviewConfig(
+  insertedBills: { id: string; name: string }[]
+): Omit<InterviewConfigInsert, "id" | "created_at" | "updated_at"> | null {
+  const targetBill = insertedBills[0];
+  if (!targetBill) return null;
+
+  return {
+    bill_id: targetBill.id,
+    status: "public",
+    themes: ["賛否", "理由"],
+    knowledge_source: `この法案についてあなたの意見を聞かせてください。`,
+  };
+}
+
+// インタビュー質問を作成
+export function createInterviewQuestions(
+  interviewConfigId: string
+): Omit<InterviewQuestionInsert, "id" | "created_at" | "updated_at">[] {
+  return [
+    {
+      interview_config_id: interviewConfigId,
+      question: "この法案に賛成ですか？反対ですか？",
+      instruction: "ユーザーの立場を明確にしてください。",
+      quick_replies: ["賛成", "反対", "どちらでもない"],
+      question_order: 1,
+    },
+    {
+      interview_config_id: interviewConfigId,
+      question: "その理由を教えてください。",
+      instruction: "具体的な理由を引き出してください。",
+      quick_replies: null,
+      question_order: 2,
+    },
+  ];
 }
