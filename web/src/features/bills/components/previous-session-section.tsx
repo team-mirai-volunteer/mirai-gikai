@@ -11,15 +11,14 @@ interface PreviousSessionSectionProps {
   bills: BillWithContent[];
 }
 
-const VISIBLE_BILLS = 4;
-const PREVIEW_BILLS = 5; // 5件目をうっすら見せる
+const VISIBLE_BILLS = 5;
 
 export function PreviousSessionSection({
   session,
   bills,
 }: PreviousSessionSectionProps) {
   const hasFade = bills.length > VISIBLE_BILLS;
-  const previewBills = bills.slice(0, PREVIEW_BILLS);
+  const visibleBills = bills.slice(0, VISIBLE_BILLS);
 
   // slugがない場合はセクションを表示しない
   if (!session.slug || bills.length === 0) {
@@ -57,17 +56,19 @@ export function PreviousSessionSection({
 
       {/* 議案カードリスト */}
       <div className="relative flex flex-col gap-3">
-        {previewBills.map((bill, index) => {
-          const isFifthCard = hasFade && index === VISIBLE_BILLS;
-          // 5件目はセッションページへのリンク（もっと読むボタンとして機能）
-          const href = isFifthCard ? sessionBillsUrl : `/bills/${bill.id}`;
+        {visibleBills.map((bill, index) => {
+          const isLastVisibleCard = hasFade && index === VISIBLE_BILLS - 1;
+          // 最後のカードはセッションページへのリンク（もっと読むボタンとして機能）
+          const href = isLastVisibleCard
+            ? sessionBillsUrl
+            : `/bills/${bill.id}`;
 
           return (
             <Link key={bill.id} href={href}>
               <CompactBillCard
                 bill={bill}
-                // 5件目は少し淡く表示して「続きを見る」感を出す
-                className={isFifthCard ? "opacity-60" : undefined}
+                // 最後のカードは少し淡く表示して「続きを見る」感を出す
+                className={isLastVisibleCard ? "opacity-60" : undefined}
               />
             </Link>
           );
