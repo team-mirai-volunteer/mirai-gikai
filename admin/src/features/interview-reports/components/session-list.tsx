@@ -13,6 +13,7 @@ import {
 import type { InterviewSessionWithDetails } from "../types";
 import { formatDuration, getSessionStatus } from "../types";
 import { SessionStatusBadge } from "./session-status-badge";
+import { StanceBadge } from "./stance-badge";
 
 interface SessionListProps {
   billId: string;
@@ -57,6 +58,7 @@ export function SessionList({
               <TableHead className="w-32">セッションID</TableHead>
               <TableHead className="w-24">ステータス</TableHead>
               <TableHead className="w-20 text-center">レポート</TableHead>
+              <TableHead className="w-28">スタンス</TableHead>
               <TableHead className="w-28">役割</TableHead>
               <TableHead className="w-44">開始時刻</TableHead>
               <TableHead className="w-24">時間</TableHead>
@@ -86,6 +88,11 @@ export function SessionList({
                   </TableCell>
                   <TableCell className="text-center">
                     <BooleanIcon value={hasReport} />
+                  </TableCell>
+                  <TableCell>
+                    <StanceBadge
+                      stance={session.interview_report?.stance || null}
+                    />
                   </TableCell>
                   <TableCell className="text-gray-600 text-sm">
                     {session.interview_report?.role || "-"}
