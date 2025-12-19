@@ -1,16 +1,5 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
-import type { Database } from "@mirai-gikai/supabase";
-
-type InterviewSession =
-  Database["public"]["Tables"]["interview_sessions"]["Row"];
-type InterviewReport = Database["public"]["Tables"]["interview_report"]["Row"];
-type InterviewMessage =
-  Database["public"]["Tables"]["interview_messages"]["Row"];
-
-export type InterviewSessionDetail = InterviewSession & {
-  interview_report: InterviewReport | null;
-  interview_messages: InterviewMessage[];
-};
+import type { InterviewSessionDetail } from "../types";
 
 export async function getInterviewSessionDetail(
   sessionId: string

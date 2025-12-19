@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Clock, MessageCircle, User } from "lucide-react";
-import type { InterviewSessionDetail } from "../api/get-interview-session-detail";
+import type { InterviewSessionDetail } from "../types";
 import { formatDuration, getSessionStatus } from "../types";
 import { SessionStatusBadge } from "./session-status-badge";
 import { StanceBadge } from "./stance-badge";
