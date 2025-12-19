@@ -43,8 +43,7 @@ export function SessionList({
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">セッション一覧</h2>
+      <div className="mb-4 flex items-center justify-end">
         <div className="text-sm text-gray-600">
           全 {totalCount} 件中 1〜{Math.min(50, sessions.length)} 件を表示
         </div>
