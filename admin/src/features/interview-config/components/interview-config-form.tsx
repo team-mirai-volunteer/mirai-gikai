@@ -1,0 +1,168 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  type InterviewConfig,
+  type InterviewConfigInput,
+  interviewConfigSchema,
+  arrayToText,
+  textToArray,
+} from "../types";
+import { upsertInterviewConfig } from "../actions/upsert-interview-config";
+
+interface InterviewConfigFormProps {
+  billId: string;
+  config: InterviewConfig | null;
+}
+
+export function InterviewConfigForm({
+  billId,
+  config,
+}: InterviewConfigFormProps) {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<InterviewConfigInput>({
+    resolver: zodResolver(interviewConfigSchema),
+    defaultValues: {
+      status: config?.status || "closed",
+      themes: config?.themes || [],
+      knowledge_source: config?.knowledge_source || "",
+    },
+  });
+
+  const handleSubmit = async (data: InterviewConfigInput) => {
+    setIsSubmitting(true);
+    try {
+      const result = await upsertInterviewConfig(billId, data);
+
+      if (result.success) {
+        toast.success("インタビュー設定を保存しました");
+        router.refresh();
+      } else {
+        toast.error(result.error || "エラーが発生しました");
+      }
+    } catch (error) {
+      console.error("Error submitting interview config:", error);
+      toast.error("予期しないエラーが発生しました");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>インタビュー設定</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6"
+          >
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>ステータス</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="ステータスを選択" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="public">公開（有効）</SelectItem>
+                      <SelectItem value="closed">非公開（無効）</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    インタビュー機能の有効/無効を設定します
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="themes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>質問テーマ</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="質問テーマを改行区切りで入力"
+                      className="min-h-[100px] resize-y"
+                      value={arrayToText(field.value)}
+                      onChange={(e) => {
+                        field.onChange(textToArray(e.target.value));
+                      }}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    質問テーマを1行ずつ入力してください
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="knowledge_source"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>ナレッジソース</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="議案の詳細情報やチームみらいの仮説などの情報を入力"
+                      className="min-h-[200px] resize-y"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    AIが質問を生成する際に参照する情報を入力してください。法案コンテンツは自動で読み込まれます。
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex gap-2">
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "保存中..." : "保存"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  );
+}
