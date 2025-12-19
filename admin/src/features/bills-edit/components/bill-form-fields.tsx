@@ -241,8 +241,10 @@ export function BillFormFields({
           <FormItem>
             <FormLabel>国会会期</FormLabel>
             <Select
-              onValueChange={field.onChange}
-              value={field.value ?? undefined}
+              onValueChange={(value) => {
+                field.onChange(value === "" ? null : value);
+              }}
+              value={field.value ?? ""}
             >
               <FormControl>
                 <SelectTrigger>
@@ -250,6 +252,7 @@ export function BillFormFields({
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
+                <SelectItem value="">-</SelectItem>
                 {dietSessions.map((session) => (
                   <SelectItem key={session.id} value={session.id}>
                     {session.name}（{session.start_date}〜{session.end_date}）
