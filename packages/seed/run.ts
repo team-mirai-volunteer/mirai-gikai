@@ -209,6 +209,9 @@ async function seedDatabase() {
     console.log("💬 Inserting interview config...");
     const interviewConfigData = createInterviewConfig(insertedBills);
     let insertedQuestionsCount = 0;
+    let insertedSessionsCount = 0;
+    let insertedMessagesCount = 0;
+    let insertedReportsCount = 0;
 
     if (interviewConfigData) {
       const { data: insertedConfig, error: configError } = await supabase
@@ -263,7 +266,8 @@ async function seedDatabase() {
         }
 
         if (insertedSessions && insertedSessions.length > 0) {
-          console.log(`✅ Inserted ${insertedSessions.length} interview sessions`);
+          insertedSessionsCount = insertedSessions.length;
+          console.log(`✅ Inserted ${insertedSessionsCount} interview sessions`);
 
           // Insert interview messages
           console.log("💬 Inserting interview messages...");
@@ -283,7 +287,8 @@ async function seedDatabase() {
           }
 
           if (insertedMessages) {
-            console.log(`✅ Inserted ${insertedMessages.length} interview messages`);
+            insertedMessagesCount = insertedMessages.length;
+            console.log(`✅ Inserted ${insertedMessagesCount} interview messages`);
           }
 
           // Insert interview reports
@@ -302,7 +307,8 @@ async function seedDatabase() {
           }
 
           if (insertedReports) {
-            console.log(`✅ Inserted ${insertedReports.length} interview reports`);
+            insertedReportsCount = insertedReports.length;
+            console.log(`✅ Inserted ${insertedReportsCount} interview reports`);
           }
         }
       }
@@ -320,6 +326,9 @@ async function seedDatabase() {
     console.log(`  Bills-Tags Relations: ${insertedBillsTags.length}`);
     console.log(`  Interview Config: ${interviewConfigData ? 1 : 0}`);
     console.log(`  Interview Questions: ${insertedQuestionsCount}`);
+    console.log(`  Interview Sessions: ${insertedSessionsCount}`);
+    console.log(`  Interview Messages: ${insertedMessagesCount}`);
+    console.log(`  Interview Reports: ${insertedReportsCount}`);
   } catch (error) {
     console.error("❌ Error seeding database:", error);
     process.exit(1);
