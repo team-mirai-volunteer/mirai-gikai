@@ -2,6 +2,8 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   Clock,
   ExternalLink,
   XCircle,
@@ -150,6 +152,20 @@ export function SessionList({
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-center gap-2">
           <Link
+            href={currentPage > 1 ? `/bills/${billId}/reports?page=1` : "#"}
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage <= 1}
+              className="gap-1"
+            >
+              <ChevronsLeft className="h-4 w-4" />
+              最初へ
+            </Button>
+          </Link>
+
+          <Link
             href={
               currentPage > 1
                 ? `/bills/${billId}/reports?page=${currentPage - 1}`
@@ -196,6 +212,24 @@ export function SessionList({
             >
               次へ
               <ChevronRight className="h-4 w-4" />
+            </Button>
+          </Link>
+
+          <Link
+            href={
+              currentPage < totalPages
+                ? `/bills/${billId}/reports?page=${totalPages}`
+                : "#"
+            }
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage >= totalPages}
+              className="gap-1"
+            >
+              最後へ
+              <ChevronsRight className="h-4 w-4" />
             </Button>
           </Link>
         </div>
