@@ -1,4 +1,11 @@
-import { CheckCircle2, Clock, ExternalLink, XCircle } from "lucide-react";
+import {
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  ExternalLink,
+  XCircle,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { SESSIONS_PER_PAGE } from "../api/get-interview-sessions";
 import type { InterviewSessionWithDetails } from "../types";
 import { formatDuration, getSessionStatus } from "../types";
 import { SessionStatusBadge } from "./session-status-badge";
@@ -19,6 +27,7 @@ interface SessionListProps {
   billId: string;
   sessions: InterviewSessionWithDetails[];
   totalCount: number;
+  currentPage: number;
 }
 
 function BooleanIcon({ value }: { value: boolean }) {
@@ -32,8 +41,13 @@ export function SessionList({
   billId,
   sessions,
   totalCount,
+  currentPage,
 }: SessionListProps) {
-  if (sessions.length === 0) {
+  const totalPages = Math.ceil(totalCount / SESSIONS_PER_PAGE);
+  const startIndex = (currentPage - 1) * SESSIONS_PER_PAGE;
+  const endIndex = Math.min(startIndex + sessions.length, totalCount);
+
+  if (sessions.length === 0 && currentPage === 1) {
     return (
       <div className="rounded-lg border p-8 text-center text-gray-500">
         まだセッションがありません
@@ -45,7 +59,7 @@ export function SessionList({
     <div>
       <div className="mb-4 flex items-center justify-end">
         <div className="text-sm text-gray-600">
-          全 {totalCount} 件中 1〜{Math.min(50, sessions.length)} 件を表示
+          全 {totalCount} 件中 {startIndex + 1}〜{endIndex} 件を表示
         </div>
       </div>
 
@@ -73,11 +87,12 @@ export function SessionList({
                 session.completed_at
               );
               const hasReport = !!session.interview_report;
+              const rowNumber = totalCount - startIndex - index;
 
               return (
                 <TableRow key={session.id}>
                   <TableCell className="font-medium text-blue-600">
-                    #{totalCount - index}
+                    #{rowNumber}
                   </TableCell>
                   <TableCell className="font-mono text-sm text-gray-600">
                     {session.id.substring(0, 8)}...
@@ -130,6 +145,61 @@ export function SessionList({
           </TableBody>
         </Table>
       </div>
+
+      {/* ページネーション */}
+      {totalPages > 1 && (
+        <div className="mt-4 flex items-center justify-center gap-2">
+          <Link
+            href={
+              currentPage > 1
+                ? `/bills/${billId}/reports?page=${currentPage - 1}`
+                : "#"
+            }
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage <= 1}
+              className="gap-1"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              前へ
+            </Button>
+          </Link>
+
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Link key={page} href={`/bills/${billId}/reports?page=${page}`}>
+                <Button
+                  variant={page === currentPage ? "default" : "outline"}
+                  size="sm"
+                  className="w-10"
+                >
+                  {page}
+                </Button>
+              </Link>
+            ))}
+          </div>
+
+          <Link
+            href={
+              currentPage < totalPages
+                ? `/bills/${billId}/reports?page=${currentPage + 1}`
+                : "#"
+            }
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage >= totalPages}
+              className="gap-1"
+            >
+              次へ
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

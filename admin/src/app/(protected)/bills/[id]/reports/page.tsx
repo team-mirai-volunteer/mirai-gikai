@@ -13,13 +13,22 @@ interface ReportsPageProps {
   params: Promise<{
     id: string;
   }>;
+  searchParams: Promise<{
+    page?: string;
+  }>;
 }
 
-export default async function ReportsPage({ params }: ReportsPageProps) {
+export default async function ReportsPage({
+  params,
+  searchParams,
+}: ReportsPageProps) {
   const { id } = await params;
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, Number(page) || 1);
+
   const [bill, sessions, totalCount] = await Promise.all([
     getBillById(id),
-    getInterviewSessions(id),
+    getInterviewSessions(id, currentPage),
     getInterviewSessionsCount(id),
   ]);
 
@@ -46,7 +55,12 @@ export default async function ReportsPage({ params }: ReportsPageProps) {
         <p className="text-gray-600 mt-1">議案「{bill.name}」のレポート</p>
       </div>
 
-      <SessionList billId={id} sessions={sessions} totalCount={totalCount} />
+      <SessionList
+        billId={id}
+        sessions={sessions}
+        totalCount={totalCount}
+        currentPage={currentPage}
+      />
     </div>
   );
 }

@@ -1,8 +1,11 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
 import type { InterviewSessionWithDetails } from "../types";
 
+export const SESSIONS_PER_PAGE = 30;
+
 export async function getInterviewSessions(
-  billId: string
+  billId: string,
+  page = 1
 ): Promise<InterviewSessionWithDetails[]> {
   const supabase = createAdminClient();
 
@@ -17,6 +20,10 @@ export async function getInterviewSessions(
     return [];
   }
 
+  // ページネーション計算
+  const from = (page - 1) * SESSIONS_PER_PAGE;
+  const to = from + SESSIONS_PER_PAGE - 1;
+
   // セッション一覧を取得
   const { data: sessions, error: sessionsError } = await supabase
     .from("interview_sessions")
@@ -27,7 +34,8 @@ export async function getInterviewSessions(
     `
     )
     .eq("interview_config_id", config.id)
-    .order("started_at", { ascending: false });
+    .order("started_at", { ascending: false })
+    .range(from, to);
 
   if (sessionsError || !sessions) {
     console.error("Failed to fetch interview sessions:", sessionsError);
