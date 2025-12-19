@@ -242,9 +242,9 @@ export function BillFormFields({
             <FormLabel>国会会期</FormLabel>
             <Select
               onValueChange={(value) => {
-                field.onChange(value === "" ? null : value);
+                field.onChange(value === "__null__" ? null : value);
               }}
-              value={field.value ?? ""}
+              value={field.value ?? "__null__"}
             >
               <FormControl>
                 <SelectTrigger>
@@ -252,7 +252,7 @@ export function BillFormFields({
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="">-</SelectItem>
+                <SelectItem value="__null__">-</SelectItem>
                 {dietSessions.map((session) => (
                   <SelectItem key={session.id} value={session.id}>
                     {session.name}（{session.start_date}〜{session.end_date}）
