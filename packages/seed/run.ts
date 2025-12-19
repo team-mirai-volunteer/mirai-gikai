@@ -6,6 +6,9 @@ import {
   createBillsTags,
   createInterviewConfig,
   createInterviewQuestions,
+  createInterviewSessions,
+  createInterviewMessages,
+  createInterviewReports,
 } from "./data";
 import { createBillContents } from "./bill-contents-data";
 import { createClient } from "@supabase/supabase-js";
@@ -26,6 +29,18 @@ async function seedDatabase() {
     // Clear existing data (in reverse order due to foreign key constraints)
     console.log("🧹 Clearing existing data...");
 
+    await supabase
+      .from("interview_report")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase
+      .from("interview_messages")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase
+      .from("interview_sessions")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
     await supabase
       .from("interview_questions")
       .delete()
@@ -230,6 +245,65 @@ async function seedDatabase() {
         if (insertedQuestions) {
           insertedQuestionsCount = insertedQuestions.length;
           console.log(`✅ Inserted ${insertedQuestionsCount} interview questions`);
+        }
+
+        // Insert interview sessions
+        console.log("🗣️ Inserting interview sessions...");
+        const sessionsData = createInterviewSessions(insertedConfig.id);
+
+        const { data: insertedSessions, error: sessionsError } = await supabase
+          .from("interview_sessions")
+          .insert(sessionsData)
+          .select("id");
+
+        if (sessionsError) {
+          throw new Error(
+            `Failed to insert interview sessions: ${sessionsError.message}`
+          );
+        }
+
+        if (insertedSessions && insertedSessions.length > 0) {
+          console.log(`✅ Inserted ${insertedSessions.length} interview sessions`);
+
+          // Insert interview messages
+          console.log("💬 Inserting interview messages...");
+          const sessionIds = insertedSessions.map((s) => s.id);
+          const messagesData = createInterviewMessages(sessionIds);
+
+          const { data: insertedMessages, error: messagesError } =
+            await supabase
+              .from("interview_messages")
+              .insert(messagesData)
+              .select("id");
+
+          if (messagesError) {
+            throw new Error(
+              `Failed to insert interview messages: ${messagesError.message}`
+            );
+          }
+
+          if (insertedMessages) {
+            console.log(`✅ Inserted ${insertedMessages.length} interview messages`);
+          }
+
+          // Insert interview reports
+          console.log("📊 Inserting interview reports...");
+          const reportsData = createInterviewReports(sessionIds);
+
+          const { data: insertedReports, error: reportsError } = await supabase
+            .from("interview_report")
+            .insert(reportsData)
+            .select("id");
+
+          if (reportsError) {
+            throw new Error(
+              `Failed to insert interview reports: ${reportsError.message}`
+            );
+          }
+
+          if (insertedReports) {
+            console.log(`✅ Inserted ${insertedReports.length} interview reports`);
+          }
         }
       }
     } else {

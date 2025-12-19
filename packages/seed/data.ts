@@ -11,6 +11,12 @@ type InterviewConfigInsert =
   Database["public"]["Tables"]["interview_configs"]["Insert"];
 type InterviewQuestionInsert =
   Database["public"]["Tables"]["interview_questions"]["Insert"];
+type InterviewSessionInsert =
+  Database["public"]["Tables"]["interview_sessions"]["Insert"];
+type InterviewMessageInsert =
+  Database["public"]["Tables"]["interview_messages"]["Insert"];
+type InterviewReportInsert =
+  Database["public"]["Tables"]["interview_report"]["Insert"];
 
 // 国会会期データ
 export const dietSessions: DietSessionInsert[] = [
@@ -208,4 +214,112 @@ export function createInterviewQuestions(
       question_order: 2,
     },
   ];
+}
+
+// インタビューセッションを作成
+export function createInterviewSessions(
+  interviewConfigId: string
+): Omit<InterviewSessionInsert, "id" | "created_at" | "updated_at">[] {
+  const now = new Date();
+  return [
+    {
+      interview_config_id: interviewConfigId,
+      user_id: "00000000-0000-0000-0000-000000000001",
+      started_at: new Date(now.getTime() - 3600000).toISOString(), // 1時間前
+      completed_at: new Date(now.getTime() - 3000000).toISOString(), // 50分前
+    },
+    {
+      interview_config_id: interviewConfigId,
+      user_id: "00000000-0000-0000-0000-000000000002",
+      started_at: new Date(now.getTime() - 7200000).toISOString(), // 2時間前
+      completed_at: new Date(now.getTime() - 6600000).toISOString(), // 1時間50分前
+    },
+    {
+      interview_config_id: interviewConfigId,
+      user_id: "00000000-0000-0000-0000-000000000003",
+      started_at: new Date(now.getTime() - 86400000).toISOString(), // 1日前
+      completed_at: new Date(now.getTime() - 85800000).toISOString(), // 1日前 + 10分
+    },
+  ];
+}
+
+// インタビューメッセージを作成
+export function createInterviewMessages(
+  sessionIds: string[]
+): Omit<InterviewMessageInsert, "id" | "created_at">[] {
+  const conversations = [
+    // セッション1: 賛成
+    [
+      { role: "assistant" as const, content: "この法案に賛成ですか？反対ですか？" },
+      { role: "user" as const, content: "賛成です" },
+      { role: "assistant" as const, content: "その理由を教えてください。" },
+      { role: "user" as const, content: "なぜなら賛成だからです。国民のためになると思います。" },
+      { role: "assistant" as const, content: "ありがとうございました。ご意見を承りました。" },
+    ],
+    // セッション2: 反対
+    [
+      { role: "assistant" as const, content: "この法案に賛成ですか？反対ですか？" },
+      { role: "user" as const, content: "反対です" },
+      { role: "assistant" as const, content: "その理由を教えてください。" },
+      { role: "user" as const, content: "財源が不明確だと思います。" },
+      { role: "assistant" as const, content: "ありがとうございました。ご意見を承りました。" },
+    ],
+    // セッション3: どちらでもない
+    [
+      { role: "assistant" as const, content: "この法案に賛成ですか？反対ですか？" },
+      { role: "user" as const, content: "どちらでもないです" },
+      { role: "assistant" as const, content: "その理由を教えてください。" },
+      { role: "user" as const, content: "もっと情報が必要だと思います。" },
+      { role: "assistant" as const, content: "ありがとうございました。ご意見を承りました。" },
+    ],
+  ];
+
+  const messages: Omit<InterviewMessageInsert, "id" | "created_at">[] = [];
+
+  sessionIds.forEach((sessionId, sessionIndex) => {
+    const conversation = conversations[sessionIndex] || conversations[0];
+    conversation.forEach((msg) => {
+      messages.push({
+        interview_session_id: sessionId,
+        role: msg.role,
+        content: msg.content,
+      });
+    });
+  });
+
+  return messages;
+}
+
+// インタビューレポートを作成
+export function createInterviewReports(
+  sessionIds: string[]
+): Omit<InterviewReportInsert, "id" | "created_at" | "updated_at">[] {
+  const reports = [
+    {
+      stance: "for" as const,
+      summary: "この法案に賛成。国民のためになると考えている。",
+      role: "一般市民",
+      role_description: "法案の内容に賛同する市民",
+      opinions: [{ title: "賛成理由", content: "国民のためになる" }],
+    },
+    {
+      stance: "against" as const,
+      summary: "財源の不明確さを理由に反対。",
+      role: "一般市民",
+      role_description: "財政面を懸念する市民",
+      opinions: [{ title: "反対理由", content: "財源が不明確" }],
+    },
+    {
+      stance: "neutral" as const,
+      summary: "判断するにはより多くの情報が必要と考えている。",
+      role: "一般市民",
+      role_description: "慎重な判断を求める市民",
+      opinions: [{ title: "態度保留理由", content: "情報不足" }],
+    },
+  ];
+
+  return sessionIds.map((sessionId, index) => ({
+    interview_session_id: sessionId,
+    ...reports[index % reports.length],
+  }));
 }
