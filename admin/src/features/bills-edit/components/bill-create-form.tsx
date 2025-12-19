@@ -20,10 +20,6 @@ interface BillCreateFormProps {
 export function BillCreateForm({ dietSessions }: BillCreateFormProps) {
   const { isSubmitting, error, handleSubmit, handleCancel } = useBillForm();
 
-  // Default to the latest session (first in the list, sorted by start_date desc)
-  const defaultDietSessionId =
-    dietSessions.length > 0 ? dietSessions[0].id : null;
-
   const form = useForm<BillCreateInput>({
     resolver: zodResolver(billCreateSchema),
     defaultValues: {
@@ -36,7 +32,7 @@ export function BillCreateForm({ dietSessions }: BillCreateFormProps) {
       share_thumbnail_url: null,
       shugiin_url: null,
       is_featured: false,
-      diet_session_id: defaultDietSessionId,
+      diet_session_id: null,
     },
   });
 

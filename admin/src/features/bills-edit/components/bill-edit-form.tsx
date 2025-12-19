@@ -21,11 +21,6 @@ interface BillEditFormProps {
 export function BillEditForm({ bill, dietSessions }: BillEditFormProps) {
   const { isSubmitting, error, handleSubmit, handleCancel } = useBillForm();
 
-  // If bill has no diet_session_id, default to the latest session (first in the list)
-  const defaultDietSessionId =
-    bill.diet_session_id ??
-    (dietSessions.length > 0 ? dietSessions[0].id : null);
-
   const form = useForm<BillUpdateInput>({
     resolver: zodResolver(billUpdateSchema),
     defaultValues: {
@@ -40,7 +35,7 @@ export function BillEditForm({ bill, dietSessions }: BillEditFormProps) {
       share_thumbnail_url: bill.share_thumbnail_url,
       shugiin_url: bill.shugiin_url,
       is_featured: bill.is_featured,
-      diet_session_id: defaultDietSessionId,
+      diet_session_id: bill.diet_session_id ?? null,
     },
   });
 
