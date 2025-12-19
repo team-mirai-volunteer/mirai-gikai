@@ -2,11 +2,9 @@ import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import type { DietSession } from "@/features/diet-sessions/types";
-import { formatDateWithDots } from "@/lib/utils/date";
 import type { BillWithContent } from "../types";
-import { BillStatusBadge } from "./bill-list/bill-status-badge";
+import { CompactBillCard } from "./bill-list/compact-bill-card";
 
 interface PreviousSessionSectionProps {
   session: DietSession;
@@ -66,7 +64,7 @@ export function PreviousSessionSection({
 
           return (
             <Link key={bill.id} href={href}>
-              <PreviousSessionBillCard
+              <CompactBillCard
                 bill={bill}
                 // 5件目は少し淡く表示して「続きを見る」感を出す
                 className={isFifthCard ? "opacity-60" : undefined}
@@ -95,51 +93,5 @@ export function PreviousSessionSection({
         )}
       </div>
     </section>
-  );
-}
-
-function PreviousSessionBillCard({
-  bill,
-  className,
-}: {
-  bill: BillWithContent;
-  className?: string;
-}) {
-  const displayTitle = bill.bill_content?.title || bill.name;
-
-  return (
-    <Card
-      className={`border border-black hover:bg-muted/50 transition-colors overflow-hidden ${className ?? ""}`}
-    >
-      <div className="flex">
-        {/* コンテンツエリア */}
-        <div className="flex-1 p-4 flex flex-col gap-2">
-          <h3 className="font-bold text-base leading-tight line-clamp-2">
-            {displayTitle}
-          </h3>
-          <div className="flex items-center gap-2">
-            <BillStatusBadge status={bill.status} className="w-fit" />
-            <span className="text-xs text-muted-foreground">
-              {bill.published_at
-                ? `${formatDateWithDots(bill.published_at)} 提出`
-                : "法案提出前"}
-            </span>
-          </div>
-        </div>
-
-        {/* サムネイル画像 */}
-        {bill.thumbnail_url && (
-          <div className="relative w-24 h-24 flex-shrink-0">
-            <Image
-              src={bill.thumbnail_url}
-              alt={bill.name}
-              fill
-              className="object-cover"
-              sizes="96px"
-            />
-          </div>
-        )}
-      </div>
-    </Card>
   );
 }
