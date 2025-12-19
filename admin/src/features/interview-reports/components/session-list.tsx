@@ -78,6 +78,7 @@ export function SessionList({
               <TableHead className="w-32">セッションID</TableHead>
               <TableHead className="w-24">ステータス</TableHead>
               <TableHead className="w-20 text-center">レポート</TableHead>
+              <TableHead className="w-28">役割</TableHead>
               <TableHead className="w-44">開始時刻</TableHead>
               <TableHead className="w-24">時間</TableHead>
               <TableHead className="w-24 text-right">メッセージ数</TableHead>
@@ -106,6 +107,9 @@ export function SessionList({
                   </TableCell>
                   <TableCell className="text-center">
                     <BooleanIcon value={hasReport} />
+                  </TableCell>
+                  <TableCell className="text-gray-600 text-sm">
+                    {session.interview_report?.role || "-"}
                   </TableCell>
                   <TableCell className="text-gray-600">
                     <div className="flex items-center gap-1">
