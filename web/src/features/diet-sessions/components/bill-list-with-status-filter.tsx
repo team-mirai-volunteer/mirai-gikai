@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { BillWithContent } from "@/features/bills/types";
-import { BillCard } from "@/features/bills/components/bill-list/bill-card";
+import { CompactBillCard } from "@/features/bills/components/bill-list/compact-bill-card";
 
 type FilterType = "all" | "enacted" | "rejected" | "other";
 
@@ -81,7 +81,7 @@ export function BillListWithStatusFilter({ bills }: Props) {
         <div className="grid gap-4">
           {filteredBills.map((bill) => (
             <Link key={bill.id} href={`/bills/${bill.id}`}>
-              <BillCard bill={bill} />
+              <CompactBillCard bill={bill} />
             </Link>
           ))}
         </div>

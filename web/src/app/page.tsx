@@ -7,6 +7,7 @@ import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficult
 import { BillDisclaimer } from "@/features/bills/components/bill-detail/bill-disclaimer";
 import { BillsByTagSection } from "@/features/bills/components/bills-by-tag-section";
 import { FeaturedBillSection } from "@/features/bills/components/featured-bill-section";
+import { PreviousSessionSection } from "@/features/bills/components/previous-session-section";
 import { loadHomeData } from "@/features/bills/loaders/load-home-data";
 import type { BillWithContent } from "@/features/bills/types";
 import { HomeChatClient } from "@/features/chat/components/home-chat-client";
@@ -15,7 +16,8 @@ import { CurrentDietSession } from "@/features/diet-sessions/components/current-
 import { getJapanTime } from "@/lib/utils/date";
 
 export default async function Home() {
-  const { billsByTag, featuredBills, comingSoonBills } = await loadHomeData();
+  const { billsByTag, featuredBills, comingSoonBills, previousSessionData } =
+    await loadHomeData();
 
   // ゆくゆくタグ機能がマージされたらBFFに統合する
   const [currentSession, currentDifficulty] = await Promise.all([
@@ -53,6 +55,16 @@ export default async function Home() {
             <ComingSoonSection bills={comingSoonBills} />
           </main>
         </div>
+
+        {/* 前回の国会セクション（Archive） */}
+        {previousSessionData && (
+          <div className="bg-white -mx-4 sm:-mx-6 px-4 sm:px-6 py-8">
+            <PreviousSessionSection
+              session={previousSessionData.session}
+              bills={previousSessionData.bills}
+            />
+          </div>
+        )}
 
         {/* みらい議会とは セクション */}
         <About />

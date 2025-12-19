@@ -104,17 +104,30 @@ async function seedDatabase() {
 
     console.log(`✅ Inserted ${insertedBills.length} bills`);
 
-    // Link first 3 bills to the 219 diet session
-    const dietSessionId = insertedDietSessions[0]?.id;
-    if (dietSessionId) {
+    // Link first 3 bills to the 219 diet session (current session)
+    const session219Id = insertedDietSessions[0]?.id;
+    if (session219Id) {
       const billsToLink = insertedBills.slice(0, 3);
       for (const bill of billsToLink) {
         await supabase
           .from("bills")
-          .update({ diet_session_id: dietSessionId })
+          .update({ diet_session_id: session219Id })
           .eq("id", bill.id);
       }
-      console.log(`🔗 Linked ${billsToLink.length} bills to diet session`);
+      console.log(`🔗 Linked ${billsToLink.length} bills to 219 diet session`);
+    }
+
+    // Link last 5 bills to the 218 diet session (previous session)
+    const session218Id = insertedDietSessions[1]?.id;
+    if (session218Id) {
+      const bills218 = insertedBills.slice(-5);
+      for (const bill of bills218) {
+        await supabase
+          .from("bills")
+          .update({ diet_session_id: session218Id })
+          .eq("id", bill.id);
+      }
+      console.log(`🔗 Linked ${bills218.length} bills to 218 diet session`);
     }
 
     // Insert bill_contents
