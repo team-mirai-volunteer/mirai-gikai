@@ -20,10 +20,28 @@ export async function getInterviewMessages(
 
   const supabase = createAdminClient();
 
+  // セッションの所有者を確認
+  const { data: session, error: sessionError } = await supabase
+    .from("interview_sessions")
+    .select("user_id")
+    .eq("id", sessionId)
+    .single();
+
+  if (sessionError || !session) {
+    console.error("Failed to fetch interview session:", sessionError);
+    return [];
+  }
+
+  // 認可チェック: セッションの所有者と現在のユーザーが一致するか
+  if (session.user_id !== user.id) {
+    console.error("Unauthorized access to interview session");
+    return [];
+  }
+
+  // メッセージを取得
   const { data, error } = await supabase
     .from("interview_messages")
     .select("*")
-    .eq("user_id", user.id)
     .eq("interview_session_id", sessionId)
     .order("created_at", { ascending: true });
 
