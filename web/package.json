@@ -56,7 +56,7 @@
     "unified": "^11.0.5",
     "unist-util-visit": "^5.0.0",
     "use-stick-to-bottom": "^1.1.1",
-    "zod": "^4.1.5"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@next/third-parties": "^15.5.5",
