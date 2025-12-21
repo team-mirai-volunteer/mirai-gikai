@@ -6,6 +6,7 @@ import { createInterviewSession } from "@/features/interview-session/actions/cre
 import { getInterviewMessages } from "@/features/interview-session/api/get-interview-messages";
 import { getInterviewSession } from "@/features/interview-session/api/get-interview-session";
 import { InterviewChatClient } from "@/features/interview-session/components/interview-chat-client";
+import { generateInitialQuestion } from "@/features/interview-session/services/generate-initial-question";
 
 interface InterviewChatPageProps {
   params: Promise<{
@@ -47,7 +48,20 @@ export default async function InterviewChatPage({
   }
 
   // メッセージ履歴を取得
-  const messages = await getInterviewMessages(session.id);
+  let messages = await getInterviewMessages(session.id);
+
+  // メッセージ履歴が空の場合、最初の質問を生成
+  if (messages.length === 0) {
+    const initialQuestion = await generateInitialQuestion({
+      sessionId: session.id,
+      billId,
+      interviewConfigId: interviewConfig.id,
+    });
+
+    if (initialQuestion) {
+      messages = [initialQuestion];
+    }
+  }
 
   return (
     <InterviewChatClient

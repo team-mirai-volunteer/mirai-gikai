@@ -54,13 +54,17 @@ export async function handleInterviewChatRequest({
   const lastMessage = messages[messages.length - 1];
   if (lastMessage && lastMessage.role === "user") {
     // ユーザーメッセージを保存
-    await saveInterviewMessage({
-      sessionId: session.id,
-      role: "user",
-      content: lastMessage.parts
-        .map((part) => (part.type === "text" ? part.text : ""))
-        .join(""),
-    });
+    const userMessageText = lastMessage.parts
+      .map((part) => (part.type === "text" ? part.text : ""))
+      .join("");
+
+    if (userMessageText.trim()) {
+      await saveInterviewMessage({
+        sessionId: session.id,
+        role: "user",
+        content: userMessageText,
+      });
+    }
   }
 
   const model = "openai/gpt-4o-mini";

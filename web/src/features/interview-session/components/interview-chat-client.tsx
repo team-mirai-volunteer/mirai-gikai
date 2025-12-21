@@ -103,8 +103,8 @@ export function InterviewChatClient({
   };
 
   return (
-    <div className="flex flex-col h-screen">
-      <Conversation className="flex-1 overflow-y-auto p-4">
+    <div className="flex flex-col h-screen py-12 pt-24 md:pt-12">
+      <Conversation className="flex-1 overflow-y-auto">
         <ConversationContent>
           {messages.length === 0 && (
             <div className="flex flex-col gap-4">
