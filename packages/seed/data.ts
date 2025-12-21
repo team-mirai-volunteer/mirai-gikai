@@ -18,6 +18,14 @@ export const dietSessions: DietSessionInsert[] = [
     start_date: "2025-10-21",
     end_date: "2025-12-17",
   },
+  {
+    name: "第218回国会（臨時会）",
+    slug: "218-rinji",
+    shugiin_url:
+      "https://www.shugiin.go.jp/internet/itdb_gian.nsf/html/gian/menu.htm",
+    start_date: "2025-08-01",
+    end_date: "2025-08-05",
+  },
 ];
 
 // タグデータ
@@ -76,6 +84,18 @@ export const bills: BillInsert[] = [
     publish_status: "published",
     is_featured: false,
   },
+  // 第218回国会用の追加法案（デザイン確認用）- ループで生成
+  ...Array.from({ length: 4 }, (_, i) => ({
+    name: `学校給食無償化促進法案（第${i + 2}号）`,
+    originating_house: (i % 2 === 0 ? "HR" : "HC") as "HR" | "HC",
+    status: (i % 2 === 0 ? "enacted" : "in_originating_house") as
+      | "enacted"
+      | "in_originating_house",
+    status_note: i % 2 === 0 ? "両院で可決、成立" : "参議院で審議中",
+    published_at: `2025-08-0${i + 1}T09:00:00+09:00`,
+    publish_status: "published" as const,
+    is_featured: false,
+  })),
   {
     name: "中学生・高校生向けプログラミング教育必修化法案",
     originating_house: "HR",
@@ -99,6 +119,13 @@ export function createBillsTags(
     "こども家庭庁予算大幅増額法案": ["子育て・教育"],
     "18歳選挙権完全実施法案": ["選挙・政治改革"],
     "学校給食無償化促進法案": ["子育て・教育"],
+    // 第218回国会用の追加法案（デザイン確認用）
+    ...Object.fromEntries(
+      Array.from({ length: 4 }, (_, i) => [
+        `学校給食無償化促進法案（第${i + 2}号）`,
+        ["子育て・教育"],
+      ])
+    ),
     "中学生・高校生向けプログラミング教育必修化法案": ["子育て・教育"],
   };
 
@@ -151,6 +178,13 @@ const miraiStancesData: Omit<MiraiStanceInsert, "bill_id">[] = [
 
 全ての子どもが質の高い食事を平等に受けられることは、健康格差の解消にもつながります。地産地消の推進により地域経済の活性化も期待できます。`,
   },
+  // 第218回国会用の追加法案（デザイン確認用）- 同じ見解を4件追加
+  ...Array.from({ length: 4 }, () => ({
+    type: "for" as const,
+    comment: `学校給食の無償化は、子育て支援と教育の充実を同時に実現する重要な政策です。
+
+全ての子どもが質の高い食事を平等に受けられることは、健康格差の解消にもつながります。地産地消の推進により地域経済の活性化も期待できます。`,
+  })),
   {
     // プログラミング教育必修化法案に対する見解
     type: "against",
