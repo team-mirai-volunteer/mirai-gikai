@@ -155,7 +155,7 @@ export function InterviewChatClient({
               ref={textareaRef}
               onChange={handleInputChange}
               value={input}
-              placeholder="わからないことをAIに質問する"
+              placeholder="AIに質問に回答する"
               rows={1}
               submitOnEnter={isDesktop}
               className="!min-h-0 min-w-0 wrap-anywhere text-sm font-medium leading-[1.5em] tracking-[0.01em] placeholder:text-[#AEAEB2] placeholder:font-medium placeholder:leading-[1.5em] placeholder:tracking-[0.01em] placeholder:no-underline border-none focus:ring-0 bg-transparent shadow-none !py-2 !px-0"
