@@ -26,6 +26,7 @@ interface InterviewChatClientProps {
   interviewConfigId: string;
   sessionId: string;
   initialMessages: Array<{
+    id: string;
     role: "assistant" | "user";
     content: string;
     created_at: string;
@@ -44,7 +45,7 @@ export function InterviewChatClient({
   // 初期メッセージをUIMessage形式に変換
   const convertedInitialMessages = useMemo(() => {
     return initialMessages.map((msg) => ({
-      id: `msg-${msg.created_at}`,
+      id: msg.id,
       role: msg.role,
       content: msg.content,
       parts: [{ type: "text" as const, text: msg.content }],
