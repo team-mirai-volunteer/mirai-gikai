@@ -1,6 +1,4 @@
 import type { UIMessage } from "@ai-sdk/react";
-import { Message, MessageContent } from "@/components/ai-elements/message";
-import { Response } from "@/components/ai-elements/response";
 import { SystemMessage } from "@/features/chat/components/system-message";
 import { UserMessage } from "@/features/chat/components/user-message";
 
