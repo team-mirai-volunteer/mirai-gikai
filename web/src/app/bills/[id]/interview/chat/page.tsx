@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
-import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
 import { getInterviewConfig } from "@/features/interview-config/api/get-interview-config";
 import { createInterviewSession } from "@/features/interview-session/actions/create-interview-session";
 import { getInterviewMessages } from "@/features/interview-session/api/get-interview-messages";
@@ -26,16 +25,6 @@ export default async function InterviewChatPage({
   ]);
 
   if (!bill || !interviewConfig) {
-    notFound();
-  }
-
-  // 匿名ユーザーを取得
-  const {
-    data: { user },
-    error: getUserError,
-  } = await getChatSupabaseUser();
-
-  if (getUserError || !user) {
     notFound();
   }
 
