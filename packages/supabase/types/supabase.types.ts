@@ -255,8 +255,6 @@ export type Database = {
           created_at: string
           end_date: string
           id: string
-          is_current_session: boolean
-          is_previous_session: boolean
           name: string
           shugiin_url: string | null
           slug: string | null
@@ -267,8 +265,6 @@ export type Database = {
           created_at?: string
           end_date: string
           id?: string
-          is_current_session?: boolean
-          is_previous_session?: boolean
           name: string
           shugiin_url?: string | null
           slug?: string | null
@@ -279,8 +275,6 @@ export type Database = {
           created_at?: string
           end_date?: string
           id?: string
-          is_current_session?: boolean
-          is_previous_session?: boolean
           name?: string
           shugiin_url?: string | null
           slug?: string | null
