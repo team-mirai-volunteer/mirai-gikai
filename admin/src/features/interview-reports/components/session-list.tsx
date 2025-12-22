@@ -1,16 +1,16 @@
-import {
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  Clock,
-  ExternalLink,
-  XCircle,
-} from "lucide-react";
+import { CheckCircle2, Clock, ExternalLink, XCircle } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import {
   Table,
   TableBody,
@@ -150,89 +150,88 @@ export function SessionList({
 
       {/* ページネーション */}
       {totalPages > 1 && (
-        <div className="mt-4 flex items-center justify-center gap-2">
-          <Link
-            href={currentPage > 1 ? `/bills/${billId}/reports?page=1` : "#"}
-          >
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage <= 1}
-              className="gap-1"
-            >
-              <ChevronsLeft className="h-4 w-4" />
-              最初へ
-            </Button>
-          </Link>
+        <Pagination className="mt-4">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href={
+                  currentPage > 1
+                    ? `/bills/${billId}/reports?page=${currentPage - 1}`
+                    : `/bills/${billId}/reports?page=1`
+                }
+                aria-disabled={currentPage <= 1}
+                className={
+                  currentPage <= 1 ? "pointer-events-none opacity-50" : ""
+                }
+              />
+            </PaginationItem>
 
-          <Link
-            href={
-              currentPage > 1
-                ? `/bills/${billId}/reports?page=${currentPage - 1}`
-                : "#"
-            }
-          >
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage <= 1}
-              className="gap-1"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              前へ
-            </Button>
-          </Link>
+            {/* ページ番号表示（最大5ページ表示、省略記号付き） */}
+            {(() => {
+              const pages: (number | "ellipsis-start" | "ellipsis-end")[] = [];
+              if (totalPages <= 5) {
+                // 5ページ以下の場合はすべて表示
+                for (let i = 1; i <= totalPages; i++) {
+                  pages.push(i);
+                }
+              } else {
+                // 最初のページ
+                pages.push(1);
 
-          <div className="flex items-center gap-1">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <Link key={page} href={`/bills/${billId}/reports?page=${page}`}>
-                <Button
-                  variant={page === currentPage ? "default" : "outline"}
-                  size="sm"
-                  className="w-10"
-                >
-                  {page}
-                </Button>
-              </Link>
-            ))}
-          </div>
+                if (currentPage > 3) {
+                  pages.push("ellipsis-start");
+                }
 
-          <Link
-            href={
-              currentPage < totalPages
-                ? `/bills/${billId}/reports?page=${currentPage + 1}`
-                : "#"
-            }
-          >
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage >= totalPages}
-              className="gap-1"
-            >
-              次へ
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </Link>
+                // 現在のページ周辺
+                const start = Math.max(2, currentPage - 1);
+                const end = Math.min(totalPages - 1, currentPage + 1);
+                for (let i = start; i <= end; i++) {
+                  pages.push(i);
+                }
 
-          <Link
-            href={
-              currentPage < totalPages
-                ? `/bills/${billId}/reports?page=${totalPages}`
-                : "#"
-            }
-          >
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage >= totalPages}
-              className="gap-1"
-            >
-              最後へ
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        </div>
+                if (currentPage < totalPages - 2) {
+                  pages.push("ellipsis-end");
+                }
+
+                // 最後のページ
+                pages.push(totalPages);
+              }
+
+              return pages.map((page) =>
+                typeof page === "string" ? (
+                  <PaginationItem key={page}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                ) : (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href={`/bills/${billId}/reports?page=${page}`}
+                      isActive={page === currentPage}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              );
+            })()}
+
+            <PaginationItem>
+              <PaginationNext
+                href={
+                  currentPage < totalPages
+                    ? `/bills/${billId}/reports?page=${currentPage + 1}`
+                    : `/bills/${billId}/reports?page=${totalPages}`
+                }
+                aria-disabled={currentPage >= totalPages}
+                className={
+                  currentPage >= totalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       )}
     </div>
   );
