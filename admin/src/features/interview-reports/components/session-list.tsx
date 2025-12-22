@@ -6,7 +6,9 @@ import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
+  PaginationFirst,
   PaginationItem,
+  PaginationLast,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
@@ -153,6 +155,16 @@ export function SessionList({
         <Pagination className="mt-4">
           <PaginationContent>
             <PaginationItem>
+              <PaginationFirst
+                href={`/bills/${billId}/reports?page=1`}
+                aria-disabled={currentPage <= 1}
+                className={
+                  currentPage <= 1 ? "pointer-events-none opacity-50" : ""
+                }
+              />
+            </PaginationItem>
+
+            <PaginationItem>
               <PaginationPrevious
                 href={
                   currentPage > 1
@@ -222,6 +234,18 @@ export function SessionList({
                     ? `/bills/${billId}/reports?page=${currentPage + 1}`
                     : `/bills/${billId}/reports?page=${totalPages}`
                 }
+                aria-disabled={currentPage >= totalPages}
+                className={
+                  currentPage >= totalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                }
+              />
+            </PaginationItem>
+
+            <PaginationItem>
+              <PaginationLast
+                href={`/bills/${billId}/reports?page=${totalPages}`}
                 aria-disabled={currentPage >= totalPages}
                 className={
                   currentPage >= totalPages

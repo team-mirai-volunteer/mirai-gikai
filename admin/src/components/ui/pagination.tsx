@@ -2,6 +2,8 @@ import type * as React from "react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
   MoreHorizontalIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -77,7 +79,7 @@ function PaginationPrevious({
       {...props}
     >
       <ChevronLeftIcon />
-      <span className="hidden sm:block">Previous</span>
+      <span className="hidden sm:block">前へ</span>
     </PaginationLink>
   );
 }
@@ -93,7 +95,7 @@ function PaginationNext({
       className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
       {...props}
     >
-      <span className="hidden sm:block">Next</span>
+      <span className="hidden sm:block">次へ</span>
       <ChevronRightIcon />
     </PaginationLink>
   );
@@ -116,6 +118,40 @@ function PaginationEllipsis({
   );
 }
 
+function PaginationFirst({
+  className,
+  ...props
+}: React.ComponentProps<typeof PaginationLink>) {
+  return (
+    <PaginationLink
+      aria-label="Go to first page"
+      size="default"
+      className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
+      {...props}
+    >
+      <ChevronsLeftIcon />
+      <span className="hidden sm:block">最初へ</span>
+    </PaginationLink>
+  );
+}
+
+function PaginationLast({
+  className,
+  ...props
+}: React.ComponentProps<typeof PaginationLink>) {
+  return (
+    <PaginationLink
+      aria-label="Go to last page"
+      size="default"
+      className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
+      {...props}
+    >
+      <span className="hidden sm:block">最後へ</span>
+      <ChevronsRightIcon />
+    </PaginationLink>
+  );
+}
+
 export {
   Pagination,
   PaginationContent,
@@ -124,4 +160,6 @@ export {
   PaginationPrevious,
   PaginationNext,
   PaginationEllipsis,
+  PaginationFirst,
+  PaginationLast,
 };
