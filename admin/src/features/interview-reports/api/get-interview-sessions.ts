@@ -42,22 +42,25 @@ export async function getInterviewSessions(
     return [];
   }
 
-  // 全セッションのメッセージ数を一括取得（N+1クエリ回避）
+  // 全セッションのメッセージ数を一括取得（SQL側でカウント、implicit GROUP BY）
   const sessionIds = sessions.map((s) => s.id);
   const { data: messageCounts, error: countError } = await supabase
     .from("interview_messages")
-    .select("interview_session_id")
+    .select("interview_session_id.count()")
     .in("interview_session_id", sessionIds);
 
   if (countError) {
     console.error("Failed to fetch message counts:", countError);
   }
 
-  // セッションIDごとのメッセージ数をカウント
+  // セッションIDごとのメッセージ数をマップに変換（missing sessions default to 0）
   const countMap = new Map<string, number>();
-  for (const msg of messageCounts || []) {
-    const id = msg.interview_session_id;
-    countMap.set(id, (countMap.get(id) || 0) + 1);
+  for (const id of sessionIds) {
+    countMap.set(id, 0);
+  }
+  for (const row of messageCounts || []) {
+    const r = row as { interview_session_id: string; count: number };
+    countMap.set(r.interview_session_id, Number(r.count));
   }
 
   // セッションにメッセージ数を付与
