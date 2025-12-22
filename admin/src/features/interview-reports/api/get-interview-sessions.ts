@@ -42,18 +42,27 @@ export async function getInterviewSessions(
     return [];
   }
 
-  // 各セッションのメッセージ数を取得
-  const sessionsWithDetails: InterviewSessionWithDetails[] = await Promise.all(
-    sessions.map(async (session) => {
-      const { count, error: countError } = await supabase
-        .from("interview_messages")
-        .select("*", { count: "exact", head: true })
-        .eq("interview_session_id", session.id);
+  // 全セッションのメッセージ数を一括取得（N+1クエリ回避）
+  const sessionIds = sessions.map((s) => s.id);
+  const { data: messageCounts, error: countError } = await supabase
+    .from("interview_messages")
+    .select("interview_session_id")
+    .in("interview_session_id", sessionIds);
 
-      if (countError) {
-        console.error("Failed to fetch message count:", countError);
-      }
+  if (countError) {
+    console.error("Failed to fetch message counts:", countError);
+  }
 
+  // セッションIDごとのメッセージ数をカウント
+  const countMap = new Map<string, number>();
+  for (const msg of messageCounts || []) {
+    const id = msg.interview_session_id;
+    countMap.set(id, (countMap.get(id) || 0) + 1);
+  }
+
+  // セッションにメッセージ数を付与
+  const sessionsWithDetails: InterviewSessionWithDetails[] = sessions.map(
+    (session) => {
       // interview_reportは配列で返ってくるので最初の要素を取得
       const report = Array.isArray(session.interview_report)
         ? session.interview_report[0] || null
@@ -61,10 +70,10 @@ export async function getInterviewSessions(
 
       return {
         ...session,
-        message_count: count || 0,
+        message_count: countMap.get(session.id) || 0,
         interview_report: report,
       };
-    })
+    }
   );
 
   return sessionsWithDetails;
