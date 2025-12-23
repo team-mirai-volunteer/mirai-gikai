@@ -1,4 +1,11 @@
-import { Calendar, Edit, FileText, MessageCircle, Plus } from "lucide-react";
+import {
+  BarChart3,
+  Calendar,
+  Edit,
+  FileText,
+  MessageCircle,
+  Plus,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -105,6 +112,12 @@ function BillCard({ bill }: { bill: Bill }) {
               <Button variant="outline" size="sm">
                 <MessageCircle className="h-4 w-4 mr-1" />
                 インタビュー設定
+              </Button>
+            </Link>
+            <Link href={`/bills/${bill.id}/reports`}>
+              <Button variant="outline" size="sm">
+                <BarChart3 className="h-4 w-4 mr-1" />
+                レポート一覧
               </Button>
             </Link>
           </div>

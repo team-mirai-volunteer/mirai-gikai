@@ -7,6 +7,16 @@ type TagInsert = Database["public"]["Tables"]["tags"]["Insert"];
 type BillsTagsInsert = Database["public"]["Tables"]["bills_tags"]["Insert"];
 type DietSessionInsert =
   Database["public"]["Tables"]["diet_sessions"]["Insert"];
+type InterviewConfigInsert =
+  Database["public"]["Tables"]["interview_configs"]["Insert"];
+type InterviewQuestionInsert =
+  Database["public"]["Tables"]["interview_questions"]["Insert"];
+type InterviewSessionInsert =
+  Database["public"]["Tables"]["interview_sessions"]["Insert"];
+type InterviewMessageInsert =
+  Database["public"]["Tables"]["interview_messages"]["Insert"];
+type InterviewReportInsert =
+  Database["public"]["Tables"]["interview_report"]["Insert"];
 
 // 国会会期データ
 export const dietSessions: DietSessionInsert[] = [
@@ -201,4 +211,218 @@ export function createMiraiStances(
     ...stance,
     bill_id: insertedBills[index]?.id || "",
   }));
+}
+
+// インタビュー設定を作成（最初の法案用）
+export function createInterviewConfig(
+  insertedBills: { id: string; name: string }[]
+): Omit<InterviewConfigInsert, "id" | "created_at" | "updated_at"> | null {
+  const targetBill = insertedBills[0];
+  if (!targetBill) return null;
+
+  return {
+    bill_id: targetBill.id,
+    status: "public",
+    themes: ["賛否", "理由"],
+    knowledge_source: `この法案についてあなたの意見を聞かせてください。`,
+  };
+}
+
+// インタビュー質問を作成
+export function createInterviewQuestions(
+  interviewConfigId: string
+): Omit<InterviewQuestionInsert, "id" | "created_at" | "updated_at">[] {
+  return [
+    {
+      interview_config_id: interviewConfigId,
+      question: "この法案に賛成ですか？反対ですか？",
+      instruction: "ユーザーの立場を明確にしてください。",
+      quick_replies: ["賛成", "反対", "どちらでもない"],
+      question_order: 1,
+    },
+    {
+      interview_config_id: interviewConfigId,
+      question: "その理由を教えてください。",
+      instruction: "具体的な理由を引き出してください。",
+      quick_replies: null,
+      question_order: 2,
+    },
+  ];
+}
+
+// インタビューセッションを作成（5パターン × 20回 = 100件）
+export function createInterviewSessions(
+  interviewConfigId: string
+): Omit<InterviewSessionInsert, "id" | "created_at" | "updated_at">[] {
+  const now = new Date();
+  const sessions: Omit<
+    InterviewSessionInsert,
+    "id" | "created_at" | "updated_at"
+  >[] = [];
+
+  // 20回ループして100件作成
+  for (let i = 0; i < 20; i++) {
+    const baseOffset = i * 86400000 * 3; // 3日ずつずらす
+
+    // パターン1: 完了 + レポートあり（賛成）
+    sessions.push({
+      interview_config_id: interviewConfigId,
+      user_id: `00000000-0000-0000-0000-${String(i * 5 + 1).padStart(12, "0")}`,
+      started_at: new Date(now.getTime() - baseOffset - 3600000).toISOString(),
+      completed_at: new Date(
+        now.getTime() - baseOffset - 3000000
+      ).toISOString(),
+    });
+
+    // パターン2: 完了 + レポートあり（反対）
+    sessions.push({
+      interview_config_id: interviewConfigId,
+      user_id: `00000000-0000-0000-0000-${String(i * 5 + 2).padStart(12, "0")}`,
+      started_at: new Date(now.getTime() - baseOffset - 7200000).toISOString(),
+      completed_at: new Date(
+        now.getTime() - baseOffset - 6600000
+      ).toISOString(),
+    });
+
+    // パターン3: 完了 + レポートあり（中立）
+    sessions.push({
+      interview_config_id: interviewConfigId,
+      user_id: `00000000-0000-0000-0000-${String(i * 5 + 3).padStart(12, "0")}`,
+      started_at: new Date(now.getTime() - baseOffset - 10800000).toISOString(),
+      completed_at: new Date(
+        now.getTime() - baseOffset - 10200000
+      ).toISOString(),
+    });
+
+    // パターン4: 完了したけどレポート未作成
+    sessions.push({
+      interview_config_id: interviewConfigId,
+      user_id: `00000000-0000-0000-0000-${String(i * 5 + 4).padStart(12, "0")}`,
+      started_at: new Date(now.getTime() - baseOffset - 14400000).toISOString(),
+      completed_at: new Date(
+        now.getTime() - baseOffset - 13800000
+      ).toISOString(),
+    });
+
+    // パターン5: 進行中（未完了、レポートなし）
+    sessions.push({
+      interview_config_id: interviewConfigId,
+      user_id: `00000000-0000-0000-0000-${String(i * 5 + 5).padStart(12, "0")}`,
+      started_at: new Date(now.getTime() - baseOffset - 1800000).toISOString(),
+      completed_at: null,
+    });
+  }
+
+  return sessions;
+}
+
+// インタビューメッセージを作成（5パターンをループ）
+export function createInterviewMessages(
+  sessionIds: string[]
+): Omit<InterviewMessageInsert, "id" | "created_at">[] {
+  const conversations = [
+    // パターン1: 賛成（完了 + レポートあり）
+    [
+      { role: "assistant" as const, content: "この法案に賛成ですか？反対ですか？" },
+      { role: "user" as const, content: "賛成です" },
+      { role: "assistant" as const, content: "その理由を教えてください。" },
+      { role: "user" as const, content: "なぜなら賛成だからです。国民のためになると思います。" },
+      { role: "assistant" as const, content: "ありがとうございました。ご意見を承りました。" },
+    ],
+    // パターン2: 反対（完了 + レポートあり）
+    [
+      { role: "assistant" as const, content: "この法案に賛成ですか？反対ですか？" },
+      { role: "user" as const, content: "反対です" },
+      { role: "assistant" as const, content: "その理由を教えてください。" },
+      { role: "user" as const, content: "財源が不明確だと思います。" },
+      { role: "assistant" as const, content: "ありがとうございました。ご意見を承りました。" },
+    ],
+    // パターン3: どちらでもない（完了 + レポートあり）
+    [
+      { role: "assistant" as const, content: "この法案に賛成ですか？反対ですか？" },
+      { role: "user" as const, content: "どちらでもないです" },
+      { role: "assistant" as const, content: "その理由を教えてください。" },
+      { role: "user" as const, content: "もっと情報が必要だと思います。" },
+      { role: "assistant" as const, content: "ありがとうございました。ご意見を承りました。" },
+    ],
+    // パターン4: 完了したけどレポート未作成
+    [
+      { role: "assistant" as const, content: "この法案に賛成ですか？反対ですか？" },
+      { role: "user" as const, content: "賛成です" },
+      { role: "assistant" as const, content: "その理由を教えてください。" },
+      { role: "user" as const, content: "良い法案だと思います。" },
+      { role: "assistant" as const, content: "ありがとうございました。ご意見を承りました。" },
+    ],
+    // パターン5: 進行中（途中で離脱）
+    [
+      { role: "assistant" as const, content: "この法案に賛成ですか？反対ですか？" },
+      { role: "user" as const, content: "うーん、ちょっと考えさせてください" },
+    ],
+  ];
+
+  const messages: Omit<InterviewMessageInsert, "id" | "created_at">[] = [];
+
+  sessionIds.forEach((sessionId, sessionIndex) => {
+    // 5パターンをループ
+    const patternIndex = sessionIndex % 5;
+    const conversation = conversations[patternIndex];
+    conversation.forEach((msg) => {
+      messages.push({
+        interview_session_id: sessionId,
+        role: msg.role,
+        content: msg.content,
+      });
+    });
+  });
+
+  return messages;
+}
+
+// インタビューレポートを作成（パターン1,2,3のみ = 5の倍数で0,1,2番目）
+export function createInterviewReports(
+  sessionIds: string[]
+): Omit<InterviewReportInsert, "id" | "created_at" | "updated_at">[] {
+  const reportTemplates = [
+    {
+      stance: "for" as const,
+      summary: "この法案に賛成。国民のためになると考えている。",
+      role: "当事者A",
+      role_description: "法案の内容に賛同する市民",
+      opinions: [{ title: "賛成理由", content: "国民のためになる" }],
+    },
+    {
+      stance: "against" as const,
+      summary: "財源の不明確さを理由に反対。",
+      role: "当事者B",
+      role_description: "財政面を懸念する市民",
+      opinions: [{ title: "反対理由", content: "財源が不明確" }],
+    },
+    {
+      stance: "neutral" as const,
+      summary: "判断するにはより多くの情報が必要と考えている。",
+      role: "当事者C",
+      role_description: "慎重な判断を求める市民",
+      opinions: [{ title: "態度保留理由", content: "情報不足" }],
+    },
+  ];
+
+  const reports: Omit<
+    InterviewReportInsert,
+    "id" | "created_at" | "updated_at"
+  >[] = [];
+
+  // パターン1,2,3（5の倍数で0,1,2番目）のみレポートを作成
+  // パターン4: 完了したけどレポート未作成
+  // パターン5: 進行中（レポートなし）
+  sessionIds.forEach((sessionId, index) => {
+    const patternIndex = index % 5;
+    if (patternIndex < 3) {
+      reports.push({
+        interview_session_id: sessionId,
+        ...reportTemplates[patternIndex],
+      });
+    }
+  });
+
+  return reports;
 }
