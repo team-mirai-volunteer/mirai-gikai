@@ -131,19 +131,11 @@ export function useInterviewChat({
     }
 
     // 通常のチャットフェーズでは、送信前にファシリテーターAPIを同期呼び出し
-    const metadata = {
-      interviewSessionId: sessionId,
-      interviewConfigId,
-      billId,
-      currentStage: "chat" as const,
-    };
-
     const facilitatorResult = await callFacilitateApi({
       messages: buildMessagesForFacilitator(
         parsedInitialMessages,
         conversationMessages,
-        { id: userMessageId, content: userMessageText },
-        metadata
+        { content: userMessageText }
       ),
       billId,
       currentStage: "chat",

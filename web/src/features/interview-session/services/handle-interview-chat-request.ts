@@ -6,7 +6,6 @@ import { getInterviewConfig } from "@/features/interview-config/api/get-intervie
 import { getInterviewQuestions } from "@/features/interview-config/api/get-interview-questions";
 import { createInterviewSession } from "@/features/interview-session/actions/create-interview-session";
 import { getInterviewSession } from "@/features/interview-session/api/get-interview-session";
-import type { InterviewChatMetadata } from "@/features/interview-session/types";
 import {
   interviewChatTextSchema,
   interviewChatWithReportSchema,
@@ -18,8 +17,9 @@ import {
 import { saveInterviewMessage } from "./save-interview-message";
 
 type InterviewChatRequestParams = {
-  messages: UIMessage<InterviewChatMetadata>[];
+  messages: { role: string; content: string }[];
   billId: string;
+  currentStage: "chat" | "summary" | "summary_complete";
 };
 
 /**
@@ -28,6 +28,7 @@ type InterviewChatRequestParams = {
 export async function handleInterviewChatRequest({
   messages,
   billId,
+  currentStage,
 }: InterviewChatRequestParams) {
   // インタビュー設定と法案情報を取得
   const [interviewConfig, bill] = await Promise.all([
@@ -46,13 +47,11 @@ export async function handleInterviewChatRequest({
 
   // 最新のメッセージを取得
   const lastMessage = messages[messages.length - 1];
-  const isSummaryPhase = lastMessage?.metadata?.currentStage === "summary";
+  const isSummaryPhase = currentStage === "summary";
 
   // ユーザーメッセージを保存
   if (lastMessage?.role === "user") {
-    const userMessageText = lastMessage.parts
-      .map((part) => (part.type === "text" ? part.text : ""))
-      .join("");
+    const userMessageText = lastMessage.content;
 
     if (userMessageText.trim()) {
       await saveInterviewMessage({
@@ -91,7 +90,7 @@ async function generateStreamingResponse({
   isSummaryPhase,
 }: {
   systemPrompt: string;
-  messages: UIMessage<InterviewChatMetadata>[];
+  messages: { role: string; content: string }[];
   sessionId: string;
   isSummaryPhase: boolean;
 }) {
@@ -125,11 +124,16 @@ async function generateStreamingResponse({
     }
   };
 
+  const uiMessages = messages.map((message) => ({
+    role: message.role as "user" | "assistant",
+    parts: [{ type: "text" as const, text: message.content }],
+  }));
+
   try {
     const result = streamText({
       model,
       system: systemPrompt,
-      messages: await convertToModelMessages(messages),
+      messages: await convertToModelMessages(uiMessages),
       output: Output.object({ schema }),
       onError: handleError,
       onFinish: handleFinish,

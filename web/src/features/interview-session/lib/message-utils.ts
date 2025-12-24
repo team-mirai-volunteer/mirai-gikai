@@ -116,58 +116,23 @@ export function buildMessagesForApi(
   return messages;
 }
 
+/** ファシリテーターAPI用のシンプルなメッセージ型 */
 export type FacilitatorMessage = {
-  id: string;
   role: "assistant" | "user";
-  parts: Array<{ type: "text"; text: string }>;
-  metadata: {
-    interviewSessionId: string;
-    interviewConfigId: string;
-    billId: string;
-    currentStage: "chat" | "summary" | "summary_complete";
-  };
+  content: string;
 };
 
 /**
  * メッセージ配列をファシリテーターAPI用の形式に変換
  */
 export function buildMessagesForFacilitator(
-  initialMessages: Array<{
-    id: string;
-    role: "assistant" | "user";
-    content: string;
-  }>,
-  conversationMessages: Array<{
-    id: string;
-    role: "assistant" | "user";
-    content: string;
-  }>,
-  newUserMessage: { id: string; content: string },
-  metadata: {
-    interviewSessionId: string;
-    interviewConfigId: string;
-    billId: string;
-    currentStage: "chat" | "summary" | "summary_complete";
-  }
+  initialMessages: Array<{ role: "assistant" | "user"; content: string }>,
+  conversationMessages: Array<{ role: "assistant" | "user"; content: string }>,
+  newUserMessage: { content: string }
 ): FacilitatorMessage[] {
-  const toFacilitatorFormat = (m: {
-    id: string;
-    role: "assistant" | "user";
-    content: string;
-  }): FacilitatorMessage => ({
-    id: m.id,
-    role: m.role,
-    parts: [{ type: "text" as const, text: m.content }],
-    metadata,
-  });
-
   return [
-    ...initialMessages.map(toFacilitatorFormat),
-    ...conversationMessages.map(toFacilitatorFormat),
-    toFacilitatorFormat({
-      id: newUserMessage.id,
-      role: "user",
-      content: newUserMessage.content,
-    }),
+    ...initialMessages.map((m) => ({ role: m.role, content: m.content })),
+    ...conversationMessages.map((m) => ({ role: m.role, content: m.content })),
+    { role: "user" as const, content: newUserMessage.content },
   ];
 }

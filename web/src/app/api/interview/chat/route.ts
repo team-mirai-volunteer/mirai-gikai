@@ -1,7 +1,5 @@
-import type { UIMessage } from "ai";
 import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
 import { handleInterviewChatRequest } from "@/features/interview-session/services/handle-interview-chat-request";
-import type { InterviewChatMetadata } from "@/features/interview-session/types";
 import { registerNodeTelemetry } from "@/lib/telemetry/register";
 
 export async function POST(req: Request) {
@@ -15,11 +13,9 @@ export async function POST(req: Request) {
     billId,
     currentStage,
   }: {
-    messages:
-      | Array<{ role: string; content: string }>
-      | UIMessage<InterviewChatMetadata>[];
+    messages: Array<{ role: string; content: string }>;
     billId: string;
-    currentStage?: "chat" | "summary" | "summary_complete";
+    currentStage: "chat" | "summary" | "summary_complete";
   } = body;
 
   const {
@@ -46,32 +42,10 @@ export async function POST(req: Request) {
   }
 
   try {
-    // useObjectから送られてくる形式に合わせて変換
-    const convertedMessages: UIMessage<InterviewChatMetadata>[] = messages.map(
-      (m, index) => {
-        if ("role" in m && "content" in m && !("parts" in m)) {
-          // useObjectから送られてくる形式
-          return {
-            id: `msg-${index}`,
-            role: m.role as "user" | "assistant",
-            content: m.content,
-            parts: [{ type: "text" as const, text: m.content }],
-            metadata: {
-              interviewSessionId: "",
-              interviewConfigId: "",
-              billId,
-              currentStage,
-            } as InterviewChatMetadata,
-          };
-        }
-        // 既存のUIMessage形式
-        return m as UIMessage<InterviewChatMetadata>;
-      }
-    );
-
     return await handleInterviewChatRequest({
-      messages: convertedMessages,
+      messages,
       billId,
+      currentStage,
     });
   } catch (error) {
     console.error("Interview chat request error:", error);

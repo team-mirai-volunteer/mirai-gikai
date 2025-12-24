@@ -1,12 +1,12 @@
 import "server-only";
 
-import { generateText, Output, type UIMessage } from "ai";
+import { generateText, Output } from "ai";
 import { z } from "zod";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
 import { getInterviewConfig } from "@/features/interview-config/api/get-interview-config";
 import { getInterviewQuestions } from "@/features/interview-config/api/get-interview-questions";
 import { buildInterviewSystemPrompt } from "../lib/build-interview-system-prompt";
-import type { InterviewChatMetadata } from "../types";
+import type { FacilitatorMessage } from "../lib/message-utils";
 
 const facilitatorResultSchema = z.object({
   status: z.enum(["continue", "summary", "summary_complete"]),
@@ -15,7 +15,7 @@ const facilitatorResultSchema = z.object({
 export type FacilitatorResult = z.infer<typeof facilitatorResultSchema>;
 
 type Params = {
-  messages: UIMessage<InterviewChatMetadata>[];
+  messages: FacilitatorMessage[];
   billId: string;
   currentStage?: "chat" | "summary" | "summary_complete";
 };
@@ -84,15 +84,7 @@ ${stageGuidance}
 `;
 
   const conversationText = messages
-    .map((m) => {
-      // UIMessageのpartsからテキストを抽出
-      // partsが存在しない場合は空文字列を返す
-      const content =
-        m.parts
-          .map((part) => (part.type === "text" ? part.text : ""))
-          .join("") || "";
-      return `${m.role === "assistant" ? "AI" : "User"}: ${content}`;
-    })
+    .map((m) => `${m.role === "assistant" ? "AI" : "User"}: ${m.content}`)
     .join("\n");
 
   const result = await generateText({
