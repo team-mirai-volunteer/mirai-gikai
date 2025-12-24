@@ -1,6 +1,6 @@
 import "server-only";
 
-import { convertToModelMessages, Output, streamText, type UIMessage } from "ai";
+import { convertToModelMessages, Output, streamText } from "ai";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
 import { getInterviewConfig } from "@/features/interview-config/api/get-interview-config";
 import { getInterviewQuestions } from "@/features/interview-config/api/get-interview-questions";
@@ -109,14 +109,11 @@ async function generateStreamingResponse({
   const handleFinish = async (event: { text?: string }) => {
     try {
       if (event.text) {
-        const content = isSummaryPhase
-          ? JSON.stringify(event.text, null, 2)
-          : event.text;
-
+        // event.textは既にJSON文字列（summaryフェーズ）またはプレーンテキスト
         await saveInterviewMessage({
           sessionId,
           role: "assistant",
-          content,
+          content: event.text,
         });
       }
     } catch (err) {

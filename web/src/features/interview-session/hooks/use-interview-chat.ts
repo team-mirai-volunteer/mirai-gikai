@@ -3,7 +3,6 @@
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { useMemo, useState } from "react";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
-import type { InterviewReportData } from "@/features/interview-session/types/schemas";
 import { interviewChatResponseSchema } from "@/features/interview-session/types/schemas";
 import {
   callCompleteApi,
@@ -28,7 +27,6 @@ interface UseInterviewChatProps {
     role: "assistant" | "user";
     content: string;
     created_at: string;
-    report?: InterviewReportData | null;
   }>;
 }
 
@@ -44,15 +42,23 @@ export function useInterviewChat({
       initialMessages.map((msg) => {
         if (msg.role === "assistant") {
           const { text, report } = parseMessageContent(msg.content);
-          return { ...msg, content: text, report: msg.report ?? report };
+          return { ...msg, content: text, report: report };
         }
         return msg;
       }),
     [initialMessages]
   );
 
+  const lastMessage = useMemo(() => {
+    return parsedInitialMessages[parsedInitialMessages.length - 1];
+  }, [parsedInitialMessages]);
+
+  console.log("lastMessage", lastMessage);
+
   const [input, setInput] = useState("");
-  const [stage, setStage] = useState<InterviewStage>("chat");
+  const [stage, setStage] = useState<InterviewStage>(
+    "report" in lastMessage && lastMessage.report != null ? "summary" : "chat"
+  );
   const [conversationMessages, setConversationMessages] = useState<
     ConversationMessage[]
   >([]);
