@@ -345,6 +345,10 @@ export function InterviewChatClient({
     textarea.style.height = `${textarea.scrollHeight}px`;
   };
 
+  const [completedReportId, setCompletedReportId] = useState<string | null>(
+    null
+  );
+
   const handleAgree = async () => {
     setIsCompleting(true);
     setCompleteError(null);
@@ -366,8 +370,9 @@ export function InterviewChatClient({
         throw new Error(data.error || "Failed to complete interview");
       }
 
+      const data = await res.json();
+      setCompletedReportId(data.report?.id || null);
       setStage("summary_complete");
-      console.log("complete interview", res);
     } catch (err) {
       setCompleteError(
         err instanceof Error ? err.message : "Failed to complete interview"
@@ -518,7 +523,9 @@ export function InterviewChatClient({
             <button
               type="button"
               onClick={() => {
-                window.location.href = `/bills/${billId}/interview/report/${sessionId}`;
+                if (completedReportId) {
+                  window.location.href = `/report/${completedReportId}`;
+                }
               }}
               className="inline-flex items-center justify-center rounded-md bg-[#0F8472] px-4 py-2 text-sm font-semibold text-white shadow disabled:opacity-60"
             >
