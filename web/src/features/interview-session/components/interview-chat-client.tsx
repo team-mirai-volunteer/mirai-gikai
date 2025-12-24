@@ -123,7 +123,7 @@ export function InterviewChatClient({
       // ストリーミング完了時にAIメッセージを履歴に追加
       if (finishedObject) {
         const { text, report } = finishedObject;
-        const convertedReport: InterviewReportData | null = report
+        const convertedReport = report
           ? {
               summary: report.summary ?? null,
               stance: report.stance ?? null,
@@ -137,7 +137,7 @@ export function InterviewChatClient({
                       content: op.content ?? "",
                     }))
                     .filter((op) => op.title || op.content)
-                : null,
+                : [],
             }
           : null;
 
@@ -172,15 +172,12 @@ export function InterviewChatClient({
                 content: op.content ?? "",
               }))
               .filter((op) => op.title || op.content)
-          : null,
+          : [],
       }
     : null;
 
   // 空のレポートは除外
   const reportData = isValidReport(rawReportData) ? rawReportData : null;
-
-  // reportがある場合はsummaryフェーズに移行
-  const currentStage = reportData ? "summary" : stage;
 
   const handleSubmit = async (message: PromptInputMessage) => {
     const hasText = Boolean(message.text);
@@ -190,7 +187,7 @@ export function InterviewChatClient({
     }
 
     // summary_completeフェーズでは送信不可
-    if (currentStage === "summary_complete") {
+    if (stage === "summary_complete") {
       return;
     }
 
@@ -208,8 +205,8 @@ export function InterviewChatClient({
     ]);
 
     // summaryフェーズではファシリテーターを呼ばず、直接チャットAPIを呼ぶ
-    if (currentStage === "summary") {
-      await submit({
+    if (stage === "summary") {
+      submit({
         messages: [
           ...parsedInitialMessages.map((m) => ({
             role: m.role,
@@ -234,6 +231,9 @@ export function InterviewChatClient({
 
     // 通常のチャットフェーズでは、送信前にファシリテーターAPIを同期呼び出し
     try {
+      // Reset form
+      setInput("");
+
       const res = await fetch("/api/interview/facilitate", {
         method: "POST",
         headers: {
@@ -305,8 +305,6 @@ export function InterviewChatClient({
             billId,
             currentStage: "summary",
           });
-          // Reset form
-          setInput("");
           return;
         }
       }
@@ -369,6 +367,7 @@ export function InterviewChatClient({
       }
 
       setStage("summary_complete");
+      console.log("complete interview", res);
     } catch (err) {
       setCompleteError(
         err instanceof Error ? err.message : "Failed to complete interview"
@@ -378,10 +377,12 @@ export function InterviewChatClient({
     }
   };
 
+  console.log("stage", stage);
+
   return (
     <div className="flex flex-col h-screen py-12 pt-24 md:pt-12">
       <Conversation className="flex-1 overflow-y-auto">
-        <ConversationContent>
+        <ConversationContent className="flex flex-col gap-4">
           {parsedInitialMessages.length === 0 && !object && (
             <div className="flex flex-col gap-4">
               <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
@@ -443,11 +444,20 @@ export function InterviewChatClient({
               エラーが発生しました: {error.message}
             </div>
           )}
+          {stage === "summary_complete" && (
+            <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4">
+              <p className="font-medium">
+                インタビューにご協力いただきありがとうございました！
+                <br />
+                インタビュー内容を提出に進めてください。
+              </p>
+            </div>
+          )}
         </ConversationContent>
       </Conversation>
 
       <div className="px-6 pb-4 pt-2">
-        {currentStage === "summary" && (
+        {stage === "summary" && (
           <>
             <div className="mb-3 flex flex-col gap-2">
               <button
@@ -503,8 +513,8 @@ export function InterviewChatClient({
             />
           </>
         )}
-        {currentStage === "summary_complete" && (
-          <div className="mb-3 flex flex-col gap-2">
+        {stage === "summary_complete" && (
+          <div className="mb-3 flex flex-col gap-3">
             <button
               type="button"
               onClick={() => {
@@ -516,7 +526,7 @@ export function InterviewChatClient({
             </button>
           </div>
         )}
-        {currentStage === "chat" && (
+        {stage === "chat" && (
           <>
             <PromptInput
               onSubmit={handleSubmit}
