@@ -26,4 +26,5 @@ export type InterviewChatMetadata = {
   interviewSessionId: string;
   interviewConfigId: string;
   billId: string;
+  currentStage?: "chat" | "summary" | "summary_complete"; // 現在のステージ
 };

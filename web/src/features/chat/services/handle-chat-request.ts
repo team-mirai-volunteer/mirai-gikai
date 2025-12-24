@@ -71,7 +71,7 @@ export async function handleChatRequest({
     const result = streamText({
       model,
       system: promptResult.content,
-      messages: convertToModelMessages(messages),
+      messages: await convertToModelMessages(messages),
       tools: {
         // biome-ignore lint/suspicious/noExplicitAny: OpenAI web_search tool type incompatibility
         web_search: openai.tools.webSearch() as any,

@@ -1,14 +1,21 @@
 import "server-only";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { convertToModelMessages, streamText, type UIMessage } from "ai";
+import { convertToModelMessages, Output, streamText, type UIMessage } from "ai";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
 import { getInterviewConfig } from "@/features/interview-config/api/get-interview-config";
 import { getInterviewQuestions } from "@/features/interview-config/api/get-interview-questions";
 import { createInterviewSession } from "@/features/interview-session/actions/create-interview-session";
 import { getInterviewSession } from "@/features/interview-session/api/get-interview-session";
 import type { InterviewChatMetadata } from "@/features/interview-session/types";
-import { buildInterviewSystemPrompt } from "../lib/build-interview-system-prompt";
+import {
+  interviewChatTextSchema,
+  interviewChatWithReportSchema,
+} from "@/features/interview-session/types/schemas";
+import {
+  buildInterviewSystemPrompt,
+  buildSummarySystemPrompt,
+} from "../lib/build-interview-system-prompt";
 
 type InterviewChatRequestParams = {
   messages: UIMessage<InterviewChatMetadata>[];
@@ -40,18 +47,29 @@ export async function handleInterviewChatRequest({
     });
   }
 
-  // 事前定義質問を取得
-  const questions = await getInterviewQuestions(interviewConfig.id);
-
-  // プロンプトを構築（コード内に記載）
-  const systemPrompt = buildInterviewSystemPrompt({
-    bill,
-    interviewConfig,
-    questions,
-  });
-
   // 最新のメッセージを取得（ユーザーの送信メッセージ）
   const lastMessage = messages[messages.length - 1];
+
+  // summaryフェーズかどうかを判定（最新メッセージのmetadataのcurrentStageで判定）
+  const isSummaryPhase = lastMessage?.metadata?.currentStage === "summary";
+
+  // プロンプトを構築（summaryフェーズの場合は要約用プロンプトを使用）
+  let systemPrompt: string;
+  if (isSummaryPhase) {
+    // 要約用プロンプト
+    systemPrompt = buildSummarySystemPrompt({
+      bill,
+      interviewConfig,
+    });
+  } else {
+    // 通常のインタビュー用プロンプト
+    const questions = await getInterviewQuestions(interviewConfig.id);
+    systemPrompt = buildInterviewSystemPrompt({
+      bill,
+      interviewConfig,
+      questions,
+    });
+  }
   if (lastMessage && lastMessage.role === "user") {
     // ユーザーメッセージを保存
     const userMessageText = lastMessage.parts
@@ -70,14 +88,55 @@ export async function handleInterviewChatRequest({
   const model = "openai/gpt-4o-mini";
 
   // Generate streaming response
+  // フェーズに応じて異なるスキーマを使用
   try {
+    if (isSummaryPhase) {
+      // summaryフェーズ: reportを含むスキーマを使用
+      const result = streamText({
+        model,
+        system: systemPrompt,
+        messages: await convertToModelMessages(messages),
+        output: Output.object({ schema: interviewChatWithReportSchema }),
+        onError: (error) => {
+          console.error("LLM generation error:", error);
+          throw new Error(
+            `LLM generation failed: ${error instanceof Error ? error.message : String(error)}`
+          );
+        },
+        onFinish: async (event) => {
+          try {
+            if (event.text) {
+              // reportを含むJSON文字列として保存
+              await saveInterviewMessage({
+                sessionId: session.id,
+                role: "assistant",
+                content: JSON.stringify(event.text, null, 2),
+              });
+            }
+          } catch (usageError) {
+            console.error("Failed to save interview message:", usageError);
+          }
+        },
+      });
+
+      return result.toTextStreamResponse();
+    }
+
+    // 通常チャットフェーズ: reportがオプショナルなスキーマを使用
     const result = streamText({
       model,
       system: systemPrompt,
-      messages: convertToModelMessages(messages),
+      messages: await convertToModelMessages(messages),
+      output: Output.object({ schema: interviewChatTextSchema }),
+
+      onError: (error) => {
+        console.error("LLM generation error:", error);
+        throw new Error(
+          `LLM generation failed: ${error instanceof Error ? error.message : String(error)}`
+        );
+      },
       onFinish: async (event) => {
         try {
-          // AI応答を保存
           if (event.text) {
             await saveInterviewMessage({
               sessionId: session.id,
@@ -91,7 +150,7 @@ export async function handleInterviewChatRequest({
       },
     });
 
-    return result.toUIMessageStreamResponse();
+    return result.toTextStreamResponse();
   } catch (error) {
     console.error("LLM generation error:", error);
     throw new Error(

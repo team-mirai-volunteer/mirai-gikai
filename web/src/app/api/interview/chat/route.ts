@@ -9,13 +9,18 @@ export async function POST(req: Request) {
   // 明示的にtelemetryを初期化
   await registerNodeTelemetry();
 
+  const body = await req.json();
   const {
     messages,
     billId,
+    currentStage,
   }: {
-    messages: UIMessage<InterviewChatMetadata>[];
+    messages:
+      | Array<{ role: string; content: string }>
+      | UIMessage<InterviewChatMetadata>[];
     billId: string;
-  } = await req.json();
+    currentStage?: "chat" | "summary" | "summary_complete";
+  } = body;
 
   const {
     data: { user },
@@ -41,8 +46,31 @@ export async function POST(req: Request) {
   }
 
   try {
+    // useObjectから送られてくる形式に合わせて変換
+    const convertedMessages: UIMessage<InterviewChatMetadata>[] = messages.map(
+      (m, index) => {
+        if ("role" in m && "content" in m && !("parts" in m)) {
+          // useObjectから送られてくる形式
+          return {
+            id: `msg-${index}`,
+            role: m.role as "user" | "assistant",
+            content: m.content,
+            parts: [{ type: "text" as const, text: m.content }],
+            metadata: {
+              interviewSessionId: "",
+              interviewConfigId: "",
+              billId,
+              currentStage,
+            } as InterviewChatMetadata,
+          };
+        }
+        // 既存のUIMessage形式
+        return m as UIMessage<InterviewChatMetadata>;
+      }
+    );
+
     return await handleInterviewChatRequest({
-      messages,
+      messages: convertedMessages,
       billId,
     });
   } catch (error) {

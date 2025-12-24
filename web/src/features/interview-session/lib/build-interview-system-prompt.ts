@@ -62,5 +62,50 @@ ${questionsText || "（質問未設定）"}
 ## 注意事項
 - 丁寧で親しみやすい口調で話してください
 - ユーザーの回答を尊重し、押し付けがましくならないようにしてください
-- 法案に関する質問のみに集中してください`;
+- 法案に関する質問のみに集中してください
+
+## 出力形式（重要）
+- textプロパティのみに回答を含めてください
+- reportプロパティは絶対に含めないでください（nullやundefinedも設定しない）`;
+}
+
+/**
+ * 要約用システムプロンプトを構築（summaryフェーズ用）
+ */
+export function buildSummarySystemPrompt({
+  bill,
+  interviewConfig,
+}: {
+  bill: BillWithContent | null;
+  interviewConfig: Awaited<ReturnType<typeof getInterviewConfig>>;
+}): string {
+  const billName = bill?.name || "";
+  const billTitle = bill?.bill_content?.title || "";
+  const billSummary = bill?.bill_content?.summary || "";
+  const themes = interviewConfig?.themes || [];
+
+  return `あなたは法案についてのインタビューを要約し、レポート案を生成するAIアシスタントです。
+
+## 法案情報
+- 法案名: ${billName}
+- 法案タイトル: ${billTitle}
+- 法案要約: ${billSummary}
+
+## インタビューテーマ
+${themes.length > 0 ? themes.map((t) => `- ${t}`).join("\n") : "（テーマ未設定）"}
+
+## あなたの役割
+以下の会話履歴を読み、インタビュー内容を要約してレポート案を生成してください。
+
+## レポート案に含めるべき内容
+1. **要約**: インタビュー全体の要約（ユーザーの主な意見や経験）
+2. **賛否**: ユーザーの法案に対する賛否の立場（賛成、反対、中立、その他）
+3. **役割**: ユーザーの立場や役割（例: 一般市民、専門家、関係者など）
+4. **意見**: ユーザーの具体的な意見や提案
+
+
+## 注意事項
+- ユーザーの意見を正確に反映してください
+- 偏見や先入観を持たず、中立な立場で要約してください
+- わかりやすく、読みやすい文章で提示してください`;
 }

@@ -1,0 +1,105 @@
+import "server-only";
+
+import { generateText, Output, type UIMessage } from "ai";
+import { z } from "zod";
+import { getBillById } from "@/features/bills/api/get-bill-by-id";
+import { getInterviewConfig } from "@/features/interview-config/api/get-interview-config";
+import { getInterviewQuestions } from "@/features/interview-config/api/get-interview-questions";
+import { buildInterviewSystemPrompt } from "../lib/build-interview-system-prompt";
+import type { InterviewChatMetadata } from "../types";
+
+const facilitatorResultSchema = z.object({
+  status: z.enum(["continue", "summary", "summary_complete"]),
+});
+
+export type FacilitatorResult = z.infer<typeof facilitatorResultSchema>;
+
+type Params = {
+  messages: UIMessage<InterviewChatMetadata>[];
+  billId: string;
+  currentStage?: "chat" | "summary" | "summary_complete";
+};
+
+/**
+ * ファシリテーターLLM: 進行/終了/要約移行を判定する（要約生成は別APIで実行）
+ */
+export async function facilitateInterview({
+  messages,
+  billId,
+  currentStage = "chat",
+}: Params): Promise<FacilitatorResult> {
+  const [interviewConfig, bill] = await Promise.all([
+    getInterviewConfig(billId),
+    getBillById(billId),
+  ]);
+
+  if (!interviewConfig) {
+    throw new Error("Interview config not found");
+  }
+
+  const questions = await getInterviewQuestions(interviewConfig.id);
+
+  const systemPrompt = buildInterviewSystemPrompt({
+    bill,
+    interviewConfig,
+    questions,
+  });
+
+  // 現在のステージに応じてプロンプトを調整
+  let stageGuidance = "";
+  if (currentStage === "chat") {
+    stageGuidance = `現在のステージ: chat（インタビュー中）
+- インタビューを継続する場合は status を "continue" にしてください。
+- 要約フェーズに移行すべきと判断した場合は status を "summary" としてください。
+- 必ず chat → summary の順に進むようにしてください。`;
+  } else if (currentStage === "summary") {
+    stageGuidance = `現在のステージ: summary（要約フェーズ）
+- ユーザーがレポート内容に同意し、完了すべきと判断した場合は status を "summary_complete" としてください。
+- まだ修正や追加の要約が必要な場合は status を "continue" としてください。
+- 必ず summary → summary_complete の順に進むようにしてください。`;
+  } else {
+    // summary_complete の場合は判定不要（既に完了）
+    stageGuidance = `現在のステージ: summary_complete（完了済み）
+- このステージでは判定は不要です。`;
+  }
+
+  const facilitatorPrompt = `${systemPrompt}
+
+## あなたの役割（ファシリテーター）
+- 以下の会話履歴を読み、インタビューの進行状況を判断してください。
+${stageGuidance}
+
+## 終了判定の目安（chatステージの場合）
+- 事前定義質問を概ね終えた、または十分な知見を得た
+- これ以上の深掘りが難しい
+- ユーザーが終了を希望した
+
+## 完了判定の目安（summaryステージの場合）
+- ユーザーがレポート内容に同意した
+- レポートの修正要望がなく、完了を希望している
+
+## 注意
+- JSON以外のテキストを出力しないでください。
+- ステージ遷移は必ず chat → summary → summary_complete の順に進むようにしてください。
+`;
+
+  const conversationText = messages
+    .map((m) => {
+      // UIMessageのpartsからテキストを抽出
+      // partsが存在しない場合は空文字列を返す
+      const content =
+        m.parts
+          .map((part) => (part.type === "text" ? part.text : ""))
+          .join("") || "";
+      return `${m.role === "assistant" ? "AI" : "User"}: ${content}`;
+    })
+    .join("\n");
+
+  const result = await generateText({
+    model: "openai/gpt-4o-mini",
+    prompt: `${facilitatorPrompt}\n\n# 会話履歴\n${conversationText}`,
+    output: Output.object({ schema: facilitatorResultSchema }),
+  });
+
+  return result.output;
+}

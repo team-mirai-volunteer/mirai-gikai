@@ -1,9 +1,8 @@
 "use client";
 
-import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { experimental_useObject as useObject } from "@ai-sdk/react";
 import Image from "next/image";
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Conversation,
   ConversationContent,
@@ -17,7 +16,10 @@ import {
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
 import { useAnonymousSupabaseUser } from "@/features/chat/hooks/use-anonymous-supabase-user";
-import type { InterviewChatMetadata } from "@/features/interview-session/types";
+import {
+  type InterviewReportData,
+  interviewChatResponseSchema,
+} from "@/features/interview-session/types/schemas";
 import { useIsDesktop } from "@/hooks/use-is-desktop";
 import { InterviewMessage } from "./interview-message";
 
@@ -30,7 +32,51 @@ interface InterviewChatClientProps {
     role: "assistant" | "user";
     content: string;
     created_at: string;
+    report?: InterviewReportData | null;
   }>;
+}
+
+// 会話メッセージの型定義
+type ConversationMessage = {
+  id: string;
+  role: "assistant" | "user";
+  content: string;
+  report?: InterviewReportData | null;
+};
+
+// レポートが有効かどうかを判定（空オブジェクトや全てnullの場合はfalse）
+function isValidReport(
+  report: InterviewReportData | null | undefined
+): report is InterviewReportData {
+  if (!report) return false;
+  // 少なくとも1つのプロパティが有効な値を持っているか確認
+  return !!(
+    report.summary ||
+    report.stance ||
+    report.role ||
+    report.role_description ||
+    (report.opinions && report.opinions.length > 0)
+  );
+}
+
+// JSONとして保存されたメッセージをパースして、textとreportに分離する
+function parseMessageContent(content: string): {
+  text: string;
+  report: InterviewReportData | null;
+} {
+  try {
+    const parsed = JSON.parse(content);
+    if (typeof parsed === "object" && parsed !== null && "text" in parsed) {
+      const report = parsed.report ?? null;
+      return {
+        text: parsed.text ?? "",
+        report: isValidReport(report) ? report : null,
+      };
+    }
+  } catch {
+    // JSONでない場合はそのままテキストとして扱う
+  }
+  return { text: content, report: null };
 }
 
 export function InterviewChatClient({
@@ -42,37 +88,99 @@ export function InterviewChatClient({
   // 匿名ユーザー認証
   useAnonymousSupabaseUser();
 
-  // 初期メッセージをUIMessage形式に変換
-  const convertedInitialMessages = useMemo(() => {
-    return initialMessages.map((msg) => ({
-      id: msg.id,
-      role: msg.role,
-      content: msg.content,
-      parts: [{ type: "text" as const, text: msg.content }],
-      metadata: {
-        interviewSessionId: sessionId,
-        interviewConfigId,
-        billId,
-      } as InterviewChatMetadata,
-    }));
-  }, [initialMessages, sessionId, interviewConfigId, billId]);
-
-  // useChatフックを使用
-  const chatState = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/interview/chat",
-      body: {
-        billId,
-      },
-    }),
-    messages: convertedInitialMessages,
+  // 初期メッセージをパースして、textとreportに分離
+  const parsedInitialMessages = initialMessages.map((msg) => {
+    if (msg.role === "assistant") {
+      const { text, report } = parseMessageContent(msg.content);
+      return { ...msg, content: text, report: msg.report ?? report };
+    }
+    return msg;
   });
 
-  const { messages, sendMessage, status, error } = chatState;
-  const isResponding = status === "streaming" || status === "submitted";
   const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isDesktop = useIsDesktop();
+
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [completeError, setCompleteError] = useState<string | null>(null);
+  const [stage, setStage] = useState<"chat" | "summary" | "summary_complete">(
+    "chat"
+  );
+  // 会話履歴を保持するstate（initialMessages以降のメッセージを蓄積）
+  const [conversationMessages, setConversationMessages] = useState<
+    ConversationMessage[]
+  >([]);
+
+  // useObjectフックを使用（streamObjectの結果を受け取る）
+  const { object, submit, isLoading, error } = useObject({
+    api: "/api/interview/chat",
+    schema: interviewChatResponseSchema,
+    onFinish: ({ object: finishedObject, error: finishedError }) => {
+      if (finishedError) {
+        console.error("chat error", finishedError);
+        return;
+      }
+      // ストリーミング完了時にAIメッセージを履歴に追加
+      if (finishedObject) {
+        const { text, report } = finishedObject;
+        const convertedReport: InterviewReportData | null = report
+          ? {
+              summary: report.summary ?? null,
+              stance: report.stance ?? null,
+              role: report.role ?? null,
+              role_description: report.role_description ?? null,
+              opinions: report.opinions
+                ? report.opinions
+                    .filter((op): op is NonNullable<typeof op> => op != null)
+                    .map((op) => ({
+                      title: op.title ?? "",
+                      content: op.content ?? "",
+                    }))
+                    .filter((op) => op.title || op.content)
+                : null,
+            }
+          : null;
+
+        setConversationMessages((prev) => [
+          ...prev,
+          {
+            id: `assistant-${Date.now()}`,
+            role: "assistant",
+            content: text ?? "",
+            // 空のレポートは除外
+            report: isValidReport(convertedReport) ? convertedReport : null,
+          },
+        ]);
+      }
+    },
+  });
+
+  const isResponding = isLoading;
+
+  // objectからreportを取得（PartialObjectをInterviewReportDataに変換）
+  const rawReportData: InterviewReportData | null = object?.report
+    ? {
+        summary: object.report.summary ?? null,
+        stance: object.report.stance ?? null,
+        role: object.report.role ?? null,
+        role_description: object.report.role_description ?? null,
+        opinions: object.report.opinions
+          ? object.report.opinions
+              .filter((op): op is NonNullable<typeof op> => op != null)
+              .map((op) => ({
+                title: op.title ?? "",
+                content: op.content ?? "",
+              }))
+              .filter((op) => op.title || op.content)
+          : null,
+      }
+    : null;
+
+  // 空のレポートは除外
+  const reportData = isValidReport(rawReportData) ? rawReportData : null;
+
+  // reportがある場合はsummaryフェーズに移行
+  const currentStage = reportData ? "summary" : stage;
 
   const handleSubmit = async (message: PromptInputMessage) => {
     const hasText = Boolean(message.text);
@@ -81,13 +189,149 @@ export function InterviewChatClient({
       return;
     }
 
-    sendMessage({
-      text: message.text ?? "",
-      metadata: {
-        interviewSessionId: sessionId,
-        interviewConfigId,
-        billId,
+    // summary_completeフェーズでは送信不可
+    if (currentStage === "summary_complete") {
+      return;
+    }
+
+    const userMessageText = message.text ?? "";
+    const userMessageId = `user-${Date.now()}`;
+
+    // ユーザーメッセージを会話履歴に追加
+    setConversationMessages((prev) => [
+      ...prev,
+      {
+        id: userMessageId,
+        role: "user",
+        content: userMessageText,
       },
+    ]);
+
+    // summaryフェーズではファシリテーターを呼ばず、直接チャットAPIを呼ぶ
+    if (currentStage === "summary") {
+      await submit({
+        messages: [
+          ...parsedInitialMessages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+          ...conversationMessages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+          {
+            role: "user" as const,
+            content: userMessageText,
+          },
+        ],
+        billId,
+        currentStage: "summary",
+      });
+      // Reset form
+      setInput("");
+      return;
+    }
+
+    // 通常のチャットフェーズでは、送信前にファシリテーターAPIを同期呼び出し
+    try {
+      const res = await fetch("/api/interview/facilitate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: [
+            ...parsedInitialMessages.map((m) => ({
+              id: m.id,
+              role: m.role,
+              parts: [{ type: "text" as const, text: m.content }],
+              metadata: {
+                interviewSessionId: sessionId,
+                interviewConfigId,
+                billId,
+                currentStage: "chat",
+              },
+            })),
+            ...conversationMessages.map((m) => ({
+              id: m.id,
+              role: m.role,
+              parts: [{ type: "text" as const, text: m.content }],
+              metadata: {
+                interviewSessionId: sessionId,
+                interviewConfigId,
+                billId,
+                currentStage: "chat",
+              },
+            })),
+            {
+              id: userMessageId,
+              role: "user" as const,
+              parts: [{ type: "text" as const, text: userMessageText }],
+              metadata: {
+                interviewSessionId: sessionId,
+                interviewConfigId,
+                billId,
+                currentStage: "chat",
+              },
+            },
+          ],
+          billId,
+          currentStage: "chat",
+        }),
+      });
+
+      if (res.ok) {
+        const data = (await res.json()) as {
+          status: "continue" | "summary" | "summary_complete";
+        };
+        if (data.status === "summary") {
+          setStage("summary");
+          // summary判定後、自動的にチャットAPIをsummaryメタデータ付きで呼び出してレポート案を生成
+          submit({
+            messages: [
+              ...parsedInitialMessages.map((m) => ({
+                role: m.role,
+                content: m.content,
+              })),
+              ...conversationMessages.map((m) => ({
+                role: m.role,
+                content: m.content,
+              })),
+              {
+                role: "user" as const,
+                content: userMessageText,
+              },
+            ],
+            billId,
+            currentStage: "summary",
+          });
+          // Reset form
+          setInput("");
+          return;
+        }
+      }
+    } catch (err) {
+      console.error("facilitate interview failed before send", err);
+    }
+
+    // 通常のチャットフェーズでのメッセージ送信
+    submit({
+      messages: [
+        ...parsedInitialMessages.map((m) => ({
+          role: m.role,
+          content: m.content,
+        })),
+        ...conversationMessages.map((m) => ({
+          role: m.role,
+          content: m.content,
+        })),
+        {
+          role: "user" as const,
+          content: userMessageText,
+        },
+      ],
+      billId,
+      currentStage: "chat",
     });
 
     // Reset form
@@ -103,11 +347,42 @@ export function InterviewChatClient({
     textarea.style.height = `${textarea.scrollHeight}px`;
   };
 
+  const handleAgree = async () => {
+    setIsCompleting(true);
+    setCompleteError(null);
+    try {
+      const res = await fetch("/api/interview/complete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sessionId,
+          interviewConfigId,
+          billId,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to complete interview");
+      }
+
+      setStage("summary_complete");
+    } catch (err) {
+      setCompleteError(
+        err instanceof Error ? err.message : "Failed to complete interview"
+      );
+    } finally {
+      setIsCompleting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen py-12 pt-24 md:pt-12">
       <Conversation className="flex-1 overflow-y-auto">
         <ConversationContent>
-          {messages.length === 0 && (
+          {parsedInitialMessages.length === 0 && !object && (
             <div className="flex flex-col gap-4">
               <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
                 法案についてのAIインタビューを開始します。
@@ -117,19 +392,50 @@ export function InterviewChatClient({
               </p>
             </div>
           )}
-          {messages.map((message) => {
-            const isStreaming =
-              status === "streaming" && message.id === messages.at(-1)?.id;
-
-            return (
+          {/* 初期メッセージを表示 */}
+          {parsedInitialMessages.map((message) => (
+            <InterviewMessage
+              key={message.id}
+              message={{
+                id: message.id,
+                role: message.role,
+                parts: [{ type: "text" as const, text: message.content }],
+              }}
+              isStreaming={false}
+              report={message.report ?? null}
+            />
+          ))}
+          {/* 会話履歴を表示（確定済みメッセージ） */}
+          {conversationMessages.map((message) => (
+            <InterviewMessage
+              key={message.id}
+              message={{
+                id: message.id,
+                role: message.role,
+                parts: [{ type: "text" as const, text: message.content }],
+              }}
+              isStreaming={false}
+              report={message.report ?? null}
+            />
+          ))}
+          {/* ストリーミング中または最新のAIレスポンスを表示 */}
+          {/* conversationMessagesに追加されるまでの間、objectを表示 */}
+          {object &&
+            !conversationMessages.some(
+              (m) => m.role === "assistant" && m.content === object.text
+            ) && (
               <InterviewMessage
-                key={message.id}
-                message={message}
-                isStreaming={isStreaming}
+                key="streaming-assistant"
+                message={{
+                  id: "streaming-assistant",
+                  role: "assistant",
+                  parts: [{ type: "text" as const, text: object.text ?? "" }],
+                }}
+                isStreaming={isLoading}
+                report={reportData}
               />
-            );
-          })}
-          {status === "submitted" && (
+            )}
+          {isLoading && !object && (
             <span className="text-sm text-gray-500">考え中...</span>
           )}
           {error && (
@@ -141,43 +447,121 @@ export function InterviewChatClient({
       </Conversation>
 
       <div className="px-6 pb-4 pt-2">
-        <PromptInput
-          onSubmit={handleSubmit}
-          className="flex items-end gap-2.5 py-2 pl-6 pr-4 bg-white rounded-[50px] border-2 border-transparent bg-clip-padding divide-y-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(white, white), linear-gradient(-45deg, rgba(188, 236, 211, 1) 0%, rgba(100, 216, 198, 1) 100%)",
-            backgroundOrigin: "border-box",
-            backgroundClip: "padding-box, border-box",
-          }}
-        >
-          <PromptInputBody className="flex-1">
-            <PromptInputTextarea
-              ref={textareaRef}
-              onChange={handleInputChange}
-              value={input}
-              placeholder="AIに質問に回答する"
-              rows={1}
-              submitOnEnter={isDesktop}
-              className="!min-h-0 min-w-0 wrap-anywhere text-sm font-medium leading-[1.5em] tracking-[0.01em] placeholder:text-[#AEAEB2] placeholder:font-medium placeholder:leading-[1.5em] placeholder:tracking-[0.01em] placeholder:no-underline border-none focus:ring-0 bg-transparent shadow-none !py-2 !px-0"
+        {currentStage === "summary" && (
+          <>
+            <div className="mb-3 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={handleAgree}
+                disabled={isCompleting}
+                className="inline-flex items-center justify-center rounded-md bg-[#0F8472] px-4 py-2 text-sm font-semibold text-white shadow disabled:opacity-60"
+              >
+                {isCompleting ? "送信中..." : "レポート内容に同意する"}
+              </button>
+              {completeError && (
+                <p className="text-sm text-red-500">{completeError}</p>
+              )}
+            </div>
+            <PromptInput
+              onSubmit={handleSubmit}
+              className="flex items-end gap-2.5 py-2 pl-6 pr-4 bg-white rounded-[50px] border-2 border-transparent bg-clip-padding divide-y-0"
+              style={{
+                backgroundImage:
+                  "linear-gradient(white, white), linear-gradient(-45deg, rgba(188, 236, 211, 1) 0%, rgba(100, 216, 198, 1) 100%)",
+                backgroundOrigin: "border-box",
+                backgroundClip: "padding-box, border-box",
+              }}
+            >
+              <PromptInputBody className="flex-1">
+                <PromptInputTextarea
+                  ref={textareaRef}
+                  onChange={handleInputChange}
+                  value={input}
+                  placeholder="レポートの修正要望があれば入力してください"
+                  rows={1}
+                  submitOnEnter={isDesktop}
+                  className="!min-h-0 min-w-0 wrap-anywhere text-sm font-medium leading-[1.5em] tracking-[0.01em] placeholder:text-[#AEAEB2] placeholder:font-medium placeholder:leading-[1.5em] placeholder:tracking-[0.01em] placeholder:no-underline border-none focus:ring-0 bg-transparent shadow-none !py-2 !px-0"
+                />
+              </PromptInputBody>
+              <button
+                type="submit"
+                disabled={!input || isResponding}
+                className="flex-shrink-0 w-10 h-10 disabled:opacity-50"
+              >
+                <Image
+                  src="/icons/send-button-icon.svg"
+                  alt="送信"
+                  width={40}
+                  height={40}
+                  className="w-full h-full"
+                />
+              </button>
+            </PromptInput>
+            <PromptInputError
+              status={error ? "error" : undefined}
+              error={error}
             />
-          </PromptInputBody>
-          <button
-            type="submit"
-            disabled={!input || isResponding}
-            className="flex-shrink-0 w-10 h-10 disabled:opacity-50"
-          >
-            <Image
-              src="/icons/send-button-icon.svg"
-              alt="送信"
-              width={40}
-              height={40}
-              className="w-full h-full"
+          </>
+        )}
+        {currentStage === "summary_complete" && (
+          <div className="mb-3 flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                window.location.href = `/bills/${billId}/interview/report/${sessionId}`;
+              }}
+              className="inline-flex items-center justify-center rounded-md bg-[#0F8472] px-4 py-2 text-sm font-semibold text-white shadow disabled:opacity-60"
+            >
+              インタビューの提出に進む
+            </button>
+          </div>
+        )}
+        {currentStage === "chat" && (
+          <>
+            <PromptInput
+              onSubmit={handleSubmit}
+              className="flex items-end gap-2.5 py-2 pl-6 pr-4 bg-white rounded-[50px] border-2 border-transparent bg-clip-padding divide-y-0"
+              style={{
+                backgroundImage:
+                  "linear-gradient(white, white), linear-gradient(-45deg, rgba(188, 236, 211, 1) 0%, rgba(100, 216, 198, 1) 100%)",
+                backgroundOrigin: "border-box",
+                backgroundClip: "padding-box, border-box",
+              }}
+            >
+              <PromptInputBody className="flex-1">
+                <PromptInputTextarea
+                  ref={textareaRef}
+                  onChange={handleInputChange}
+                  value={input}
+                  placeholder="AIに質問に回答する"
+                  rows={1}
+                  submitOnEnter={isDesktop}
+                  className="!min-h-0 min-w-0 wrap-anywhere text-sm font-medium leading-[1.5em] tracking-[0.01em] placeholder:text-[#AEAEB2] placeholder:font-medium placeholder:leading-[1.5em] placeholder:tracking-[0.01em] placeholder:no-underline border-none focus:ring-0 bg-transparent shadow-none !py-2 !px-0"
+                />
+              </PromptInputBody>
+              <button
+                type="submit"
+                disabled={!input || isResponding}
+                className="flex-shrink-0 w-10 h-10 disabled:opacity-50"
+              >
+                <Image
+                  src="/icons/send-button-icon.svg"
+                  alt="送信"
+                  width={40}
+                  height={40}
+                  className="w-full h-full"
+                />
+              </button>
+            </PromptInput>
+            <PromptInputError
+              status={error ? "error" : undefined}
+              error={error}
             />
-          </button>
-        </PromptInput>
-        <PromptInputError status={status} error={error} />
-        {messages.length > 0 && <PromptInputHint />}
+            {(parsedInitialMessages.length > 0 || object) && (
+              <PromptInputHint />
+            )}
+          </>
+        )}
       </div>
     </div>
   );
