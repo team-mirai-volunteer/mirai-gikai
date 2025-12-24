@@ -47,6 +47,15 @@ describe("sanitizeUsage", () => {
       inputTokens: 100,
       outputTokens: 200,
       totalTokens: 0,
+      inputTokenDetails: {
+        noCacheTokens: undefined,
+        cacheReadTokens: undefined,
+        cacheWriteTokens: undefined,
+      },
+      outputTokenDetails: {
+        textTokens: undefined,
+        reasoningTokens: undefined,
+      },
     });
 
     expect(usage).toEqual({

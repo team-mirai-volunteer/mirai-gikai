@@ -1,24 +1,12 @@
 "use client";
 
-import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
-import Image from "next/image";
-import { useMemo, useRef, useState } from "react";
 import {
   Conversation,
   ConversationContent,
 } from "@/components/ai-elements/conversation";
-import {
-  PromptInput,
-  PromptInputBody,
-  PromptInputError,
-  PromptInputHint,
-  type PromptInputMessage,
-  PromptInputTextarea,
-} from "@/components/ai-elements/prompt-input";
 import { useAnonymousSupabaseUser } from "@/features/chat/hooks/use-anonymous-supabase-user";
-import type { InterviewChatMetadata } from "@/features/interview-session/types";
-import { useIsDesktop } from "@/hooks/use-is-desktop";
+import { useInterviewChat } from "../hooks/use-interview-chat";
+import { InterviewChatInput } from "./interview-chat-input";
 import { InterviewMessage } from "./interview-message";
 
 interface InterviewChatClientProps {
@@ -42,72 +30,35 @@ export function InterviewChatClient({
   // 匿名ユーザー認証
   useAnonymousSupabaseUser();
 
-  // 初期メッセージをUIMessage形式に変換
-  const convertedInitialMessages = useMemo(() => {
-    return initialMessages.map((msg) => ({
-      id: msg.id,
-      role: msg.role,
-      content: msg.content,
-      parts: [{ type: "text" as const, text: msg.content }],
-      metadata: {
-        interviewSessionId: sessionId,
-        interviewConfigId,
-        billId,
-      } as InterviewChatMetadata,
-    }));
-  }, [initialMessages, sessionId, interviewConfigId, billId]);
-
-  // useChatフックを使用
-  const chatState = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/interview/chat",
-      body: {
-        billId,
-      },
-    }),
-    messages: convertedInitialMessages,
+  const {
+    input,
+    setInput,
+    stage,
+    parsedInitialMessages,
+    conversationMessages,
+    isLoading,
+    error,
+    object,
+    streamingReportData,
+    isStreamingMessageCommitted,
+    isCompleting,
+    completeError,
+    completedReportId,
+    handleSubmit,
+    handleAgree,
+  } = useInterviewChat({
+    billId,
+    interviewConfigId,
+    sessionId,
+    initialMessages,
   });
-
-  const { messages, sendMessage, status, error } = chatState;
-  const isResponding = status === "streaming" || status === "submitted";
-  const [input, setInput] = useState("");
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const isDesktop = useIsDesktop();
-
-  const handleSubmit = async (message: PromptInputMessage) => {
-    const hasText = Boolean(message.text);
-
-    if (!hasText || isResponding) {
-      return;
-    }
-
-    sendMessage({
-      text: message.text ?? "",
-      metadata: {
-        interviewSessionId: sessionId,
-        interviewConfigId,
-        billId,
-      },
-    });
-
-    // Reset form
-    setInput("");
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-
-    // Auto-resize
-    const textarea = e.target;
-    textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight}px`;
-  };
 
   return (
     <div className="flex flex-col h-screen py-12 pt-24 md:pt-12">
       <Conversation className="flex-1 overflow-y-auto">
-        <ConversationContent>
-          {messages.length === 0 && (
+        <ConversationContent className="flex flex-col gap-4">
+          {/* 初期表示メッセージ */}
+          {parsedInitialMessages.length === 0 && !object && (
             <div className="flex flex-col gap-4">
               <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
                 法案についてのAIインタビューを開始します。
@@ -117,67 +68,129 @@ export function InterviewChatClient({
               </p>
             </div>
           )}
-          {messages.map((message) => {
-            const isStreaming =
-              status === "streaming" && message.id === messages.at(-1)?.id;
 
-            return (
-              <InterviewMessage
-                key={message.id}
-                message={message}
-                isStreaming={isStreaming}
-              />
-            );
-          })}
-          {status === "submitted" && (
+          {/* 初期メッセージを表示 */}
+          {parsedInitialMessages.map((message) => (
+            <InterviewMessage
+              key={message.id}
+              message={{
+                id: message.id,
+                role: message.role,
+                parts: [{ type: "text" as const, text: message.content }],
+              }}
+              isStreaming={false}
+              report={message.report ?? null}
+            />
+          ))}
+
+          {/* 会話履歴を表示（確定済みメッセージ） */}
+          {conversationMessages.map((message) => (
+            <InterviewMessage
+              key={message.id}
+              message={{
+                id: message.id,
+                role: message.role,
+                parts: [{ type: "text" as const, text: message.content }],
+              }}
+              isStreaming={false}
+              report={message.report ?? null}
+            />
+          ))}
+
+          {/* ストリーミング中のAIレスポンスを表示 */}
+          {object && !isStreamingMessageCommitted && (
+            <InterviewMessage
+              key="streaming-assistant"
+              message={{
+                id: "streaming-assistant",
+                role: "assistant",
+                parts: [{ type: "text" as const, text: object.text ?? "" }],
+              }}
+              isStreaming={isLoading}
+              report={streamingReportData}
+            />
+          )}
+
+          {/* ローディング表示 */}
+          {isLoading && !object && (
             <span className="text-sm text-gray-500">考え中...</span>
           )}
+
+          {/* エラー表示 */}
           {error && (
             <div className="text-sm text-red-500">
               エラーが発生しました: {error.message}
             </div>
           )}
+
+          {/* 完了メッセージ */}
+          {stage === "summary_complete" && (
+            <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4">
+              <p className="font-medium">
+                インタビューにご協力いただきありがとうございました！
+                <br />
+                インタビュー内容を提出に進めてください。
+              </p>
+            </div>
+          )}
         </ConversationContent>
       </Conversation>
 
+      {/* 入力エリア */}
       <div className="px-6 pb-4 pt-2">
-        <PromptInput
-          onSubmit={handleSubmit}
-          className="flex items-end gap-2.5 py-2 pl-6 pr-4 bg-white rounded-[50px] border-2 border-transparent bg-clip-padding divide-y-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(white, white), linear-gradient(-45deg, rgba(188, 236, 211, 1) 0%, rgba(100, 216, 198, 1) 100%)",
-            backgroundOrigin: "border-box",
-            backgroundClip: "padding-box, border-box",
-          }}
-        >
-          <PromptInputBody className="flex-1">
-            <PromptInputTextarea
-              ref={textareaRef}
-              onChange={handleInputChange}
-              value={input}
-              placeholder="AIに質問に回答する"
-              rows={1}
-              submitOnEnter={isDesktop}
-              className="!min-h-0 min-w-0 wrap-anywhere text-sm font-medium leading-[1.5em] tracking-[0.01em] placeholder:text-[#AEAEB2] placeholder:font-medium placeholder:leading-[1.5em] placeholder:tracking-[0.01em] placeholder:no-underline border-none focus:ring-0 bg-transparent shadow-none !py-2 !px-0"
+        {stage === "summary" && (
+          <>
+            <div className="mb-3 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={handleAgree}
+                disabled={isCompleting}
+                className="inline-flex items-center justify-center rounded-md bg-[#0F8472] px-4 py-2 text-sm font-semibold text-white shadow disabled:opacity-60"
+              >
+                {isCompleting ? "送信中..." : "レポート内容に同意する"}
+              </button>
+              {completeError && (
+                <p className="text-sm text-red-500">{completeError}</p>
+              )}
+            </div>
+            <InterviewChatInput
+              input={input}
+              onInputChange={setInput}
+              onSubmit={handleSubmit}
+              placeholder="レポートの修正要望があれば入力してください"
+              isResponding={isLoading}
+              error={error}
             />
-          </PromptInputBody>
-          <button
-            type="submit"
-            disabled={!input || isResponding}
-            className="flex-shrink-0 w-10 h-10 disabled:opacity-50"
-          >
-            <Image
-              src="/icons/send-button-icon.svg"
-              alt="送信"
-              width={40}
-              height={40}
-              className="w-full h-full"
-            />
-          </button>
-        </PromptInput>
-        <PromptInputError status={status} error={error} />
-        {messages.length > 0 && <PromptInputHint />}
+          </>
+        )}
+
+        {stage === "summary_complete" && (
+          <div className="mb-3 flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                if (completedReportId) {
+                  window.location.href = `/report/${completedReportId}`;
+                }
+              }}
+              className="inline-flex items-center justify-center rounded-md bg-[#0F8472] px-4 py-2 text-sm font-semibold text-white shadow disabled:opacity-60"
+            >
+              インタビューの提出に進む
+            </button>
+          </div>
+        )}
+
+        {stage === "chat" && (
+          <InterviewChatInput
+            input={input}
+            onInputChange={setInput}
+            onSubmit={handleSubmit}
+            placeholder="AIに質問に回答する"
+            isResponding={isLoading}
+            error={error}
+            showHint={parsedInitialMessages.length > 0 || !!object}
+          />
+        )}
       </div>
     </div>
   );

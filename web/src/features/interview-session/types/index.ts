@@ -20,10 +20,3 @@ export type InterviewReportInsert =
 
 export type InterviewQuestion =
   Database["public"]["Tables"]["interview_questions"]["Row"];
-
-// Chat metadata for interview
-export type InterviewChatMetadata = {
-  interviewSessionId: string;
-  interviewConfigId: string;
-  billId: string;
-};
