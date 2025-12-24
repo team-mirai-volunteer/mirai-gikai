@@ -584,6 +584,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_interview_message_counts: {
+        Args: { session_ids: string[] }
+        Returns: {
+          interview_session_id: string
+          message_count: number
+        }[]
+      }
       is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
