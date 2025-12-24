@@ -5,7 +5,6 @@ import {
   ConversationContent,
 } from "@/components/ai-elements/conversation";
 import { useAnonymousSupabaseUser } from "@/features/chat/hooks/use-anonymous-supabase-user";
-import type { InterviewReportData } from "@/features/interview-session/types/schemas";
 import { useInterviewChat } from "../hooks/use-interview-chat";
 import { InterviewChatInput } from "./interview-chat-input";
 import { InterviewMessage } from "./interview-message";
@@ -19,7 +18,6 @@ interface InterviewChatClientProps {
     role: "assistant" | "user";
     content: string;
     created_at: string;
-    report?: InterviewReportData | null;
   }>;
 }
 

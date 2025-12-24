@@ -1,7 +1,6 @@
-import type { UIMessage } from "ai";
 import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
+import type { FacilitatorMessage } from "@/features/interview-session/lib/message-utils";
 import { facilitateInterview } from "@/features/interview-session/services/facilitate-interview";
-import type { InterviewChatMetadata } from "@/features/interview-session/types";
 
 export async function POST(req: Request) {
   const {
@@ -9,7 +8,7 @@ export async function POST(req: Request) {
     billId,
     currentStage,
   }: {
-    messages: UIMessage<InterviewChatMetadata>[];
+    messages: FacilitatorMessage[];
     billId: string;
     currentStage?: "chat" | "summary" | "summary_complete";
   } = await req.json();

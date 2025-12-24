@@ -3,6 +3,7 @@
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { useMemo, useState } from "react";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
+import type { InterviewReportData } from "@/features/interview-session/types/schemas";
 import { interviewChatResponseSchema } from "@/features/interview-session/types/schemas";
 import {
   callCompleteApi,
@@ -17,6 +18,15 @@ import {
 } from "../lib/message-utils";
 
 export type InterviewStage = "chat" | "summary" | "summary_complete";
+
+/** パース済み初期メッセージの型 */
+type ParsedInitialMessage = {
+  id: string;
+  role: "assistant" | "user";
+  content: string;
+  created_at: string;
+  report: InterviewReportData | null;
+};
 
 interface UseInterviewChatProps {
   billId: string;
@@ -38,13 +48,13 @@ export function useInterviewChat({
 }: UseInterviewChatProps) {
   // 初期メッセージをパースして、textとreportに分離
   const parsedInitialMessages = useMemo(
-    () =>
+    (): ParsedInitialMessage[] =>
       initialMessages.map((msg) => {
         if (msg.role === "assistant") {
           const { text, report } = parseMessageContent(msg.content);
-          return { ...msg, content: text, report: report };
+          return { ...msg, content: text, report };
         }
-        return msg;
+        return { ...msg, report: null };
       }),
     [initialMessages]
   );
