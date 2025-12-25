@@ -1,67 +1,111 @@
-import { MessageSquare, User } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import type { PublicInterviewReport } from "../types";
-import { StanceBadge } from "./stance-badge";
+import { MessageSquare, ThumbsUp, User } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import type { Opinion, PublicInterviewReport, StanceTypeEnum } from "../types";
+import { STANCE_LABELS, stanceToFilterType } from "../types";
 
 interface ReportCardProps {
   report: PublicInterviewReport;
-  index: number;
 }
 
-function formatDate(dateString: string): string {
+function formatRelativeTime(dateString: string): string {
   const date = new Date(dateString);
-  return date.toLocaleDateString("ja-JP", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) return "今日";
+  if (diffDays === 1) return "昨日";
+  if (diffDays < 7) return `${diffDays}日前`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)}週間前`;
+  if (diffDays < 365) return `${Math.floor(diffDays / 30)}ヶ月前`;
+  return `${Math.floor(diffDays / 365)}年前`;
 }
 
-export function ReportCard({ report, index }: ReportCardProps) {
+function getStanceDisplay(stance: StanceTypeEnum | null): {
+  label: string;
+  dotColor: string;
+  textColor: string;
+} {
+  const filterType = stanceToFilterType(stance);
+
+  switch (filterType) {
+    case "for":
+      return {
+        label: "期待している",
+        dotColor: "bg-teal-500",
+        textColor: "text-teal-700",
+      };
+    case "against":
+      return {
+        label: "懸念している",
+        dotColor: "bg-rose-500",
+        textColor: "text-rose-700",
+      };
+    default:
+      return {
+        label: stance ? STANCE_LABELS[stance] : "その他",
+        dotColor: "bg-amber-500",
+        textColor: "text-amber-700",
+      };
+  }
+}
+
+export function ReportCard({ report }: ReportCardProps) {
   const completedAt = report.interview_session.completed_at;
+  const stanceDisplay = getStanceDisplay(report.stance);
+
+  // opinions はJSONなのでパース
+  const opinions = report.opinions as Opinion[] | null;
 
   return (
-    <Card className="transition-shadow hover:shadow-md">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">#{index + 1}</span>
-            <span>·</span>
-            <span>{completedAt ? formatDate(completedAt) : "-"}</span>
+    <Card className="border border-black/10 hover:bg-muted/30 transition-colors overflow-hidden">
+      <div className="p-4 flex flex-col gap-3">
+        {/* ヘッダー: スタンス + 日時 */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span
+              className={`w-2 h-2 rounded-full ${stanceDisplay.dotColor}`}
+            />
+            <span className={`text-sm font-medium ${stanceDisplay.textColor}`}>
+              {stanceDisplay.label}
+            </span>
           </div>
-          {report.stance && <StanceBadge stance={report.stance} />}
+          <span className="text-xs text-muted-foreground">
+            {completedAt ? formatRelativeTime(completedAt) : "-"}
+          </span>
         </div>
+
+        {/* 役割 */}
         {report.role && (
-          <CardTitle className="flex items-center gap-2 text-base mt-2">
+          <div className="flex items-center gap-2">
             <User className="size-4 text-muted-foreground flex-shrink-0" />
-            <span>{report.role}</span>
-          </CardTitle>
+            <span className="text-sm font-medium">{report.role}</span>
+          </div>
         )}
-        {report.role_description && (
-          <CardDescription className="mt-1 line-clamp-2">
-            {report.role_description}
-          </CardDescription>
-        )}
-      </CardHeader>
-      <CardContent className="pt-0">
+
+        {/* 説明文 */}
         {report.summary && (
-          <div className="space-y-2">
-            <div className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
-              <MessageSquare className="size-4" />
-              <span>ご意見</span>
-            </div>
-            <p className="text-sm leading-relaxed text-foreground/90 line-clamp-4">
-              {report.summary}
+          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+            {report.summary}
+          </p>
+        )}
+
+        {/* 意見セクション（opinionsがあれば表示） */}
+        {opinions && opinions.length > 0 && (
+          <div className="flex items-start gap-2 pt-1">
+            <MessageSquare className="size-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-muted-foreground line-clamp-2">
+              {opinions[0].content}
             </p>
           </div>
         )}
-      </CardContent>
+
+        {/* 参考になるボタン（将来的に機能追加可能） */}
+        <div className="flex items-center gap-1 text-muted-foreground pt-1">
+          <ThumbsUp className="size-3.5" />
+          <span className="text-xs">参考になる</span>
+        </div>
+      </div>
     </Card>
   );
 }

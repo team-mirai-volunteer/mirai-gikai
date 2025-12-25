@@ -1,15 +1,14 @@
-import { ArrowLeft, MessageSquareText } from "lucide-react";
+import { MessageSquareText } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/layouts/container";
-import { Button } from "@/components/ui/button";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
 import {
   getPublicReports,
   getPublicReportsCount,
 } from "@/features/interview-reports/api/get-public-reports";
-import { ReportsList } from "@/features/interview-reports/components/reports-list";
+import { ReportsListWithFilter } from "@/features/interview-reports/components/reports-list-with-filter";
 import { env } from "@/lib/env";
 
 interface ReportsPageProps {
@@ -86,38 +85,41 @@ export default async function ReportsPage({
   const billName = bill.bill_content?.title ?? bill.name;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pb-12">
-      <Container className="pt-6">
-        {/* 戻るリンク */}
-        <div className="mb-6">
-          <Button variant="ghost" size="sm" asChild className="-ml-2">
-            <Link href={`/bills/${id}`}>
-              <ArrowLeft className="size-4 mr-1" />
-              法案詳細に戻る
-            </Link>
-          </Button>
+    <div className="min-h-screen bg-[#f5f5f5]">
+      {/* ヒーロー画像 */}
+      {bill.thumbnail_url ? (
+        <div className="relative w-full h-48 md:h-64">
+          <Image
+            src={bill.thumbnail_url}
+            alt={bill.name}
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
         </div>
+      ) : (
+        <div className="w-full h-20 bg-gradient-to-b from-slate-200 to-slate-100" />
+      )}
 
+      {/* コンテンツ */}
+      <Container className="py-8">
         {/* ヘッダー */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-muted-foreground mb-2">
-            <MessageSquareText className="size-5" />
-            <span className="text-sm font-medium">みんなのご意見</span>
-          </div>
-          <h1 className="text-xl font-bold leading-tight mb-2">{billName}</h1>
-          <p className="text-sm text-muted-foreground">
-            この法案に対する市民の皆様のご意見を公開しています
-            {totalCount > 0 && `（全${totalCount}件）`}
-          </p>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold mb-2">{billName}</h1>
         </div>
 
-        {/* レポート一覧 */}
-        <ReportsList
-          billId={id}
-          reports={reports}
-          totalCount={totalCount}
-          currentPage={currentPage}
-        />
+        {/* セクションタイトル */}
+        <div className="flex items-center gap-2 mb-6">
+          <MessageSquareText className="size-5 text-teal-600" />
+          <h2 className="text-lg font-bold">
+            法案に対する当事者の意見{" "}
+            <span className="text-teal-600">{totalCount}件</span>
+          </h2>
+        </div>
+
+        {/* フィルター付きレポート一覧 */}
+        <ReportsListWithFilter reports={reports} />
       </Container>
     </div>
   );

@@ -16,6 +16,15 @@ export type PublicInterviewReport = InterviewReport & {
   >;
 };
 
+// 意見の型
+export type Opinion = {
+  title: string;
+  content: string;
+};
+
+// フィルタータイプ
+export type StanceFilterType = "all" | "for" | "against" | "other";
+
 // スタンスの日本語ラベル
 export const STANCE_LABELS: Record<StanceTypeEnum, string> = {
   for: "賛成",
@@ -26,3 +35,22 @@ export const STANCE_LABELS: Record<StanceTypeEnum, string> = {
   considering: "検討中",
   continued_deliberation: "継続審議",
 };
+
+// フィルターラベル
+export const FILTER_LABELS: Record<StanceFilterType, string> = {
+  all: "ALL",
+  for: "期待",
+  against: "懸念",
+  other: "期待も懸念も",
+};
+
+// スタンスからフィルタータイプへの変換
+export function stanceToFilterType(
+  stance: StanceTypeEnum | null
+): StanceFilterType {
+  if (!stance) return "other";
+  if (stance === "for" || stance === "conditional_for") return "for";
+  if (stance === "against" || stance === "conditional_against")
+    return "against";
+  return "other";
+}
