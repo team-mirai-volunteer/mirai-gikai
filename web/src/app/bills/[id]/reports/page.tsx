@@ -85,7 +85,7 @@ export default async function ReportsPage({
   const billName = bill.bill_content?.title ?? bill.name;
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5]">
+    <div className="min-h-screen bg-background">
       {/* ヒーロー画像 + ヘッダー（bill-detail-headerと同じスタイル） */}
       <div className="bg-white rounded-b-4xl">
         {bill.thumbnail_url ? (
