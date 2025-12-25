@@ -86,29 +86,34 @@ export default async function ReportsPage({
 
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
-      {/* ヒーロー画像 */}
-      {bill.thumbnail_url ? (
-        <div className="relative w-full h-48 md:h-64">
-          <Image
-            src={bill.thumbnail_url}
-            alt={bill.name}
-            fill
-            className="object-cover"
-            sizes="100vw"
-            priority
-          />
+      {/* ヒーロー画像 + ヘッダー（bill-detail-headerと同じスタイル） */}
+      <div className="bg-white rounded-b-4xl">
+        {bill.thumbnail_url ? (
+          <div className="relative w-full h-72 md:h-80">
+            <Image
+              src={bill.thumbnail_url}
+              alt={bill.name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority
+            />
+          </div>
+        ) : (
+          <div className="w-full h-20 bg-white-100" />
+        )}
+
+        {/* ヘッダーコンテンツ */}
+        <div className="px-4 pt-8 pb-6">
+          <h1 className="text-2xl font-bold mb-3">{billName}</h1>
+          <p className="text-sm text-muted-foreground font-medium">
+            {bill.name}
+          </p>
         </div>
-      ) : (
-        <div className="w-full h-20 bg-gradient-to-b from-slate-200 to-slate-100" />
-      )}
+      </div>
 
       {/* コンテンツ */}
-      <Container className="py-8">
-        {/* ヘッダー */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-2">{billName}</h1>
-        </div>
-
+      <Container className="py-6">
         {/* セクションタイトル */}
         <div className="flex items-center gap-2 mb-6">
           <MessageSquareText className="size-5 text-teal-600" />
