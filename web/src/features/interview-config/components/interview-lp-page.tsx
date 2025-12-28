@@ -3,13 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { BillWithContent } from "@/features/bills/types";
-import { RestartInterviewButton } from "@/features/interview-session/components/restart-interview-button";
+import type { LatestInterviewSession } from "@/features/interview-session/api/get-latest-interview-session";
 import type { InterviewConfig } from "../api/get-interview-config";
+import { InterviewActionButtons } from "./interview-action-buttons";
 
 interface InterviewLPPageProps {
   bill: BillWithContent;
   interviewConfig: InterviewConfig;
-  activeSessionId: string | null;
+  sessionInfo: LatestInterviewSession | null;
 }
 
 const FEATURES = [
@@ -52,14 +53,12 @@ function _InterviewLPHeader({ bill }: { bill: BillWithContent }) {
 function _InterviewLPHero({
   bill,
   billId,
-  activeSessionId,
+  sessionInfo,
 }: {
   bill: BillWithContent;
   billId: string;
-  activeSessionId: string | null;
+  sessionInfo: LatestInterviewSession | null;
 }) {
-  const hasActiveSession = !!activeSessionId;
-
   return (
     <div className="flex flex-col items-center gap-6 px-4">
       <div className="flex flex-col items-center gap-3">
@@ -100,26 +99,7 @@ function _InterviewLPHero({
       </div>
 
       <div className="w-full max-w-[370px] mt-2 flex flex-col gap-3">
-        <Link href={`/bills/${billId}/interview/chat`}>
-          <Button className="w-full bg-mirai-gradient text-black border border-black rounded-[100px] h-[48px] px-6 font-bold text-[15px] hover:opacity-90 transition-opacity flex items-center justify-center gap-4">
-            <Image
-              src="/icons/messages-square-icon.svg"
-              alt=""
-              width={24}
-              height={24}
-              className="object-contain"
-            />
-            <span>
-              {hasActiveSession
-                ? "AIインタビューを再開する"
-                : "AIインタビューをはじめる"}
-            </span>
-            <ArrowRight className="size-5" />
-          </Button>
-        </Link>
-        {activeSessionId && (
-          <RestartInterviewButton sessionId={activeSessionId} billId={billId} />
-        )}
+        <InterviewActionButtons billId={billId} sessionInfo={sessionInfo} />
       </div>
     </div>
   );
@@ -237,35 +217,14 @@ function _InterviewNoticeSection() {
 
 function _InterviewFooterActions({
   billId,
-  activeSessionId,
+  sessionInfo,
 }: {
   billId: string;
-  activeSessionId: string | null;
+  sessionInfo: LatestInterviewSession | null;
 }) {
-  const hasActiveSession = !!activeSessionId;
-
   return (
     <div className="flex flex-col w-full max-w-[370px] mx-auto space-y-4">
-      <Link href={`/bills/${billId}/interview/chat`}>
-        <Button className="w-full bg-mirai-gradient text-black border border-black rounded-[100px] h-[48px] px-6 font-bold text-[15px] hover:opacity-90 transition-opacity flex items-center justify-center gap-4">
-          <Image
-            src="/icons/messages-square-icon.svg"
-            alt=""
-            width={24}
-            height={24}
-            className="object-contain"
-          />
-          <span>
-            {hasActiveSession
-              ? "AIインタビューを再開する"
-              : "AIインタビューをはじめる"}
-          </span>
-          <ArrowRight className="size-4" />
-        </Button>
-      </Link>
-      {activeSessionId && (
-        <RestartInterviewButton sessionId={activeSessionId} billId={billId} />
-      )}
+      <InterviewActionButtons billId={billId} sessionInfo={sessionInfo} />
       <Link href={`/bills/${billId}`}>
         <Button variant="outline" className="w-full">
           <Undo2 className="size-5" />
@@ -279,7 +238,7 @@ function _InterviewFooterActions({
 export function InterviewLPPage({
   bill,
   interviewConfig,
-  activeSessionId,
+  sessionInfo,
 }: InterviewLPPageProps) {
   return (
     <div className="flex flex-col gap-8 pb-8 bg-mirai-light-gradient">
@@ -288,7 +247,7 @@ export function InterviewLPPage({
         <_InterviewLPHero
           bill={bill}
           billId={bill.id}
-          activeSessionId={activeSessionId}
+          sessionInfo={sessionInfo}
         />
         <_InterviewOverviewSection
           billId={bill.id}
@@ -297,10 +256,7 @@ export function InterviewLPPage({
         <_InterviewDurationSection />
         <_InterviewThemesSection themes={interviewConfig.themes} />
         <_InterviewNoticeSection />
-        <_InterviewFooterActions
-          billId={bill.id}
-          activeSessionId={activeSessionId}
-        />
+        <_InterviewFooterActions billId={bill.id} sessionInfo={sessionInfo} />
       </div>
     </div>
   );
