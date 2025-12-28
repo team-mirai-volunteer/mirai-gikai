@@ -9,10 +9,35 @@
 - 設計ドキュメントは `docs/` に格納し、ルートの設定ファイル（`biome.json`, `pnpm-workspace.yaml` など）は全体ポリシーとして扱います。
 
 ## Next.js アーキテクチャ指針
-- Bulletproof React の feature ベース構成を採用し、`src/features/{feature}/components|actions|api|types` を基本形とします。
+- Bulletproof React の feature ベース構成を採用します。
 - export 用の `index.ts` は作成せず、必要なファイルから直接 import します。
 - Server Components を標準とし、状態管理・イベント処理が必要な場合のみ `"use client"` を付与した Client Component を追加します。
 - ファイル名はケバブケース、コンポーネントはパスカルケース、関数はキャメルケースで統一します。
+
+### Feature ディレクトリ構造
+複雑な feature では server/client/shared の3層構造を採用します：
+
+```
+src/features/{feature}/
+├── server/
+│   ├── components/    # Server Components
+│   ├── api/           # Server Components用データ取得関数
+│   ├── actions/       # Server Actions ("use server")
+│   ├── services/      # ビジネスロジック層
+│   ├── loaders/       # ページ初期化処理
+│   └── utils/         # Server専用ユーティリティ
+├── client/
+│   ├── components/    # Client Components ("use client")
+│   ├── hooks/         # カスタムフック
+│   └── utils/         # Client専用ユーティリティ
+└── shared/
+    ├── types/         # 共通型定義
+    └── utils/         # 共通ユーティリティ
+```
+
+- Server側ファイルには `"server-only"` を、Client Componentsには `"use client"` を付与
+- 型定義やServer/Client両方で使う関数は `shared/` に配置
+- シンプルな feature は従来の `components|actions|api|types` 構成でも可
 
 ## Build, Test, and Development Commands
 - 依存導入は `pnpm install`、全てのスクリプトは pnpm 経由で実行します。
