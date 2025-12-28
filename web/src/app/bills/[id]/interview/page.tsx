@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
 import { getInterviewConfig } from "@/features/interview-config/api/get-interview-config";
 import { InterviewLPPage } from "@/features/interview-config/components/interview-lp-page";
-import { getInterviewSession } from "@/features/interview-session/api/get-interview-session";
+import { getLatestInterviewSession } from "@/features/interview-session/api/get-latest-interview-session";
 import { env } from "@/lib/env";
 
 interface InterviewPageProps {
@@ -71,14 +71,14 @@ export default async function InterviewPage({ params }: InterviewPageProps) {
     notFound();
   }
 
-  // 進行中のセッションがあるかどうかを取得
-  const activeSession = await getInterviewSession(interviewConfig.id);
+  // 最新のセッション情報を取得
+  const latestSession = await getLatestInterviewSession(interviewConfig.id);
 
   return (
     <InterviewLPPage
       bill={bill}
       interviewConfig={interviewConfig}
-      activeSessionId={activeSession?.id ?? null}
+      sessionInfo={latestSession}
     />
   );
 }
