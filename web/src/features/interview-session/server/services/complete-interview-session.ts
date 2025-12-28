@@ -5,9 +5,9 @@ import { generateObject } from "ai";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
 import { getInterviewConfig } from "@/features/interview-config/api/get-interview-config";
 import { getInterviewQuestions } from "@/features/interview-config/api/get-interview-questions";
-import { buildInterviewSystemPrompt } from "../lib/build-interview-system-prompt";
-import type { InterviewReport } from "../types";
-import { interviewReportSchema } from "../types/schemas";
+import { interviewReportSchema } from "../../shared/schemas";
+import type { InterviewReport } from "../../shared/types";
+import { buildInterviewSystemPrompt } from "../utils/build-interview-system-prompt";
 
 const reportOutputSchema = interviewReportSchema;
 

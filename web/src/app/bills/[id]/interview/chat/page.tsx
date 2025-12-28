@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
 import { getInterviewConfig } from "@/features/interview-config/api/get-interview-config";
-import { InterviewChatClient } from "@/features/interview-session/components/interview-chat-client";
-import { initializeInterviewChat } from "@/features/interview-session/loaders/initialize-interview-chat";
+import { InterviewChatClient } from "@/features/interview-session/client/components/interview-chat-client";
+import { initializeInterviewChat } from "@/features/interview-session/server/loaders/initialize-interview-chat";
 
 interface InterviewChatPageProps {
   params: Promise<{

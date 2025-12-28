@@ -1,6 +1,6 @@
 import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
-import type { FacilitatorMessage } from "@/features/interview-session/lib/message-utils";
-import { facilitateInterview } from "@/features/interview-session/services/facilitate-interview";
+import type { FacilitatorMessage } from "@/features/interview-session/client/utils/message-utils";
+import { facilitateInterview } from "@/features/interview-session/server/services/facilitate-interview";
 
 export async function POST(req: Request) {
   const {

@@ -4,16 +4,16 @@ import { convertToModelMessages, Output, streamText } from "ai";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
 import { getInterviewConfig } from "@/features/interview-config/api/get-interview-config";
 import { getInterviewQuestions } from "@/features/interview-config/api/get-interview-questions";
-import { createInterviewSession } from "@/features/interview-session/actions/create-interview-session";
-import { getInterviewSession } from "@/features/interview-session/api/get-interview-session";
+import { createInterviewSession } from "@/features/interview-session/server/actions/create-interview-session";
+import { getInterviewSession } from "@/features/interview-session/server/api/get-interview-session";
 import {
   interviewChatTextSchema,
   interviewChatWithReportSchema,
-} from "@/features/interview-session/types/schemas";
+} from "@/features/interview-session/shared/schemas";
 import {
   buildInterviewSystemPrompt,
   buildSummarySystemPrompt,
-} from "../lib/build-interview-system-prompt";
+} from "../utils/build-interview-system-prompt";
 import { saveInterviewMessage } from "./save-interview-message";
 
 type InterviewChatRequestParams = {
@@ -95,9 +95,6 @@ async function generateStreamingResponse({
   isSummaryPhase: boolean;
 }) {
   const model = "openai/gpt-4o-mini";
-  const schema = isSummaryPhase
-    ? interviewChatWithReportSchema
-    : interviewChatTextSchema;
 
   const handleError = (error: unknown) => {
     console.error("LLM generation error:", error);

@@ -1,4 +1,4 @@
-import type { InterviewReportData } from "../types/schemas";
+import type { InterviewReportData } from "../../shared/schemas";
 
 /**
  * 会話メッセージの型定義

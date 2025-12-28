@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import type { ConversationMessage } from "../lib/message-utils";
+import type { ConversationMessage } from "../utils/message-utils";
 import type { ParsedInitialMessage } from "./use-parsed-messages";
 
 interface UseQuickRepliesProps {

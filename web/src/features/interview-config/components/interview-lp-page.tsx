@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { BillWithContent } from "@/features/bills/types";
-import type { LatestInterviewSession } from "@/features/interview-session/api/get-latest-interview-session";
+import type { LatestInterviewSession } from "@/features/interview-session/server/api/get-latest-interview-session";
 import type { InterviewConfig } from "../api/get-interview-config";
 import { InterviewActionButtons } from "./interview-action-buttons";
 

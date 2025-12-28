@@ -3,14 +3,14 @@
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { useState } from "react";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
-import { interviewChatResponseSchema } from "@/features/interview-session/types/schemas";
-import { callFacilitateApi } from "../lib/interview-api-client";
+import { interviewChatResponseSchema } from "@/features/interview-session/shared/schemas";
+import { callFacilitateApi } from "../utils/interview-api-client";
 import {
   buildMessagesForApi,
   buildMessagesForFacilitator,
   type ConversationMessage,
   convertPartialReport,
-} from "../lib/message-utils";
+} from "../utils/message-utils";
 import { useInterviewCompletion } from "./use-interview-completion";
 import { type InitialMessage, useParsedMessages } from "./use-parsed-messages";
 import { useQuickReplies } from "./use-quick-replies";

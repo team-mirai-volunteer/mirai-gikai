@@ -3,8 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
-import { getInterviewMessages } from "@/features/interview-session/api/get-interview-messages";
-import { getInterviewReportById } from "@/features/interview-session/api/get-interview-report-by-id";
+import { getInterviewMessages } from "@/features/interview-session/server/api/get-interview-messages";
+import { getInterviewReportById } from "@/features/interview-session/server/api/get-interview-report-by-id";
 
 interface InterviewReportPageProps {
   params: Promise<{

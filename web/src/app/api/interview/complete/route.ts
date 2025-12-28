@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
-import { completeInterviewSession } from "@/features/interview-session/services/complete-interview-session";
+import { completeInterviewSession } from "@/features/interview-session/server/services/complete-interview-session";
 
 export async function POST(req: Request) {
   const { sessionId, interviewConfigId, billId } = await req.json();
