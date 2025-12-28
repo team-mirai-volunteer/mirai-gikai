@@ -18,7 +18,7 @@ export function InterviewHeaderActions() {
   };
 
   return (
-    <Button variant="outline" onClick={handleSaveAndExit}>
+    <Button variant="outline" size="sm" onClick={handleSaveAndExit}>
       保存して中断
     </Button>
   );

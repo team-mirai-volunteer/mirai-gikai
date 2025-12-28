@@ -26,6 +26,7 @@ export async function getInterviewSession(
     .eq("interview_config_id", interviewConfigId)
     .eq("user_id", user.id)
     .is("completed_at", null) // 未完了のセッションのみ
+    .is("archived_at", null) // アーカイブされていないセッションのみ
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
