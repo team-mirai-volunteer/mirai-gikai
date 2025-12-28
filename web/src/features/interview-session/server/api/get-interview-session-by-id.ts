@@ -1,11 +1,11 @@
 import "server-only";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
+import type { InterviewSession } from "../../shared/types";
 import {
   getAuthenticatedUser,
   isSessionOwner,
-} from "../lib/verify-session-ownership";
-import type { InterviewSession } from "../types";
+} from "../utils/verify-session-ownership";
 
 export type InterviewSessionWithBillId = InterviewSession & {
   bill_id: string;

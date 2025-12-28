@@ -1,10 +1,10 @@
 import "server-only";
 
-import { createInterviewSession } from "@/features/interview-session/actions/create-interview-session";
-import { getInterviewMessages } from "@/features/interview-session/api/get-interview-messages";
-import { getInterviewSession } from "@/features/interview-session/api/get-interview-session";
-import { generateInitialQuestion } from "@/features/interview-session/services/generate-initial-question";
-import type { InterviewMessage, InterviewSession } from "../types";
+import { createInterviewSession } from "@/features/interview-session/server/actions/create-interview-session";
+import { getInterviewMessages } from "@/features/interview-session/server/api/get-interview-messages";
+import { getInterviewSession } from "@/features/interview-session/server/api/get-interview-session";
+import { generateInitialQuestion } from "@/features/interview-session/server/services/generate-initial-question";
+import type { InterviewMessage, InterviewSession } from "../../shared/types";
 
 type InitializeInterviewChatResult = {
   session: InterviewSession;

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DifficultySelector } from "@/features/bill-difficulty/components/difficulty-selector";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
-import { InterviewHeaderActions } from "@/features/interview-session/components/interview-header-actions";
+import { InterviewHeaderActions } from "@/features/interview-session/client/components/interview-header-actions";
 import { isInterviewPage, isMainPage } from "@/lib/page-layout-utils";
 import { HamburgerMenu } from "./hamburger-menu";
 

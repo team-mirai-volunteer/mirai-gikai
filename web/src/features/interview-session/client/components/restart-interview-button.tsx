@@ -4,7 +4,7 @@ import { RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { archiveInterviewSession } from "../actions/archive-interview-session";
+import { archiveInterviewSession } from "../../server/actions/archive-interview-session";
 
 interface RestartInterviewButtonProps {
   sessionId: string;

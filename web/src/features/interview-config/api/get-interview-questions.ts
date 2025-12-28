@@ -1,5 +1,5 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
-import type { InterviewQuestion } from "@/features/interview-session/types";
+import type { InterviewQuestion } from "@/features/interview-session/shared/types";
 
 export async function getInterviewQuestions(
   interviewConfigId: string

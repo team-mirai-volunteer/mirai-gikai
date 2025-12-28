@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { callCompleteApi } from "../lib/interview-api-client";
-import type { InterviewStage } from "./use-interview-chat";
+import { callCompleteApi } from "../utils/interview-api-client";
 
 interface UseInterviewCompletionProps {
   sessionId: string;

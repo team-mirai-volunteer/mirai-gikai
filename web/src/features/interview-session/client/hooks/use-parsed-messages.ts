@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { parseMessageContent } from "../lib/message-utils";
-import type { InterviewReportData } from "../types/schemas";
+import type { InterviewReportData } from "../../shared/schemas";
+import { parseMessageContent } from "../utils/message-utils";
 import type { InterviewStage } from "./use-interview-chat";
 
 /** 初期メッセージの型 */

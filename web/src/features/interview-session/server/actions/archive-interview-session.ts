@@ -1,7 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { verifySessionOwnership } from "../lib/verify-session-ownership";
+import { verifySessionOwnership } from "../utils/verify-session-ownership";
 
 interface ArchiveInterviewSessionResult {
   success: boolean;

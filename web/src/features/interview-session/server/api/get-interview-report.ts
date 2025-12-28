@@ -1,8 +1,8 @@
 import "server-only";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { verifySessionOwnership } from "../lib/verify-session-ownership";
-import type { InterviewReport } from "../types";
+import type { InterviewReport } from "../../shared/types";
+import { verifySessionOwnership } from "../utils/verify-session-ownership";
 
 /**
  * セッションIDからインタビューレポートを取得

@@ -1,5 +1,5 @@
 import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
-import { handleInterviewChatRequest } from "@/features/interview-session/services/handle-interview-chat-request";
+import { handleInterviewChatRequest } from "@/features/interview-session/server/services/handle-interview-chat-request";
 import { registerNodeTelemetry } from "@/lib/telemetry/register";
 
 export async function POST(req: Request) {

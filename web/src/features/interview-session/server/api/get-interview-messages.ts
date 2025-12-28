@@ -1,8 +1,8 @@
 import "server-only";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { verifySessionOwnership } from "../lib/verify-session-ownership";
-import type { InterviewMessage } from "../types";
+import type { InterviewMessage } from "../../shared/types";
+import { verifySessionOwnership } from "../utils/verify-session-ownership";
 
 export async function getInterviewMessages(
   sessionId: string
