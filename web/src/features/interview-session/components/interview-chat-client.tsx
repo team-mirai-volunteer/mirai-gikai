@@ -8,6 +8,7 @@ import { useAnonymousSupabaseUser } from "@/features/chat/hooks/use-anonymous-su
 import { useInterviewChat } from "../hooks/use-interview-chat";
 import { InterviewChatInput } from "./interview-chat-input";
 import { InterviewMessage } from "./interview-message";
+import { QuickReplyButtons } from "./quick-reply-buttons";
 
 interface InterviewChatClientProps {
   billId: string;
@@ -41,11 +42,13 @@ export function InterviewChatClient({
     object,
     streamingReportData,
     isStreamingMessageCommitted,
+    currentQuickReplies,
     isCompleting,
     completeError,
     completedReportId,
     handleSubmit,
     handleAgree,
+    handleQuickReply,
   } = useInterviewChat({
     billId,
     interviewConfigId,
@@ -132,6 +135,15 @@ export function InterviewChatClient({
                 インタビュー内容を提出に進めてください。
               </p>
             </div>
+          )}
+
+          {/* クイックリプライボタン */}
+          {stage === "chat" && currentQuickReplies.length > 0 && (
+            <QuickReplyButtons
+              replies={currentQuickReplies}
+              onSelect={handleQuickReply}
+              disabled={isLoading}
+            />
           )}
         </ConversationContent>
       </Conversation>

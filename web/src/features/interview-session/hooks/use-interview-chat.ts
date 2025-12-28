@@ -1,43 +1,27 @@
 "use client";
 
 import { experimental_useObject as useObject } from "@ai-sdk/react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
-import type { InterviewReportData } from "@/features/interview-session/types/schemas";
 import { interviewChatResponseSchema } from "@/features/interview-session/types/schemas";
-import {
-  callCompleteApi,
-  callFacilitateApi,
-} from "../lib/interview-api-client";
+import { callFacilitateApi } from "../lib/interview-api-client";
 import {
   buildMessagesForApi,
   buildMessagesForFacilitator,
   type ConversationMessage,
   convertPartialReport,
-  parseMessageContent,
 } from "../lib/message-utils";
+import { useInterviewCompletion } from "./use-interview-completion";
+import { type InitialMessage, useParsedMessages } from "./use-parsed-messages";
+import { useQuickReplies } from "./use-quick-replies";
 
 export type InterviewStage = "chat" | "summary" | "summary_complete";
-
-/** パース済み初期メッセージの型 */
-type ParsedInitialMessage = {
-  id: string;
-  role: "assistant" | "user";
-  content: string;
-  created_at: string;
-  report: InterviewReportData | null;
-};
 
 interface UseInterviewChatProps {
   billId: string;
   interviewConfigId: string;
   sessionId: string;
-  initialMessages: Array<{
-    id: string;
-    role: "assistant" | "user";
-    content: string;
-    created_at: string;
-  }>;
+  initialMessages: InitialMessage[];
 }
 
 export function useInterviewChat({
@@ -46,39 +30,16 @@ export function useInterviewChat({
   sessionId,
   initialMessages,
 }: UseInterviewChatProps) {
-  // 初期メッセージをパースして、textとreportに分離
-  const parsedInitialMessages = useMemo(
-    (): ParsedInitialMessage[] =>
-      initialMessages.map((msg) => {
-        if (msg.role === "assistant") {
-          const { text, report } = parseMessageContent(msg.content);
-          return { ...msg, content: text, report };
-        }
-        return { ...msg, report: null };
-      }),
-    [initialMessages]
-  );
+  // 初期メッセージのパース
+  const { parsedInitialMessages, initialStage } =
+    useParsedMessages(initialMessages);
 
-  const lastMessage = useMemo(() => {
-    return parsedInitialMessages[parsedInitialMessages.length - 1];
-  }, [parsedInitialMessages]);
-
-  console.log("lastMessage", lastMessage);
-
+  // 基本状態
   const [input, setInput] = useState("");
-  const [stage, setStage] = useState<InterviewStage>(
-    "report" in lastMessage && lastMessage.report != null ? "summary" : "chat"
-  );
+  const [stage, setStage] = useState<InterviewStage>(initialStage);
   const [conversationMessages, setConversationMessages] = useState<
     ConversationMessage[]
   >([]);
-
-  // 完了処理の状態
-  const [isCompleting, setIsCompleting] = useState(false);
-  const [completeError, setCompleteError] = useState<string | null>(null);
-  const [completedReportId, setCompletedReportId] = useState<string | null>(
-    null
-  );
 
   // useObjectフックを使用（streamObjectの結果を受け取る）
   const { object, submit, isLoading, error } = useObject({
@@ -90,7 +51,7 @@ export function useInterviewChat({
         return;
       }
       if (finishedObject) {
-        const { text, report } = finishedObject;
+        const { text, report, quick_replies } = finishedObject;
         setConversationMessages((prev) => [
           ...prev,
           {
@@ -98,10 +59,27 @@ export function useInterviewChat({
             role: "assistant",
             content: text ?? "",
             report: convertPartialReport(report),
+            quickReplies: quick_replies ?? [],
           },
         ]);
       }
     },
+  });
+
+  // 完了処理
+  const { isCompleting, completeError, completedReportId, handleAgree } =
+    useInterviewCompletion({
+      sessionId,
+      interviewConfigId,
+      billId,
+      onComplete: () => setStage("summary_complete"),
+    });
+
+  // クイックリプライ
+  const currentQuickReplies = useQuickReplies({
+    conversationMessages,
+    parsedInitialMessages,
+    isLoading,
   });
 
   // objectからreportを取得
@@ -167,25 +145,9 @@ export function useInterviewChat({
     submitChatMessage(userMessageText, "chat");
   };
 
-  // インタビュー完了処理
-  const handleAgree = async () => {
-    setIsCompleting(true);
-    setCompleteError(null);
-    try {
-      const result = await callCompleteApi({
-        sessionId,
-        interviewConfigId,
-        billId,
-      });
-      setCompletedReportId(result.report?.id || null);
-      setStage("summary_complete");
-    } catch (err) {
-      setCompleteError(
-        err instanceof Error ? err.message : "Failed to complete interview"
-      );
-    } finally {
-      setIsCompleting(false);
-    }
+  // クイックリプライを選択した時の処理
+  const handleQuickReply = (reply: string) => {
+    handleSubmit({ text: reply });
   };
 
   // ストリーミング中のメッセージが会話履歴に追加済みかどうか
@@ -207,6 +169,7 @@ export function useInterviewChat({
     object,
     streamingReportData,
     isStreamingMessageCommitted,
+    currentQuickReplies,
 
     // 完了処理の状態
     isCompleting,
@@ -216,5 +179,6 @@ export function useInterviewChat({
     // アクション
     handleSubmit,
     handleAgree,
+    handleQuickReply,
   };
 }

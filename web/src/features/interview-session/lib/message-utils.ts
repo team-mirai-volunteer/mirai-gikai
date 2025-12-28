@@ -8,6 +8,7 @@ export type ConversationMessage = {
   role: "assistant" | "user";
   content: string;
   report?: InterviewReportData | null;
+  quickReplies?: string[];
 };
 
 /**
@@ -27,16 +28,21 @@ export function isValidReport(
 }
 
 /**
- * JSONとして保存されたメッセージをパースして、textとreportに分離する
+ * JSONとして保存されたメッセージをパースして、textとreportとquickRepliesに分離する
  */
 export function parseMessageContent(content: string): {
   text: string;
   report: InterviewReportData | null;
+  quickReplies: string[];
 } {
   try {
     const parsed = JSON.parse(content);
     if (typeof parsed === "object" && parsed !== null && "text" in parsed) {
       const rawReport = parsed.report;
+      const quickReplies = Array.isArray(parsed.quick_replies)
+        ? parsed.quick_replies
+        : [];
+
       if (rawReport) {
         // opinionsがnullの場合は空配列に変換
         const report: InterviewReportData = {
@@ -46,14 +52,15 @@ export function parseMessageContent(content: string): {
         return {
           text: parsed.text ?? "",
           report: isValidReport(report) ? report : null,
+          quickReplies,
         };
       }
-      return { text: parsed.text ?? "", report: null };
+      return { text: parsed.text ?? "", report: null, quickReplies };
     }
   } catch {
     // JSONでない場合はそのままテキストとして扱う
   }
-  return { text: content, report: null };
+  return { text: content, report: null, quickReplies: [] };
 }
 
 /**
