@@ -4,9 +4,9 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Lexend_Giga, Noto_Sans_JP } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
-import { useId } from "react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/layouts/footer/footer";
+import { MainLayout } from "@/components/layouts/main-layout";
 import { env } from "@/lib/env";
 import { RubyfulInitializer } from "@/lib/rubyful";
 
@@ -80,8 +80,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const mainContentId = useId();
-
   return (
     <html lang="ja">
       <body
@@ -92,19 +90,11 @@ export default function RootLayout({
         <GoogleAnalytics gaId={env.analytics.gaTrackingId ?? ""} />
         <RubyfulInitializer />
 
-        <div
-          // xlサイズでは、横幅1180px（メイン + チャット）の中央寄せにする
-          className="
-            relative max-w-[700px] mx-auto sm:shadow-lg md:mt-24
-            pc:mr-[500px] xl:ml-[calc(calc(100vw-1180px)/2)]
-          "
-        >
+        <MainLayout>
           <Header />
-          <main id={mainContentId} className="min-h-screen bg-[#F7F4F0]">
-            {children}
-          </main>
+          <main className="min-h-screen bg-[#F7F4F0]">{children}</main>
           <Footer />
-        </div>
+        </MainLayout>
       </body>
     </html>
   );
