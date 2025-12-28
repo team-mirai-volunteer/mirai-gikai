@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
 import { getInterviewConfig } from "@/features/interview-config/api/get-interview-config";
 import { InterviewLPPage } from "@/features/interview-config/components/interview-lp-page";
+import { getInterviewSession } from "@/features/interview-session/api/get-interview-session";
 import { env } from "@/lib/env";
 
 interface InterviewPageProps {
@@ -70,5 +71,14 @@ export default async function InterviewPage({ params }: InterviewPageProps) {
     notFound();
   }
 
-  return <InterviewLPPage bill={bill} interviewConfig={interviewConfig} />;
+  // 進行中のセッションがあるかどうかを取得
+  const activeSession = await getInterviewSession(interviewConfig.id);
+
+  return (
+    <InterviewLPPage
+      bill={bill}
+      interviewConfig={interviewConfig}
+      hasActiveSession={!!activeSession}
+    />
+  );
 }

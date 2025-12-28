@@ -14,3 +14,15 @@ export function isMainPage(pathname: string): boolean {
   if (/^\/bills\/[^/]+$/.test(pathname)) return true;
   return false;
 }
+
+/** インタビューチャットページかどうかを判定 */
+export function isInterviewPage(pathname: string): boolean {
+  // /bills/[id]/interview/chat
+  return /^\/bills\/[^/]+\/interview\/chat$/.test(pathname);
+}
+
+/** インタビューページからbillIdを抽出 */
+export function extractBillIdFromPath(pathname: string): string | null {
+  const match = pathname.match(/^\/bills\/([^/]+)/);
+  return match ? match[1] : null;
+}
