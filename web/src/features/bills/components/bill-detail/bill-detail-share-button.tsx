@@ -22,6 +22,7 @@ export function BillDetailShareButton({
     <>
       <Button
         variant="outline"
+        size="sm"
         onClick={() => setIsModalOpen(true)}
         className="text-xs gap-1"
       >

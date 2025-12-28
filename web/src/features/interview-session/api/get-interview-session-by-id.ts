@@ -1,7 +1,10 @@
 import "server-only";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
+import {
+  getAuthenticatedUser,
+  isSessionOwner,
+} from "../lib/verify-session-ownership";
 import type { InterviewSession } from "../types";
 
 export type InterviewSessionWithBillId = InterviewSession & {
@@ -15,17 +18,14 @@ export type InterviewSessionWithBillId = InterviewSession & {
 export async function getInterviewSessionById(
   sessionId: string
 ): Promise<InterviewSessionWithBillId | null> {
-  // 認可処理: バックエンド側でuserIdを取得
-  const {
-    data: { user },
-    error: getUserError,
-  } = await getChatSupabaseUser();
+  const authResult = await getAuthenticatedUser();
 
-  if (getUserError || !user) {
-    console.error("Failed to get user:", getUserError);
+  if (!authResult.authenticated) {
+    console.error("Failed to get user:", authResult.error);
     return null;
   }
 
+  const { userId } = authResult;
   const supabase = createAdminClient();
 
   // セッションとinterview_configを結合して取得
@@ -41,7 +41,7 @@ export async function getInterviewSessionById(
   }
 
   // 認可チェック: セッションの所有者と現在のユーザーが一致するか
-  if (session.user_id !== user.id) {
+  if (!isSessionOwner(session.user_id, userId)) {
     console.error("Unauthorized access to interview session");
     return null;
   }

@@ -78,7 +78,7 @@ export default async function InterviewPage({ params }: InterviewPageProps) {
     <InterviewLPPage
       bill={bill}
       interviewConfig={interviewConfig}
-      hasActiveSession={!!activeSession}
+      activeSessionId={activeSession?.id ?? null}
     />
   );
 }
