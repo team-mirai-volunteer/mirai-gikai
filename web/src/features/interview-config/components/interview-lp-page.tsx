@@ -8,6 +8,7 @@ import type { InterviewConfig } from "../api/get-interview-config";
 interface InterviewLPPageProps {
   bill: BillWithContent;
   interviewConfig: InterviewConfig;
+  hasActiveSession?: boolean;
 }
 
 const FEATURES = [
@@ -50,9 +51,11 @@ function _InterviewLPHeader({ bill }: { bill: BillWithContent }) {
 function _InterviewLPHero({
   bill,
   billId,
+  hasActiveSession,
 }: {
   bill: BillWithContent;
   billId: string;
+  hasActiveSession?: boolean;
 }) {
   return (
     <div className="flex flex-col items-center gap-6 px-4">
@@ -103,7 +106,11 @@ function _InterviewLPHero({
               height={24}
               className="object-contain"
             />
-            <span>AIインタビューをはじめる</span>
+            <span>
+              {hasActiveSession
+                ? "AIインタビューを再開する"
+                : "AIインタビューをはじめる"}
+            </span>
             <ArrowRight className="size-5" />
           </Button>
         </Link>
@@ -222,7 +229,13 @@ function _InterviewNoticeSection() {
   );
 }
 
-function _InterviewFooterActions({ billId }: { billId: string }) {
+function _InterviewFooterActions({
+  billId,
+  hasActiveSession,
+}: {
+  billId: string;
+  hasActiveSession?: boolean;
+}) {
   return (
     <div className="flex flex-col w-full max-w-[370px] mx-auto space-y-4">
       <Link href={`/bills/${billId}/interview/chat`}>
@@ -234,7 +247,11 @@ function _InterviewFooterActions({ billId }: { billId: string }) {
             height={24}
             className="object-contain"
           />
-          <span>AIインタビューをはじめる</span>
+          <span>
+            {hasActiveSession
+              ? "AIインタビューを再開する"
+              : "AIインタビューをはじめる"}
+          </span>
           <ArrowRight className="size-4" />
         </Button>
       </Link>
@@ -254,12 +271,17 @@ function _InterviewFooterActions({ billId }: { billId: string }) {
 export function InterviewLPPage({
   bill,
   interviewConfig,
+  hasActiveSession,
 }: InterviewLPPageProps) {
   return (
     <div className="flex flex-col gap-8 pb-8 bg-mirai-light-gradient">
       <_InterviewLPHeader bill={bill} />
       <div className="flex flex-col items-center gap-8 px-4">
-        <_InterviewLPHero bill={bill} billId={bill.id} />
+        <_InterviewLPHero
+          bill={bill}
+          billId={bill.id}
+          hasActiveSession={hasActiveSession}
+        />
         <_InterviewOverviewSection
           billId={bill.id}
           billName={bill.bill_content?.title ?? bill.name}
@@ -267,7 +289,10 @@ export function InterviewLPPage({
         <_InterviewDurationSection />
         <_InterviewThemesSection themes={interviewConfig.themes} />
         <_InterviewNoticeSection />
-        <_InterviewFooterActions billId={bill.id} />
+        <_InterviewFooterActions
+          billId={bill.id}
+          hasActiveSession={hasActiveSession}
+        />
       </div>
     </div>
   );
