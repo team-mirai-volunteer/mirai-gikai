@@ -138,7 +138,7 @@ export function InterviewChatClient({
           )}
 
           {/* クイックリプライボタン */}
-          {stage === "chat" && currentQuickReplies.length > 0 && (
+          {!isLoading && stage === "chat" && currentQuickReplies.length > 0 && (
             <QuickReplyButtons
               replies={currentQuickReplies}
               onSelect={handleQuickReply}

@@ -22,7 +22,7 @@ export type InterviewReportData = z.infer<typeof interviewReportSchema>;
 export const interviewChatTextSchema = z.object({
   text: z.string(),
   quick_replies: z.array(z.string()).nullable(),
-  question_id: z.string().nullable().nullable(),
+  question_id: z.string().nullable(),
 });
 
 export type InterviewChatText = z.infer<typeof interviewChatTextSchema>;
@@ -31,7 +31,6 @@ export type InterviewChatText = z.infer<typeof interviewChatTextSchema>;
 export const interviewChatWithReportSchema = z.object({
   text: z.string(),
   report: interviewReportSchema,
-  quick_replies: z.array(z.string()).nullable(),
 });
 
 export type InterviewChatWithReport = z.infer<
@@ -42,8 +41,8 @@ export type InterviewChatWithReport = z.infer<
 export const interviewChatResponseSchema = z.object({
   text: z.string(),
   report: interviewReportSchema.optional(),
-  quick_replies: z.array(z.string()).nullable(),
-  question_id: z.string().nullable().optional(),
+  quick_replies: z.array(z.string()).optional().nullable(),
+  question_id: z.string().optional().nullable(),
 });
 
 export type InterviewChatResponse = z.infer<typeof interviewChatResponseSchema>;

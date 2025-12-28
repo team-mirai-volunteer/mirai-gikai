@@ -126,16 +126,27 @@ async function generateStreamingResponse({
     parts: [{ type: "text" as const, text: message.content }],
   }));
 
-  try {
-    const result = streamText({
-      model,
-      system: systemPrompt,
-      messages: await convertToModelMessages(uiMessages),
-      output: Output.object({ schema }),
-      onError: handleError,
-      onFinish: handleFinish,
-    });
+  const streamParams = {
+    model,
+    system: systemPrompt,
+    messages: await convertToModelMessages(uiMessages),
+    onError: handleError,
+    onFinish: handleFinish,
+  } as const;
 
+  try {
+    if (isSummaryPhase) {
+      const result = streamText({
+        ...streamParams,
+        output: Output.object({ schema: interviewChatWithReportSchema }),
+      });
+      return result.toTextStreamResponse();
+    }
+
+    const result = streamText({
+      ...streamParams,
+      output: Output.object({ schema: interviewChatTextSchema }),
+    });
     return result.toTextStreamResponse();
   } catch (error) {
     handleError(error);
