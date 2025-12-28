@@ -21,6 +21,7 @@ export interface ParsedInitialMessage {
   created_at: string;
   report: InterviewReportData | null;
   quickReplies: string[];
+  questionId: string | null;
 }
 
 /**
@@ -31,12 +32,11 @@ export function useParsedMessages(initialMessages: InitialMessage[]) {
     (): ParsedInitialMessage[] =>
       initialMessages.map((msg) => {
         if (msg.role === "assistant") {
-          const { text, report, quickReplies } = parseMessageContent(
-            msg.content
-          );
-          return { ...msg, content: text, report, quickReplies };
+          const { text, report, quickReplies, questionId } =
+            parseMessageContent(msg.content);
+          return { ...msg, content: text, report, quickReplies, questionId };
         }
-        return { ...msg, report: null, quickReplies: [] };
+        return { ...msg, report: null, quickReplies: [], questionId: null };
       }),
     [initialMessages]
   );

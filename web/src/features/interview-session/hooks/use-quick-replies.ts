@@ -26,7 +26,10 @@ export function useQuickReplies({
     const lastAssistantMessage = [...conversationMessages]
       .reverse()
       .find((m) => m.role === "assistant");
-    if (lastAssistantMessage?.quickReplies?.length) {
+    if (
+      lastAssistantMessage?.questionId &&
+      lastAssistantMessage.quickReplies?.length
+    ) {
       return lastAssistantMessage.quickReplies;
     }
 
@@ -35,7 +38,10 @@ export function useQuickReplies({
       const lastInitialAssistant = [...parsedInitialMessages]
         .reverse()
         .find((m) => m.role === "assistant");
-      if (lastInitialAssistant?.quickReplies?.length) {
+      if (
+        lastInitialAssistant?.questionId &&
+        lastInitialAssistant.quickReplies?.length
+      ) {
         return lastInitialAssistant.quickReplies;
       }
     }

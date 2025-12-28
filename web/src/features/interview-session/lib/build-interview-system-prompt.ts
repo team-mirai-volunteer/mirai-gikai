@@ -26,7 +26,7 @@ export function buildInterviewSystemPrompt({
   const questionsText = questions
     .map(
       (q, index) =>
-        `${index + 1}. ${q.question}${q.instruction ? `\n   指示: ${q.instruction}` : ""}${q.quick_replies ? `\n   クイックリプライ: ${q.quick_replies.join(", ")}` : ""}`
+        `${index + 1}. [ID: ${q.id}] ${q.question}${q.instruction ? `\n   指示: ${q.instruction}` : ""}${q.quick_replies ? `\n   クイックリプライ: ${q.quick_replies.join(", ")}` : ""}`
     )
     .join("\n");
 
@@ -60,9 +60,10 @@ ${questionsText || "（質問未設定）"}
 5. インタビュー完了時は、レポートを生成する旨を伝えてください
 
 ## クイックリプライについて
-- 事前定義質問にクイックリプライが設定されている場合、その質問をする際は必ずレスポンスの \`quick_replies\` フィールドにその選択肢を含めてください
+- 事前定義質問そのものをこれから行う場合は、その質問のIDをレスポンスの \`question_id\` フィールドに含めてください
+- 事前定義質問にクイックリプライが設定されている場合、その質問をする際はレスポンスの \`quick_replies\` フィールドにその選択肢を含めてください
 - クイックリプライは事前定義質問に設定されているもののみを使用してください
-- 深掘り質問など、事前定義質問以外の質問をする場合は \`quick_replies\` を含めないでください
+- 深掘り質問など、事前定義質問以外の質問をする場合は \`question_id\` を含めず、\`quick_replies\` も含めないでください
 
 ## 注意事項
 - 丁寧で親しみやすい口調で話してください
@@ -98,6 +99,9 @@ ${themes.length > 0 ? themes.map((t) => `- ${t}`).join("\n") : "（テーマ未�
 
 ## あなたの役割
 以下の会話履歴を読み、インタビュー内容を要約してレポート案を生成してください。
+
+## 留意点
+要約をすること、また要約の内容が問題ないかの確認に徹して、質問は一切しないでください。
 
 ## レポート案に含めるべき内容
 1. **要約**: インタビュー全体の要約（ユーザーの主な意見や経験）

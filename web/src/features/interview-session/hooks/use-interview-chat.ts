@@ -51,7 +51,8 @@ export function useInterviewChat({
         return;
       }
       if (finishedObject) {
-        const { text, report, quick_replies } = finishedObject;
+        const { text, report, quick_replies, question_id } = finishedObject;
+        const questionId = question_id ?? null;
         setConversationMessages((prev) => [
           ...prev,
           {
@@ -59,7 +60,9 @@ export function useInterviewChat({
             role: "assistant",
             content: text ?? "",
             report: convertPartialReport(report),
-            quickReplies: quick_replies ?? [],
+            quickReplies:
+              questionId && Array.isArray(quick_replies) ? quick_replies : [],
+            questionId,
           },
         ]);
       }
