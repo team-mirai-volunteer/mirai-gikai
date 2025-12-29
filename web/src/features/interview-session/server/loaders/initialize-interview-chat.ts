@@ -1,8 +1,8 @@
 import "server-only";
 
 import { createInterviewSession } from "@/features/interview-session/server/actions/create-interview-session";
-import { getInterviewMessages } from "@/features/interview-session/server/api/get-interview-messages";
-import { getInterviewSession } from "@/features/interview-session/server/api/get-interview-session";
+import { getInterviewMessages } from "@/features/interview-session/server/loaders/get-interview-messages";
+import { getInterviewSession } from "@/features/interview-session/server/loaders/get-interview-session";
 import { generateInitialQuestion } from "@/features/interview-session/server/services/generate-initial-question";
 import type { InterviewMessage, InterviewSession } from "../../shared/types";
 

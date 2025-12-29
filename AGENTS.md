@@ -21,10 +21,9 @@
 src/features/{feature}/
 ├── server/
 │   ├── components/    # Server Components
-│   ├── api/           # Server Components用データ取得関数
+│   ├── loaders/       # Server Components用データ取得関数
 │   ├── actions/       # Server Actions ("use server")
 │   ├── services/      # ビジネスロジック層
-│   ├── loaders/       # ページ初期化処理
 │   └── utils/         # Server専用ユーティリティ
 ├── client/
 │   ├── components/    # Client Components ("use client")
