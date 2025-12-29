@@ -1,9 +1,9 @@
 import { openai } from "@ai-sdk/openai";
 import type { Database } from "@mirai-gikai/supabase";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
-import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
+import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/types";
 import type { BillWithContent } from "@/features/bills/shared/types";
-import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
+import { ChatError, ChatErrorCode } from "@/features/chat/shared/types/errors";
 import { env } from "@/lib/env";
 import {
   type CompiledPrompt,

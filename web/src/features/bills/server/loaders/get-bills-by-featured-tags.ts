@@ -1,7 +1,7 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { unstable_cache } from "next/cache";
-import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
-import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
+import { getDifficultyLevel } from "@/features/bill-difficulty/server/loaders/get-difficulty-level";
+import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/types";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import type { BillsByTag } from "../../shared/types";
 

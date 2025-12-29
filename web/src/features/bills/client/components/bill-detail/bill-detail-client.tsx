@@ -1,13 +1,12 @@
 "use client";
 
 import { useRef } from "react";
-import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
+import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/types";
 import { TextSelectionWrapper } from "@/features/bills/client/components/text-selection-tooltip/text-selection-wrapper";
-import { DifficultyInfoCard } from "@/features/bills/server/components/bill-detail/difficulty-info-card";
 import {
   ChatButton,
   type ChatButtonRef,
-} from "@/features/chat/components/chat-button";
+} from "@/features/chat/client/components/chat-button";
 import type { BillWithContent } from "../../../shared/types";
 
 interface BillDetailClientProps {
@@ -47,7 +46,6 @@ export function BillDetailClient({
         billContext={bill}
         difficultyLevel={currentDifficulty}
       />
-      <DifficultyInfoCard />
     </>
   );
 }

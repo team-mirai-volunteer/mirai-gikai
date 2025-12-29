@@ -4,7 +4,7 @@ import {
   DIFFICULTY_COOKIE_NAME,
   type DifficultyLevelEnum,
   VALID_DIFFICULTY_LEVELS,
-} from "../types";
+} from "../../shared/types";
 
 /**
  * 有効な難易度レベルかチェック

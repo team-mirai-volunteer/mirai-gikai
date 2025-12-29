@@ -2,12 +2,12 @@
 
 import { useId, useState } from "react";
 import { Switch } from "@/components/ui/switch";
-import { setDifficultyLevel } from "../actions/set-difficulty-level";
+import { setDifficultyLevel } from "../../server/actions/set-difficulty-level";
 import {
   saveScrollDistanceFromBottom,
   useRestoreScrollFromBottom,
 } from "../hooks/use-scroll-from-bottom";
-import type { DifficultyLevelEnum } from "../types";
+import type { DifficultyLevelEnum } from "../../shared/types";
 
 interface DifficultySelectorProps {
   currentLevel: DifficultyLevelEnum;

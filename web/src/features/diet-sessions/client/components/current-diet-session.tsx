@@ -1,5 +1,5 @@
 import { formatDateWithDots } from "@/lib/utils/date";
-import type { DietSession } from "../types";
+import type { DietSession } from "../../shared/types";
 
 type CurrentDietSessionProps = {
   session: DietSession | null;

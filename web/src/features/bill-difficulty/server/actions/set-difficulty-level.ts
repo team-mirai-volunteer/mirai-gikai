@@ -5,7 +5,7 @@ import {
   DIFFICULTY_COOKIE_NAME,
   DIFFICULTY_COOKIE_OPTIONS,
   type DifficultyLevelEnum,
-} from "../types";
+} from "../../shared/types";
 
 /**
  * 難易度設定をCookieに保存

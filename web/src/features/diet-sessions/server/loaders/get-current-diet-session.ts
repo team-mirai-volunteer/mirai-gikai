@@ -1,7 +1,7 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { unstable_cache } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-import type { DietSession } from "../types";
+import type { DietSession } from "../../shared/types";
 
 /**
  * 指定日時点で開催中の国会会期を取得
