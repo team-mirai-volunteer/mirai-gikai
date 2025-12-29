@@ -10,7 +10,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import type { Bill } from "@/features/bills/types";
+import type { Bill } from "@/features/bills/shared/types";
 import { useAnonymousSupabaseUser } from "../hooks/use-anonymous-supabase-user";
 import { ChatWindow } from "./chat-window";
 

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { convertToModelMessages, Output, streamText } from "ai";
-import { getBillById } from "@/features/bills/api/get-bill-by-id";
+import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
 import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 import { createInterviewSession } from "@/features/interview-session/server/actions/create-interview-session";

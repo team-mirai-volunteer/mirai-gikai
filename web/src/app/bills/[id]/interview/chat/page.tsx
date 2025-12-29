@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getBillById } from "@/features/bills/api/get-bill-by-id";
+import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
 import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import { InterviewChatClient } from "@/features/interview-session/client/components/interview-chat-client";
 import { initializeInterviewChat } from "@/features/interview-session/server/loaders/initialize-interview-chat";

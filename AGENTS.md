@@ -26,7 +26,7 @@ src/features/{feature}/
 │   ├── services/      # ビジネスロジック層
 │   └── utils/         # Server専用ユーティリティ
 ├── client/
-│   ├── components/    # Client Components ("use client")
+│   ├── components/    # Client Components（Server/Client両方で使えるものも含む）
 │   ├── hooks/         # カスタムフック
 │   └── utils/         # Client専用ユーティリティ
 └── shared/

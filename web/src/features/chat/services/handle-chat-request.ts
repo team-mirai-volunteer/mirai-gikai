@@ -2,7 +2,7 @@ import { openai } from "@ai-sdk/openai";
 import type { Database } from "@mirai-gikai/supabase";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
-import type { BillWithContent } from "@/features/bills/types";
+import type { BillWithContent } from "@/features/bills/shared/types";
 import { ChatError, ChatErrorCode } from "@/features/chat/types/errors";
 import { env } from "@/lib/env";
 import {

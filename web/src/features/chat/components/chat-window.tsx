@@ -18,7 +18,7 @@ import {
   type PromptInputMessage,
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
-import type { Bill } from "@/features/bills/types";
+import type { Bill } from "@/features/bills/shared/types";
 import { useIsDesktop } from "@/hooks/use-is-desktop";
 import { useViewportHeight } from "@/hooks/use-viewport-height";
 import { SystemMessage } from "./system-message";

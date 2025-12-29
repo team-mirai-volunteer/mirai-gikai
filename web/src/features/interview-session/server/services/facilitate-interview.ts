@@ -2,7 +2,7 @@ import "server-only";
 
 import { generateText, Output } from "ai";
 import { z } from "zod";
-import { getBillById } from "@/features/bills/api/get-bill-by-id";
+import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
 import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 import type { FacilitatorMessage } from "../../client/utils/message-utils";

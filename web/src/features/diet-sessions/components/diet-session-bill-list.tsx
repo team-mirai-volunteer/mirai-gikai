@@ -1,5 +1,5 @@
 import type { DietSession } from "../types";
-import type { BillWithContent } from "@/features/bills/types";
+import type { BillWithContent } from "@/features/bills/shared/types";
 import { formatDateWithDots } from "@/lib/utils/date";
 import { BillListWithStatusFilter } from "./bill-list-with-status-filter";
 
