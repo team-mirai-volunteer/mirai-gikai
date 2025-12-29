@@ -5,6 +5,7 @@ import type { Metadata, Viewport } from "next";
 import { Lexend_Giga, Noto_Sans_JP } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import { Header } from "@/components/header";
+import { AuthGate } from "@/components/layouts/auth-gate";
 import { Footer } from "@/components/layouts/footer/footer";
 import { MainLayout } from "@/components/layouts/main-layout";
 import { env } from "@/lib/env";
@@ -89,6 +90,7 @@ export default function RootLayout({
         <SpeedInsights />
         <GoogleAnalytics gaId={env.analytics.gaTrackingId ?? ""} />
         <RubyfulInitializer />
+        <AuthGate />
 
         <MainLayout>
           <Header />

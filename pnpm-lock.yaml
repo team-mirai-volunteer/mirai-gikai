@@ -251,6 +251,9 @@ importers:
       react-dom:
         specifier: 19.1.2
         version: 19.1.2(react@19.1.2)
+      react-markdown:
+        specifier: ^10.1.0
+        version: 10.1.0(@types/react@19.2.2)(react@19.1.2)
       react-syntax-highlighter:
         specifier: ^15.6.6
         version: 15.6.6(react@19.1.2)

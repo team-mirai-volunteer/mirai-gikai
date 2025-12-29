@@ -47,9 +47,6 @@ export const ChatButton = forwardRef<ChatButtonRef, ChatButtonProps>(
     const [openedWithText, setOpenedWithText] = useState(false);
     const pathname = usePathname();
 
-    // Ensure anonymous user is created before using chat
-    useAnonymousSupabaseUser();
-
     // Chat state をここで管理することで、モーダルが閉じても状態が保持される
     const chatState = useChat();
 
