@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
-import { getInterviewConfig } from "@/features/interview-config/api/get-interview-config";
-import { InterviewLPPage } from "@/features/interview-config/components/interview-lp-page";
+import { InterviewLPPage } from "@/features/interview-config/client/components/interview-lp-page";
+import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import { getLatestInterviewSession } from "@/features/interview-session/server/loaders/get-latest-interview-session";
 import { env } from "@/lib/env";
 

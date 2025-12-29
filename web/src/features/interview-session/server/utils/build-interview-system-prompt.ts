@@ -1,8 +1,8 @@
 import "server-only";
 
 import type { BillWithContent } from "@/features/bills/types";
-import type { getInterviewConfig } from "@/features/interview-config/api/get-interview-config";
-import type { getInterviewQuestions } from "@/features/interview-config/api/get-interview-questions";
+import type { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
+import type { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 
 /**
  * インタビュー用システムプロンプトを構築
