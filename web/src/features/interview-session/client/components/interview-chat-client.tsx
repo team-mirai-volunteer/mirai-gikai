@@ -4,7 +4,6 @@ import {
   Conversation,
   ConversationContent,
 } from "@/components/ai-elements/conversation";
-import { useAnonymousSupabaseUser } from "@/features/chat/client/hooks/use-anonymous-supabase-user";
 import { useInterviewChat } from "../hooks/use-interview-chat";
 import { InterviewChatInput } from "./interview-chat-input";
 import { InterviewMessage } from "./interview-message";
@@ -28,9 +27,6 @@ export function InterviewChatClient({
   sessionId,
   initialMessages,
 }: InterviewChatClientProps) {
-  // 匿名ユーザー認証
-  useAnonymousSupabaseUser();
-
   const {
     input,
     setInput,

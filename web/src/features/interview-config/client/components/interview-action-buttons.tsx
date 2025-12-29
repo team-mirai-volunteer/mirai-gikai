@@ -1,9 +1,13 @@
+"use client";
+
 import { ArrowRight, FileText } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { RestartInterviewButton } from "@/features/interview-session/client/components/restart-interview-button";
 import type { LatestInterviewSession } from "@/features/interview-session/server/loaders/get-latest-interview-session";
+import { InterviewConsentModal } from "./interview-consent-modal";
 
 interface InterviewActionButtonsProps {
   billId: string;
@@ -14,6 +18,7 @@ export function InterviewActionButtons({
   billId,
   sessionInfo,
 }: InterviewActionButtonsProps) {
+  const [showConsentModal, setShowConsentModal] = useState(false);
   const isActive = sessionInfo?.status === "active";
   const isCompleted = sessionInfo?.status === "completed";
 
@@ -33,27 +38,51 @@ export function InterviewActionButtons({
     );
   }
 
-  // 進行中または新規の場合
+  // 進行中の場合は直接遷移
+  if (isActive) {
+    return (
+      <>
+        <Link href={`/bills/${billId}/interview/chat`}>
+          <Button className="w-full bg-mirai-gradient text-black border border-black rounded-[100px] h-[48px] px-6 font-bold text-[15px] hover:opacity-90 transition-opacity flex items-center justify-center gap-4">
+            <Image
+              src="/icons/messages-square-icon.svg"
+              alt=""
+              width={24}
+              height={24}
+              className="object-contain"
+            />
+            <span>AIインタビューを再開する</span>
+            <ArrowRight className="size-5" />
+          </Button>
+        </Link>
+        <RestartInterviewButton sessionId={sessionInfo.id} billId={billId} />
+      </>
+    );
+  }
+
+  // 新規の場合はモーダルを表示
   return (
     <>
-      <Link href={`/bills/${billId}/interview/chat`}>
-        <Button className="w-full bg-mirai-gradient text-black border border-black rounded-[100px] h-[48px] px-6 font-bold text-[15px] hover:opacity-90 transition-opacity flex items-center justify-center gap-4">
-          <Image
-            src="/icons/messages-square-icon.svg"
-            alt=""
-            width={24}
-            height={24}
-            className="object-contain"
-          />
-          <span>
-            {isActive ? "AIインタビューを再開する" : "AIインタビューをはじめる"}
-          </span>
-          <ArrowRight className="size-5" />
-        </Button>
-      </Link>
-      {isActive && sessionInfo && (
-        <RestartInterviewButton sessionId={sessionInfo.id} billId={billId} />
-      )}
+      <Button
+        onClick={() => setShowConsentModal(true)}
+        className="w-full bg-mirai-gradient text-black border border-black rounded-[100px] h-[48px] px-6 font-bold text-[15px] hover:opacity-90 transition-opacity flex items-center justify-center gap-4"
+      >
+        <Image
+          src="/icons/messages-square-icon.svg"
+          alt=""
+          width={24}
+          height={24}
+          className="object-contain"
+        />
+        <span>AIインタビューをはじめる</span>
+        <ArrowRight className="size-5" />
+      </Button>
+
+      <InterviewConsentModal
+        open={showConsentModal}
+        onOpenChange={setShowConsentModal}
+        billId={billId}
+      />
     </>
   );
 }
