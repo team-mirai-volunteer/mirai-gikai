@@ -2,12 +2,12 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { getBillById } from "@/features/bills-edit/api/get-bill-by-id";
+import { getBillById } from "@/features/bills-edit/loaders/get-bill-by-id";
+import { SessionList } from "@/features/interview-reports/components/session-list";
 import {
   getInterviewSessions,
   getInterviewSessionsCount,
-} from "@/features/interview-reports/api/get-interview-sessions";
-import { SessionList } from "@/features/interview-reports/components/session-list";
+} from "@/features/interview-reports/loaders/get-interview-sessions";
 
 interface ReportsPageProps {
   params: Promise<{

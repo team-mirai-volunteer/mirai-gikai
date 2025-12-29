@@ -16,8 +16,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getBills } from "../../api/get-bills";
 import { BILL_STATUS_CONFIG } from "../../constants/bill-config";
+import { getBills } from "../../loaders/get-bills";
 import type { Bill, BillStatus } from "../../types";
 import { getBillStatusLabel } from "../../types";
 import { BillActionsMenu } from "../bill-actions-menu/bill-actions-menu";
