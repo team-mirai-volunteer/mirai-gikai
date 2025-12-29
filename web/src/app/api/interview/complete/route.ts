@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
+import { getChatSupabaseUser } from "@/features/chat/server/utils/supabase-server";
 import { completeInterviewSession } from "@/features/interview-session/server/services/complete-interview-session";
 
 export async function POST(req: Request) {

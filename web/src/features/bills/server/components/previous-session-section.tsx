@@ -2,7 +2,7 @@ import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import type { DietSession } from "@/features/diet-sessions/types";
+import type { DietSession } from "@/features/diet-sessions/shared/types";
 import type { BillWithContent } from "../../shared/types";
 import { CompactBillCard } from "../../client/components/bill-list/compact-bill-card";
 

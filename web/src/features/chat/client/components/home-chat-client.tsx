@@ -1,6 +1,6 @@
 "use client";
 
-import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
+import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/types";
 import { ChatButton } from "./chat-button";
 
 interface HomeChatClientProps {

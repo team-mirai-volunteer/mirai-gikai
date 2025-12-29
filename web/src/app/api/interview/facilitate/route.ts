@@ -1,4 +1,4 @@
-import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
+import { getChatSupabaseUser } from "@/features/chat/server/utils/supabase-server";
 import type { FacilitatorMessage } from "@/features/interview-session/client/utils/message-utils";
 import { facilitateInterview } from "@/features/interview-session/server/services/facilitate-interview";
 

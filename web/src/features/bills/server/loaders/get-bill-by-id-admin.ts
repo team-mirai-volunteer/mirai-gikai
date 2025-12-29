@@ -1,5 +1,5 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
+import { getDifficultyLevel } from "@/features/bill-difficulty/server/loaders/get-difficulty-level";
 import type { BillWithContent } from "../../shared/types";
 import { getBillContentWithDifficulty } from "./helpers/get-bill-content";
 

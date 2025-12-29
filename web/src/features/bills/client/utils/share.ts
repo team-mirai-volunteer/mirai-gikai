@@ -1,5 +1,5 @@
-import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
-import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
+import { getDifficultyLevel } from "@/features/bill-difficulty/server/loaders/get-difficulty-level";
+import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/types";
 import { getOrigin } from "@/lib/utils/url";
 import type { BillWithContent } from "../../shared/types";
 

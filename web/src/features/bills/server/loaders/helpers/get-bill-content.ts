@@ -1,5 +1,5 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
-import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
+import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/types";
 
 /**
  * 指定された難易度の議案コンテンツを取得

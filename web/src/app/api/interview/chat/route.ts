@@ -1,4 +1,4 @@
-import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
+import { getChatSupabaseUser } from "@/features/chat/server/utils/supabase-server";
 import { handleInterviewChatRequest } from "@/features/interview-session/server/services/handle-interview-chat-request";
 import { registerNodeTelemetry } from "@/lib/telemetry/register";
 

@@ -1,5 +1,5 @@
 import { Container } from "@/components/layouts/container";
-import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
+import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/types";
 import { InterviewLandingSection } from "@/features/interview-config/client/components/interview-landing-section";
 import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import { BillDetailClient } from "../../../client/components/bill-detail/bill-detail-client";

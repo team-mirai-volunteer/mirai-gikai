@@ -1,6 +1,6 @@
-import type { DietSession } from "../types";
 import type { BillWithContent } from "@/features/bills/shared/types";
 import { formatDateWithDots } from "@/lib/utils/date";
+import type { DietSession } from "../../shared/types";
 import { BillListWithStatusFilter } from "./bill-list-with-status-filter";
 
 type Props = {

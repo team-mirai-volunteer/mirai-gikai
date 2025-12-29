@@ -1,9 +1,9 @@
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { unstable_cache } from "next/cache";
-import { getDifficultyLevel } from "@/features/bill-difficulty/api/get-difficulty-level";
-import type { DifficultyLevelEnum } from "@/features/bill-difficulty/types";
-import { getPreviousDietSession } from "@/features/diet-sessions/api/get-previous-diet-session";
-import type { DietSession } from "@/features/diet-sessions/types";
+import { getDifficultyLevel } from "@/features/bill-difficulty/server/loaders/get-difficulty-level";
+import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/types";
+import { getPreviousDietSession } from "@/features/diet-sessions/server/loaders/get-previous-diet-session";
+import type { DietSession } from "@/features/diet-sessions/shared/types";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import type { BillWithContent } from "../../shared/types";
 import { fetchTagsByBillIds } from "./helpers/get-bill-tags";

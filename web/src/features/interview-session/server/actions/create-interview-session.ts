@@ -1,7 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
+import { getChatSupabaseUser } from "@/features/chat/server/utils/supabase-server";
 import type { InterviewSession } from "../../shared/types";
 
 export async function createInterviewSession({
