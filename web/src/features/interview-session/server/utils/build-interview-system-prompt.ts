@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { BillWithContent } from "@/features/bills/types";
+import type { BillWithContent } from "@/features/bills/shared/types";
 import type { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import type { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 

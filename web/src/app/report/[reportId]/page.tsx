@@ -2,7 +2,7 @@ import { ChevronRight, MessageSquareMore, Undo2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getBillById } from "@/features/bills/api/get-bill-by-id";
+import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
 import { getInterviewMessages } from "@/features/interview-session/server/loaders/get-interview-messages";
 import { getInterviewReportById } from "@/features/interview-session/server/loaders/get-interview-report-by-id";
 

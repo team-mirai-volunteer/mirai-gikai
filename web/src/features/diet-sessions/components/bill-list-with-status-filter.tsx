@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type { BillWithContent } from "@/features/bills/types";
-import { CompactBillCard } from "@/features/bills/components/bill-list/compact-bill-card";
+import type { BillWithContent } from "@/features/bills/shared/types";
+import { CompactBillCard } from "@/features/bills/client/components/bill-list/compact-bill-card";
 
 type FilterType = "all" | "enacted" | "rejected" | "other";
 

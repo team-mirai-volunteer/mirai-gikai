@@ -2,7 +2,7 @@ import "server-only";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { generateObject } from "ai";
-import { getBillById } from "@/features/bills/api/get-bill-by-id";
+import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
 import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 import { interviewReportSchema } from "../../shared/schemas";
