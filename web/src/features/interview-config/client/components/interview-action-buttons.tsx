@@ -2,8 +2,8 @@ import { ArrowRight, FileText } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import type { LatestInterviewSession } from "@/features/interview-session/server/loaders/get-latest-interview-session";
 import { RestartInterviewButton } from "@/features/interview-session/client/components/restart-interview-button";
+import type { LatestInterviewSession } from "@/features/interview-session/server/loaders/get-latest-interview-session";
 
 interface InterviewActionButtonsProps {
   billId: string;

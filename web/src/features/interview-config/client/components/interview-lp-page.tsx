@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { BillWithContent } from "@/features/bills/types";
 import type { LatestInterviewSession } from "@/features/interview-session/server/loaders/get-latest-interview-session";
-import type { InterviewConfig } from "../api/get-interview-config";
+import type { InterviewConfig } from "../../server/loaders/get-interview-config";
 import { InterviewActionButtons } from "./interview-action-buttons";
 
 interface InterviewLPPageProps {
