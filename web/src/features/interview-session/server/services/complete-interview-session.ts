@@ -61,7 +61,7 @@ export async function completeInterviewSession({
   });
 
   const completion = await generateObject({
-    model: "google/gemini-3-flash-preview",
+    model: "google/gemini-3-flash",
     prompt: reportPrompt,
     schema: reportOutputSchema,
   });
