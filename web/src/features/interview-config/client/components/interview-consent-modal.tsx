@@ -2,6 +2,7 @@
 
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Markdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import {
@@ -94,8 +95,10 @@ export function InterviewConsentModal({
   billId,
 }: InterviewConsentModalProps) {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleAgree = () => {
+    setIsLoading(true);
     router.push(`/bills/${billId}/interview/chat`);
   };
 
@@ -127,13 +130,14 @@ export function InterviewConsentModal({
         </div>
 
         <div className="space-y-3 mt-6">
-          <Button onClick={handleAgree} className="w-full">
-            同意してはじめる
-            <ArrowRight className="ml-2 size-5" />
+          <Button onClick={handleAgree} disabled={isLoading} className="w-full">
+            {"同意してはじめる"}
+            {<ArrowRight className="ml-2 size-5" />}
           </Button>
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
+            disabled={isLoading}
             className="w-full"
           >
             同意せずに戻る
