@@ -1,7 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import { verifySessionOwnership } from "../utils/verify-session-ownership";
+import { verifySessionOwnership } from "@/features/interview-session/server/utils/verify-session-ownership";
 
 interface UpdatePublicSettingResult {
   success: boolean;

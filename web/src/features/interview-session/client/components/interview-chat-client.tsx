@@ -5,11 +5,11 @@ import {
   Conversation,
   ConversationContent,
 } from "@/components/ai-elements/conversation";
-import { updatePublicSetting } from "../../server/actions/update-public-setting";
+import { InterviewPublicConsentModal } from "@/features/interview-report/client/components/interview-public-consent-modal";
+import { updatePublicSetting } from "@/features/interview-report/server/actions/update-public-setting";
 import { useInterviewChat } from "../hooks/use-interview-chat";
 import { InterviewChatInput } from "./interview-chat-input";
 import { InterviewMessage } from "./interview-message";
-import { InterviewPublicConsentModal } from "./interview-public-consent-modal";
 import { QuickReplyButtons } from "./quick-reply-buttons";
 
 interface InterviewChatClientProps {
