@@ -11,7 +11,6 @@ import {
   type ConversationMessage,
   convertPartialReport,
 } from "../utils/message-utils";
-import { useInterviewCompletion } from "./use-interview-completion";
 import { type InitialMessage, useParsedMessages } from "./use-parsed-messages";
 import { useQuickReplies } from "./use-quick-replies";
 
@@ -19,15 +18,11 @@ export type InterviewStage = "chat" | "summary" | "summary_complete";
 
 interface UseInterviewChatProps {
   billId: string;
-  interviewConfigId: string;
-  sessionId: string;
   initialMessages: InitialMessage[];
 }
 
 export function useInterviewChat({
   billId,
-  interviewConfigId,
-  sessionId,
   initialMessages,
 }: UseInterviewChatProps) {
   // 初期メッセージのパース
@@ -70,21 +65,25 @@ export function useInterviewChat({
     },
   });
 
-  // 完了処理
-  const { isCompleting, completeError, completedReportId, handleAgree } =
-    useInterviewCompletion({
-      sessionId,
-      billId,
-      onComplete: () => setStage("summary_complete"),
-    });
-
   // 統合ローディング状態（useObjectのisLoading + ファシリテーターAPI呼び出し中）
   const isChatLoading = isLoading || isFacilitating;
 
+  // 完了時のコールバック（summary_completeへの遷移用）
+  const handleComplete = (reportId: string | null) => {
+    setStage("summary_complete");
+    setCompletedReportId(reportId);
+  };
+
+  const [completedReportId, setCompletedReportId] = useState<string | null>(
+    null
+  );
+
+  // 初期メッセージと会話履歴を統合
+  const messages = [...parsedInitialMessages, ...conversationMessages];
+
   // クイックリプライ
   const currentQuickReplies = useQuickReplies({
-    conversationMessages,
-    parsedInitialMessages,
+    messages,
     isLoading: isChatLoading,
   });
 
@@ -120,7 +119,11 @@ export function useInterviewChat({
     // ユーザーメッセージを会話履歴に追加
     setConversationMessages((prev) => [
       ...prev,
-      { id: userMessageId, role: "user", content: userMessageText },
+      {
+        id: userMessageId,
+        role: "user",
+        content: userMessageText,
+      },
     ]);
     setInput("");
 
@@ -161,35 +164,22 @@ export function useInterviewChat({
     handleSubmit({ text: reply });
   };
 
-  // ストリーミング中のメッセージが会話履歴に追加済みかどうか
-  const isStreamingMessageCommitted =
-    object &&
-    conversationMessages.some(
-      (m) => m.role === "assistant" && m.content === object.text
-    );
-
   return {
     // 状態
     input,
     setInput,
     stage,
-    parsedInitialMessages,
-    conversationMessages,
+    messages,
     isLoading: isChatLoading,
     error,
     object,
     streamingReportData,
-    isStreamingMessageCommitted,
     currentQuickReplies,
-
-    // 完了処理の状態
-    isCompleting,
-    completeError,
     completedReportId,
 
     // アクション
     handleSubmit,
-    handleAgree,
     handleQuickReply,
+    handleComplete,
   };
 }

@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import type { InterviewReportViewData } from "../../shared/schemas";
-import { parseMessageContent } from "../utils/message-utils";
+import {
+  type ConversationMessage,
+  parseMessageContent,
+} from "../utils/message-utils";
 import type { InterviewStage } from "./use-interview-chat";
 
 /** 初期メッセージの型 */
@@ -13,30 +15,30 @@ export interface InitialMessage {
   created_at: string;
 }
 
-/** パース済み初期メッセージの型 */
-export interface ParsedInitialMessage {
-  id: string;
-  role: "assistant" | "user";
-  content: string;
-  created_at: string;
-  report: InterviewReportViewData | null;
-  quickReplies: string[];
-  questionId: string | null;
-}
-
 /**
  * 初期メッセージをパースして、text・report・quickRepliesに分離するフック
  */
 export function useParsedMessages(initialMessages: InitialMessage[]) {
   const parsedInitialMessages = useMemo(
-    (): ParsedInitialMessage[] =>
+    (): ConversationMessage[] =>
       initialMessages.map((msg) => {
         if (msg.role === "assistant") {
           const { text, report, quickReplies, questionId } =
             parseMessageContent(msg.content);
-          return { ...msg, content: text, report, quickReplies, questionId };
+          return {
+            id: msg.id,
+            role: msg.role,
+            content: text,
+            report,
+            quickReplies,
+            questionId,
+          };
         }
-        return { ...msg, report: null, quickReplies: [], questionId: null };
+        return {
+          id: msg.id,
+          role: msg.role,
+          content: msg.content,
+        };
       }),
     [initialMessages]
   );
@@ -47,7 +49,7 @@ export function useParsedMessages(initialMessages: InitialMessage[]) {
 
   // 初期ステージを決定
   const initialStage: InterviewStage = useMemo(() => {
-    if (lastMessage && "report" in lastMessage && lastMessage.report != null) {
+    if (lastMessage && lastMessage.report != null) {
       return "summary";
     }
     return "chat";
@@ -55,7 +57,6 @@ export function useParsedMessages(initialMessages: InitialMessage[]) {
 
   return {
     parsedInitialMessages,
-    lastMessage,
     initialStage,
   };
 }

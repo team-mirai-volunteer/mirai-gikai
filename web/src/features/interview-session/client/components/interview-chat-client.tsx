@@ -1,20 +1,18 @@
 "use client";
 
-import { useState } from "react";
 import {
   Conversation,
   ConversationContent,
 } from "@/components/ai-elements/conversation";
-import { InterviewPublicConsentModal } from "@/features/interview-report/client/components/interview-public-consent-modal";
-import { updatePublicSetting } from "@/features/interview-report/server/actions/update-public-setting";
 import { useInterviewChat } from "../hooks/use-interview-chat";
 import { InterviewChatInput } from "./interview-chat-input";
 import { InterviewMessage } from "./interview-message";
+import { InterviewSubmitSection } from "./interview-submit-section";
+import { InterviewSummaryInput } from "./interview-summary-input";
 import { QuickReplyButtons } from "./quick-reply-buttons";
 
 interface InterviewChatClientProps {
   billId: string;
-  interviewConfigId: string;
   sessionId: string;
   initialMessages: Array<{
     id: string;
@@ -26,64 +24,42 @@ interface InterviewChatClientProps {
 
 export function InterviewChatClient({
   billId,
-  interviewConfigId,
   sessionId,
   initialMessages,
 }: InterviewChatClientProps) {
-  const [isPublicConsentModalOpen, setIsPublicConsentModalOpen] =
-    useState(false);
-  const [isSubmittingPublicSetting, setIsSubmittingPublicSetting] =
-    useState(false);
-
   const {
     input,
     setInput,
     stage,
-    parsedInitialMessages,
-    conversationMessages,
+    messages,
     isLoading,
     error,
     object,
     streamingReportData,
-    isStreamingMessageCommitted,
     currentQuickReplies,
-    isCompleting,
-    completeError,
     completedReportId,
     handleSubmit,
-    handleAgree,
     handleQuickReply,
+    handleComplete,
   } = useInterviewChat({
     billId,
-    interviewConfigId,
-    sessionId,
     initialMessages,
   });
 
-  const handlePublicSettingSubmit = async (isPublic: boolean) => {
-    if (!completedReportId) return;
+  // ストリーミング中のメッセージがすでに会話履歴に追加されているかどうか
+  const isStreamingMessageCommitted =
+    object &&
+    messages.some((m) => m.role === "assistant" && m.content === object.text);
 
-    setIsSubmittingPublicSetting(true);
-    try {
-      const result = await updatePublicSetting(sessionId, isPublic);
-      if (result.success) {
-        window.location.href = `/report/${completedReportId}`;
-      } else {
-        console.error("Failed to update public setting:", result.error);
-      }
-      // 画面遷移するまで isSubmittingPublicSetting を true のままにする
-    } catch (err) {
-      console.error("Failed to update public setting:", err);
-      setIsSubmittingPublicSetting(false);
-    }
-  };
+  // ストリーミング中のメッセージを表示するかどうか
+  const showStreamingMessage = object && !isStreamingMessageCommitted;
 
   return (
     <div className="flex flex-col h-screen py-12 pt-24 md:pt-12">
       <Conversation className="flex-1 overflow-y-auto">
         <ConversationContent className="flex flex-col gap-4">
           {/* 初期表示メッセージ */}
-          {parsedInitialMessages.length === 0 && !object && (
+          {messages.length === 0 && !object && (
             <div className="flex flex-col gap-4">
               <p className="text-sm font-bold leading-[1.8] text-[#1F2937]">
                 法案についてのAIインタビューを開始します。
@@ -94,8 +70,8 @@ export function InterviewChatClient({
             </div>
           )}
 
-          {/* 初期メッセージを表示 */}
-          {parsedInitialMessages.map((message) => (
+          {/* メッセージ一覧を表示 */}
+          {messages.map((message) => (
             <InterviewMessage
               key={message.id}
               message={{
@@ -104,26 +80,12 @@ export function InterviewChatClient({
                 parts: [{ type: "text" as const, text: message.content }],
               }}
               isStreaming={false}
-              report={message.report ?? null}
-            />
-          ))}
-
-          {/* 会話履歴を表示（確定済みメッセージ） */}
-          {conversationMessages.map((message) => (
-            <InterviewMessage
-              key={message.id}
-              message={{
-                id: message.id,
-                role: message.role,
-                parts: [{ type: "text" as const, text: message.content }],
-              }}
-              isStreaming={false}
-              report={message.report ?? null}
+              report={message.report}
             />
           ))}
 
           {/* ストリーミング中のAIレスポンスを表示 */}
-          {object && !isStreamingMessageCommitted && (
+          {showStreamingMessage && (
             <InterviewMessage
               key="streaming-assistant"
               message={{
@@ -173,49 +135,24 @@ export function InterviewChatClient({
       {/* 入力エリア */}
       <div className="px-6 pb-4 pt-2">
         {stage === "summary" && (
-          <>
-            <div className="mb-3 flex flex-col gap-2">
-              <button
-                type="button"
-                onClick={handleAgree}
-                disabled={isCompleting}
-                className="inline-flex items-center justify-center rounded-md bg-[#0F8472] px-4 py-2 text-sm font-semibold text-white shadow disabled:opacity-60"
-              >
-                {isCompleting ? "送信中..." : "レポート内容に同意する"}
-              </button>
-              {completeError && (
-                <p className="text-sm text-red-500">{completeError}</p>
-              )}
-            </div>
-            <InterviewChatInput
-              input={input}
-              onInputChange={setInput}
-              onSubmit={handleSubmit}
-              placeholder="レポートの修正要望があれば入力してください"
-              isResponding={isLoading}
-              error={error}
-            />
-          </>
+          <InterviewSummaryInput
+            sessionId={sessionId}
+            billId={billId}
+            input={input}
+            onInputChange={setInput}
+            onSubmit={handleSubmit}
+            onComplete={handleComplete}
+            isLoading={isLoading}
+            error={error}
+          />
         )}
 
-        {stage === "summary_complete" && (
-          <div className="mb-3 flex flex-col gap-3">
-            <button
-              type="button"
-              onClick={() => setIsPublicConsentModalOpen(true)}
-              className="inline-flex items-center justify-center rounded-md bg-[#0F8472] px-4 py-2 text-sm font-semibold text-white shadow disabled:opacity-60"
-            >
-              インタビューの提出に進む
-            </button>
-          </div>
+        {stage === "summary_complete" && completedReportId && (
+          <InterviewSubmitSection
+            sessionId={sessionId}
+            reportId={completedReportId}
+          />
         )}
-
-        <InterviewPublicConsentModal
-          open={isPublicConsentModalOpen}
-          onOpenChange={setIsPublicConsentModalOpen}
-          onSubmit={handlePublicSettingSubmit}
-          isSubmitting={isSubmittingPublicSetting}
-        />
 
         {stage === "chat" && (
           <InterviewChatInput
@@ -225,7 +162,7 @@ export function InterviewChatClient({
             placeholder="AIに質問に回答する"
             isResponding={isLoading}
             error={error}
-            showHint={parsedInitialMessages.length > 0 || !!object}
+            showHint={messages.length > 0 || !!object}
           />
         )}
       </div>
