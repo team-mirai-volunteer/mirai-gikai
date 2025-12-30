@@ -445,6 +445,7 @@ export type Database = {
           created_at: string
           id: string
           interview_config_id: string
+          is_public_by_user: boolean
           langfuse_session_id: string | null
           started_at: string
           updated_at: string
@@ -456,6 +457,7 @@ export type Database = {
           created_at?: string
           id?: string
           interview_config_id: string
+          is_public_by_user?: boolean
           langfuse_session_id?: string | null
           started_at?: string
           updated_at?: string
@@ -467,6 +469,7 @@ export type Database = {
           created_at?: string
           id?: string
           interview_config_id?: string
+          is_public_by_user?: boolean
           langfuse_session_id?: string | null
           started_at?: string
           updated_at?: string
