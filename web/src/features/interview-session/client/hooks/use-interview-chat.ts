@@ -40,6 +40,7 @@ export function useInterviewChat({
   const [conversationMessages, setConversationMessages] = useState<
     ConversationMessage[]
   >([]);
+  const [isFacilitating, setIsFacilitating] = useState(false);
 
   // useObjectフックを使用（streamObjectの結果を受け取る）
   const { object, submit, isLoading, error } = useObject({
@@ -77,11 +78,14 @@ export function useInterviewChat({
       onComplete: () => setStage("summary_complete"),
     });
 
+  // 統合ローディング状態（useObjectのisLoading + ファシリテーターAPI呼び出し中）
+  const isChatLoading = isLoading || isFacilitating;
+
   // クイックリプライ
   const currentQuickReplies = useQuickReplies({
     conversationMessages,
     parsedInitialMessages,
-    isLoading,
+    isLoading: isChatLoading,
   });
 
   // objectからreportを取得
@@ -106,7 +110,7 @@ export function useInterviewChat({
   // メッセージ送信
   const handleSubmit = async (message: PromptInputMessage) => {
     const hasText = Boolean(message.text);
-    if (!hasText || isLoading || stage === "summary_complete") {
+    if (!hasText || isChatLoading || stage === "summary_complete") {
       return;
     }
 
@@ -127,24 +131,29 @@ export function useInterviewChat({
     }
 
     // 通常のチャットフェーズでは、送信前にファシリテーターAPIを同期呼び出し
-    const facilitatorResult = await callFacilitateApi({
-      messages: buildMessagesForFacilitator(
-        parsedInitialMessages,
-        conversationMessages,
-        { content: userMessageText }
-      ),
-      billId,
-      currentStage: "chat",
-    });
+    setIsFacilitating(true);
+    try {
+      const facilitatorResult = await callFacilitateApi({
+        messages: buildMessagesForFacilitator(
+          parsedInitialMessages,
+          conversationMessages,
+          { content: userMessageText }
+        ),
+        billId,
+        currentStage: "chat",
+      });
 
-    if (facilitatorResult?.status === "summary") {
-      setStage("summary");
-      submitChatMessage(userMessageText, "summary");
-      return;
+      if (facilitatorResult?.status === "summary") {
+        setStage("summary");
+        submitChatMessage(userMessageText, "summary");
+        return;
+      }
+
+      // 通常のチャットフェーズでのメッセージ送信
+      submitChatMessage(userMessageText, "chat");
+    } finally {
+      setIsFacilitating(false);
     }
-
-    // 通常のチャットフェーズでのメッセージ送信
-    submitChatMessage(userMessageText, "chat");
   };
 
   // クイックリプライを選択した時の処理
@@ -166,7 +175,7 @@ export function useInterviewChat({
     stage,
     parsedInitialMessages,
     conversationMessages,
-    isLoading,
+    isLoading: isChatLoading,
     error,
     object,
     streamingReportData,

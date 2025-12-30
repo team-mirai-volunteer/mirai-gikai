@@ -1,16 +1,17 @@
 import "server-only";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
-import type { InterviewReport } from "../../shared/types";
 import {
   getAuthenticatedUser,
   isSessionOwner,
-} from "../utils/verify-session-ownership";
+} from "@/features/interview-session/server/utils/verify-session-ownership";
+import type { InterviewReport } from "../../shared/types";
 
 export type InterviewReportWithSessionInfo = InterviewReport & {
   bill_id: string;
   session_started_at: string;
   session_completed_at: string | null;
+  is_public_by_user: boolean;
 };
 
 /**
@@ -34,7 +35,7 @@ export async function getInterviewReportById(
   const { data: report, error: reportError } = await supabase
     .from("interview_report")
     .select(
-      "*, interview_sessions(user_id, started_at, completed_at, interview_configs(bill_id))"
+      "*, interview_sessions(user_id, started_at, completed_at, is_public_by_user, interview_configs(bill_id))"
     )
     .eq("id", reportId)
     .single();
@@ -49,6 +50,7 @@ export async function getInterviewReportById(
     user_id: string;
     started_at: string;
     completed_at: string | null;
+    is_public_by_user: boolean;
     interview_configs: { bill_id: string } | null;
   } | null;
 
@@ -76,5 +78,6 @@ export async function getInterviewReportById(
     bill_id: session.interview_configs.bill_id,
     session_started_at: session.started_at,
     session_completed_at: session.completed_at,
+    is_public_by_user: session.is_public_by_user,
   };
 }

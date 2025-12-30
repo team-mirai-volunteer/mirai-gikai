@@ -1,8 +1,8 @@
 import type { UIMessage } from "@ai-sdk/react";
 import { SystemMessage } from "@/features/chat/client/components/system-message";
 import { UserMessage } from "@/features/chat/client/components/user-message";
+import { InterviewReportView } from "@/features/interview-report/client/components/interview-report";
 import type { InterviewReportViewData } from "../../shared/schemas";
-import { InterviewReportView } from "./interview-report";
 
 interface InterviewMessageProps {
   message: UIMessage;
