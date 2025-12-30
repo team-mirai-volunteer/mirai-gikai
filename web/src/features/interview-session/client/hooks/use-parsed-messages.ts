@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import type { InterviewReportData } from "../../shared/schemas";
+import type { InterviewReportViewData } from "../../shared/schemas";
 import { parseMessageContent } from "../utils/message-utils";
 import type { InterviewStage } from "./use-interview-chat";
 
@@ -19,7 +19,7 @@ export interface ParsedInitialMessage {
   role: "assistant" | "user";
   content: string;
   created_at: string;
-  report: InterviewReportData | null;
+  report: InterviewReportViewData | null;
   quickReplies: string[];
   questionId: string | null;
 }

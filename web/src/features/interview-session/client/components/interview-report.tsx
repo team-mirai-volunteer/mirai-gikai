@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import type { InterviewReportData } from "../../shared/schemas";
+import type { InterviewReportViewData } from "../../shared/schemas";
 
 type Props = {
-  report: InterviewReportData;
+  report: InterviewReportViewData;
 };
 
 export function InterviewReportView({ report }: Props) {

@@ -73,7 +73,6 @@ export function useInterviewChat({
   const { isCompleting, completeError, completedReportId, handleAgree } =
     useInterviewCompletion({
       sessionId,
-      interviewConfigId,
       billId,
       onComplete: () => setStage("summary_complete"),
     });

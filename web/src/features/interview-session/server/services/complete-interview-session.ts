@@ -4,16 +4,14 @@ import { createAdminClient } from "@mirai-gikai/supabase";
 import { generateObject } from "ai";
 import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
 import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
-import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 import { interviewReportSchema } from "../../shared/schemas";
 import type { InterviewReport } from "../../shared/types";
-import { buildInterviewSystemPrompt } from "../utils/build-interview-system-prompt";
+import { buildSummarySystemPrompt } from "../utils/build-interview-system-prompt";
 
 const reportOutputSchema = interviewReportSchema;
 
 type CompleteInterviewSessionParams = {
   sessionId: string;
-  interviewConfigId: string;
   billId: string;
 };
 
@@ -22,16 +20,14 @@ type CompleteInterviewSessionParams = {
  */
 export async function completeInterviewSession({
   sessionId,
-  interviewConfigId,
   billId,
 }: CompleteInterviewSessionParams): Promise<InterviewReport> {
   const supabase = createAdminClient();
 
-  // インタビュー設定・法案・質問を取得
-  const [interviewConfig, bill, questions] = await Promise.all([
+  // インタビュー設定・法案を取得
+  const [interviewConfig, bill] = await Promise.all([
     getInterviewConfig(billId),
     getBillById(billId),
-    getInterviewQuestions(interviewConfigId),
   ]);
 
   if (!interviewConfig) {
@@ -51,31 +47,22 @@ export async function completeInterviewSession({
     );
   }
 
-  // プロンプトを構築
-  const systemPrompt = buildInterviewSystemPrompt({
+  // 会話履歴を {role}: {content} 形式に変換
+  const formattedMessages = messages.map((m) => ({
+    role: m.role,
+    content: m.content,
+  }));
+
+  // サマリ用プロンプトを構築（会話履歴を含む）
+  const reportPrompt = buildSummarySystemPrompt({
     bill,
     interviewConfig,
-    questions,
+    messages: formattedMessages,
   });
 
-  const reportPrompt = `${systemPrompt}
-
-## あなたの役割
-これまでのインタビュー内容を要約し、ユーザーのスタンスや役割を推定したレポートを生成してください。
-
-## 留意点
-- summaryは簡潔に1-3文で要約してください。
-- stanceはfor/against/neutralから選択してください。
-- opinionsは重要な論点をタイトルと内容で列挙してください（最大3件程度）。`;
-
-  // ユーザーメッセージのテキスト連結をインプットに含める
-  const messagesText = messages
-    .map((m) => `${m.role === "assistant" ? "AI" : "User"}: ${m.content}`)
-    .join("\n");
-
   const completion = await generateObject({
-    model: "openai/gpt-4o-mini",
-    prompt: `${reportPrompt}\n\n# インタビュー履歴\n${messagesText}`,
+    model: "google/gemini-3-flash-preview",
+    prompt: reportPrompt,
     schema: reportOutputSchema,
   });
 
@@ -92,6 +79,7 @@ export async function completeInterviewSession({
         role: parsed.role,
         role_description: parsed.role_description,
         opinions: parsed.opinions,
+        scores: parsed.scores,
       },
       { onConflict: "interview_session_id" }
     )
