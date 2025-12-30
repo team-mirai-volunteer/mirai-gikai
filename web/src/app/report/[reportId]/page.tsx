@@ -3,9 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
-import { PublicStatusSection } from "@/features/interview-session/client/components/public-status-section";
+import { PublicStatusSection } from "@/features/interview-report/client/components/public-status-section";
+import { getInterviewReportById } from "@/features/interview-report/server/loaders/get-interview-report-by-id";
 import { getInterviewMessages } from "@/features/interview-session/server/loaders/get-interview-messages";
-import { getInterviewReportById } from "@/features/interview-session/server/loaders/get-interview-report-by-id";
 
 interface InterviewReportPageProps {
   params: Promise<{
