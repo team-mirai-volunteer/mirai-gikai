@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
+import { PublicStatusSection } from "@/features/interview-session/client/components/public-status-section";
 import { getInterviewMessages } from "@/features/interview-session/server/loaders/get-interview-messages";
 import { getInterviewReportById } from "@/features/interview-session/server/loaders/get-interview-report-by-id";
 
@@ -137,10 +138,16 @@ export default async function InterviewReportPage({
       {/* インタビューレポートセクション */}
       <div className="px-4 py-8">
         <div className="flex flex-col gap-9">
-          {/* セクションタイトル */}
-          <h2 className="text-2xl font-bold text-black">
-            インタビューレポート
-          </h2>
+          {/* セクションタイトルと公開ステータス */}
+          <div className="flex flex-col items-center gap-4">
+            <h2 className="text-2xl font-bold text-black">
+              インタビューレポート
+            </h2>
+            <PublicStatusSection
+              sessionId={report.interview_session_id}
+              initialIsPublic={report.is_public_by_user}
+            />
+          </div>
 
           {/* レポートカード */}
           <div className="flex flex-col gap-9">
