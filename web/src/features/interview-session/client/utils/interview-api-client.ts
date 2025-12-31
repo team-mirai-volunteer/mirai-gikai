@@ -37,8 +37,6 @@ export async function callFacilitateApi(
 
 interface CompleteInterviewParams {
   sessionId: string;
-  interviewConfigId: string;
-  billId: string;
 }
 
 interface CompleteInterviewResult {

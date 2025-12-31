@@ -3,7 +3,7 @@ import { getChatSupabaseUser } from "@/features/chat/server/utils/supabase-serve
 import { completeInterviewSession } from "@/features/interview-session/server/services/complete-interview-session";
 
 export async function POST(req: Request) {
-  const { sessionId, interviewConfigId, billId } = await req.json();
+  const { sessionId } = await req.json();
 
   const {
     data: { user },
@@ -17,15 +17,13 @@ export async function POST(req: Request) {
     );
   }
 
-  if (!sessionId || !interviewConfigId || !billId) {
-    return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
+  if (!sessionId) {
+    return NextResponse.json({ error: "Missing sessionId" }, { status: 400 });
   }
 
   try {
     const report = await completeInterviewSession({
       sessionId,
-      interviewConfigId,
-      billId,
     });
 
     return NextResponse.json({ report });

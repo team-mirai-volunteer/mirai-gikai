@@ -6,8 +6,6 @@ import { InterviewChatInput } from "./interview-chat-input";
 
 interface InterviewSummaryInputProps {
   sessionId: string;
-  interviewConfigId: string;
-  billId: string;
   input: string;
   onInputChange: (value: string) => void;
   onSubmit: (message: PromptInputMessage) => void;
@@ -18,8 +16,6 @@ interface InterviewSummaryInputProps {
 
 export function InterviewSummaryInput({
   sessionId,
-  interviewConfigId,
-  billId,
   input,
   onInputChange,
   onSubmit,
@@ -29,8 +25,6 @@ export function InterviewSummaryInput({
 }: InterviewSummaryInputProps) {
   const { isCompleting, completeError, handleAgree } = useInterviewCompletion({
     sessionId,
-    interviewConfigId,
-    billId,
     onComplete,
   });
 

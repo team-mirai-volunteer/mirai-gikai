@@ -13,7 +13,6 @@ import { QuickReplyButtons } from "./quick-reply-buttons";
 
 interface InterviewChatClientProps {
   billId: string;
-  interviewConfigId: string;
   sessionId: string;
   initialMessages: Array<{
     id: string;
@@ -25,7 +24,6 @@ interface InterviewChatClientProps {
 
 export function InterviewChatClient({
   billId,
-  interviewConfigId,
   sessionId,
   initialMessages,
 }: InterviewChatClientProps) {
@@ -139,8 +137,6 @@ export function InterviewChatClient({
         {stage === "summary" && (
           <InterviewSummaryInput
             sessionId={sessionId}
-            interviewConfigId={interviewConfigId}
-            billId={billId}
             input={input}
             onInputChange={setInput}
             onSubmit={handleSubmit}
