@@ -34,7 +34,6 @@ export default async function InterviewChatPage({
   return (
     <InterviewChatClient
       billId={billId}
-      interviewConfigId={interviewConfig.id}
       sessionId={session.id}
       initialMessages={messages}
     />
