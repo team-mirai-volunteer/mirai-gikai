@@ -1,4 +1,5 @@
 import type { UIMessage } from "@ai-sdk/react";
+import Image from "next/image";
 import { SystemMessage } from "@/features/chat/client/components/system-message";
 import { UserMessage } from "@/features/chat/client/components/user-message";
 import { InterviewReportView } from "@/features/interview-report/client/components/interview-report";
@@ -20,13 +21,24 @@ export function InterviewMessage({
   }
 
   return (
-    <div className="space-y-2">
-      <SystemMessage message={message} isStreaming={isStreaming} />
-      {report && (
-        <div className="mt-2">
-          <InterviewReportView report={report} />
-        </div>
-      )}
+    <div className="flex flex-col gap-3">
+      <div className="flex-shrink-0">
+        <Image
+          src="/icons/ai-chat.svg"
+          alt="AI"
+          width={36}
+          height={36}
+          className="rounded-full"
+        />
+      </div>
+      <div className="flex-1 space-y-2">
+        <SystemMessage message={message} isStreaming={isStreaming} />
+        {report && (
+          <div className="mt-2">
+            <InterviewReportView report={report} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

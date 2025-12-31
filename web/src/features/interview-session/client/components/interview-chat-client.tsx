@@ -55,7 +55,7 @@ export function InterviewChatClient({
   const showStreamingMessage = object && !isStreamingMessageCommitted;
 
   return (
-    <div className="flex flex-col h-screen py-12 pt-24 md:pt-12">
+    <div className="flex flex-col h-screen py-12 pt-24 md:pt-12 bg-white">
       <Conversation className="flex-1 overflow-y-auto">
         <ConversationContent className="flex flex-col gap-4">
           {/* 初期表示メッセージ */}
