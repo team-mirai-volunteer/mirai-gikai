@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
 import { PublicStatusSection } from "@/features/interview-report/client/components/public-status-section";
 import { getInterviewReportById } from "@/features/interview-report/server/loaders/get-interview-report-by-id";
+import { stanceLabels } from "@/features/interview-report/shared/constants";
 import { getInterviewMessages } from "@/features/interview-session/server/loaders/get-interview-messages";
 
 interface InterviewReportPageProps {
@@ -12,17 +13,6 @@ interface InterviewReportPageProps {
     reportId: string;
   }>;
 }
-
-// スタンスのラベルマッピング
-const stanceLabels: Record<string, string> = {
-  for: "賛成",
-  against: "反対",
-  neutral: "期待と懸念両方がある",
-  conditional_for: "条件付き賛成",
-  conditional_against: "条件付き反対",
-  considering: "検討中",
-  continued_deliberation: "継続審議",
-};
 
 // 日時フォーマット
 function formatDateTime(dateString: string): string {

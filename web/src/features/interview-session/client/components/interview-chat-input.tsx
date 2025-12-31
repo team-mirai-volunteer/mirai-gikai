@@ -81,7 +81,10 @@ export function InterviewChatInput({
         </button>
       </PromptInput>
       <PromptInputError status={error ? "error" : undefined} error={error} />
-      {showHint && <PromptInputHint />}
+      {/* {showHint && <PromptInputHint />} */}
+      <PromptInputHint>
+        個人情報や機密情報は記載しないでください
+      </PromptInputHint>
     </>
   );
 }

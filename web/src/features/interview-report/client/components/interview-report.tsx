@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import type { InterviewReportData } from "@/features/interview-session/shared/schemas";
+import { stanceLabels } from "../../shared/constants";
 
 type Props = {
   report: InterviewReportData;
@@ -14,52 +15,50 @@ export function InterviewReportView({ report }: Props) {
   }, [report.opinions]);
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-semibold text-gray-500">
-        インタビューレポート
-      </p>
-      <div className="mt-2 space-y-2 text-sm text-gray-800">
+    <div className="rounded-[16px] bg-mirai-light-gradient p-4 shadow-sm">
+      {/* <p className="text-xs font-semibold">インタビューレポート</p> */}
+      <div className="mt-2 space-y-3 text-sm">
         {report.summary && (
-          <div>
-            <p className="font-semibold">要約</p>
-            <p className="whitespace-pre-wrap text-gray-700">
-              {report.summary}
-            </p>
+          <div className="font-bold space-y-1">
+            <p className="text-primary-accent">💡意見の要約</p>
+            <p className="whitespace-pre-wrap">{report.summary}</p>
           </div>
         )}
         {report.stance && (
-          <div className="flex gap-2 text-gray-700">
-            <span className="font-semibold">スタンス</span>
-            <span>{report.stance}</span>
+          <div className="font-bold">
+            <p className="text-primary-accent">🙋基本スタンス</p>
+            <p>{stanceLabels[report.stance] || report.stance}</p>
           </div>
         )}
         {(report.role || report.role_description) && (
-          <div className="space-y-1 text-gray-700">
+          <div className="space-y-2 font-bold">
             {report.role && (
-              <p>
-                <span className="font-semibold">役割: </span>
-                <span>{report.role}</span>
-              </p>
+              <div>
+                <p className="text-primary-accent">立場</p>
+                <p>{report.role}</p>
+              </div>
             )}
             {report.role_description && (
-              <p className="whitespace-pre-wrap">
-                <span className="font-semibold">説明: </span>
-                <span>{report.role_description}</span>
-              </p>
+              <div className="whitespace-pre-wrap">
+                <p className="text-primary-accent">立場の詳細</p>
+                <p>{report.role_description}</p>
+              </div>
             )}
           </div>
         )}
         {opinions.length > 0 && (
-          <div className="space-y-1 text-gray-700">
-            <p className="font-semibold">意見</p>
-            <ul className="list-disc pl-5 space-y-1">
-              {opinions.map((op) => (
+          <div className="space-y-1">
+            <p className="font-bold text-primary-accent">💬主な意見</p>
+            <ul className="space-y-2">
+              {opinions.map((op, index) => (
                 <li
                   key={`${op.title}-${op.content}`}
                   className="whitespace-pre-wrap"
                 >
-                  <span className="font-semibold">{op.title}:</span>{" "}
-                  {op.content}
+                  <p className="font-bold">
+                    {index + 1}. {op.title}
+                  </p>
+                  <p>{op.content}</p>
                 </li>
               ))}
             </ul>

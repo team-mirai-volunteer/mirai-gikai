@@ -36,6 +36,9 @@ export function InterviewMessage({
         {report && (
           <div className="mt-2">
             <InterviewReportView report={report} />
+            <p className="text-sm font-medium mt-2">
+              こちらの内容で問題ありませんか？違和感がある箇所があれば指摘してください。
+            </p>
           </div>
         )}
       </div>
