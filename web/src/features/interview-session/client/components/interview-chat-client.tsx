@@ -55,7 +55,7 @@ export function InterviewChatClient({
   const showStreamingMessage = object && !isStreamingMessageCommitted;
 
   return (
-    <div className="flex flex-col h-screen py-12 pt-24 md:pt-12">
+    <div className="flex flex-col h-screen md:h-[calc(100vh-96px)] pt-24 md:pt-4 bg-white">
       <Conversation className="flex-1 overflow-y-auto">
         <ConversationContent className="flex flex-col gap-4">
           {/* 初期表示メッセージ */}
@@ -112,13 +112,11 @@ export function InterviewChatClient({
 
           {/* 完了メッセージ */}
           {stage === "summary_complete" && (
-            <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4">
-              <p className="font-medium">
-                インタビューにご協力いただきありがとうございました！
-                <br />
-                インタビュー内容を提出に進めてください。
-              </p>
-            </div>
+            <p className="text-sm font-medium">
+              インタビューにご協力いただきありがとうございました！
+              <br />
+              インタビュー内容を提出に進めてください。
+            </p>
           )}
 
           {/* クイックリプライボタン */}
@@ -161,7 +159,6 @@ export function InterviewChatClient({
             placeholder="AIに質問に回答する"
             isResponding={isLoading}
             error={error}
-            showHint={messages.length > 0 || !!object}
           />
         )}
       </div>
