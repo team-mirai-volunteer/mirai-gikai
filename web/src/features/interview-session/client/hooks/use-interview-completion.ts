@@ -5,7 +5,6 @@ import { callCompleteApi } from "../utils/interview-api-client";
 
 interface UseInterviewCompletionProps {
   sessionId: string;
-  billId: string;
   onComplete: (reportId: string | null) => void;
 }
 
@@ -14,7 +13,6 @@ interface UseInterviewCompletionProps {
  */
 export function useInterviewCompletion({
   sessionId,
-  billId,
   onComplete,
 }: UseInterviewCompletionProps) {
   const [isCompleting, setIsCompleting] = useState(false);
@@ -29,7 +27,6 @@ export function useInterviewCompletion({
     try {
       const result = await callCompleteApi({
         sessionId,
-        billId,
       });
       const reportId = result.report?.id || null;
       setCompletedReportId(reportId);
