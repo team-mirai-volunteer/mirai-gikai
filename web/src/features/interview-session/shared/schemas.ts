@@ -6,35 +6,27 @@ const opinionSchema = z.object({
   content: z.string().describe("意見の説明（120文字以内）"),
 });
 
+// 0-100のスコア（LLMが小数点を返す可能性があるため丸める）
+const scoreValueSchema = z
+  .number()
+  .transform((v) => Math.round(v))
+  .pipe(z.number().int().min(0).max(100));
+
 // スコアリングスキーマ
 const scoresSchema = z.object({
-  total: z.number().min(0).max(100).describe("総合スコア（0-100）"),
-  clarity: z
-    .number()
-    .min(0)
-    .max(100)
-    .describe("主張の明確さ（0-100）- 意見や立場が明確に表現されているか"),
-  specificity: z
-    .number()
-    .min(0)
-    .max(100)
-    .describe(
-      "具体性（0-100）- 実務経験に基づく具体的な事例や数値が含まれているか"
-    ),
-  impact: z
-    .number()
-    .min(0)
-    .max(100)
-    .describe(
-      "影響度（0-100）- 法案が与える社会的影響や関係者への影響について言及があるか"
-    ),
-  constructiveness: z
-    .number()
-    .min(0)
-    .max(100)
-    .describe(
-      "建設性（0-100）- 問題点の指摘だけでなく、改善案や代替案の提示があるか"
-    ),
+  total: scoreValueSchema.describe("総合スコア（0-100の整数）"),
+  clarity: scoreValueSchema.describe(
+    "主張の明確さ（0-100）- 意見や立場が明確に表現されているか"
+  ),
+  specificity: scoreValueSchema.describe(
+    "具体性（0-100）- 実務経験に基づく具体的な事例や数値が含まれているか"
+  ),
+  impact: scoreValueSchema.describe(
+    "影響度（0-100）- 法案が与える社会的影響や関係者への影響について言及があるか"
+  ),
+  constructiveness: scoreValueSchema.describe(
+    "建設性（0-100）- 問題点の指摘だけでなく、改善案や代替案の提示があるか"
+  ),
   reasoning: z.string().describe("スコアの根拠を簡潔に説明（100文字以内）"),
 });
 
@@ -47,7 +39,7 @@ export const interviewReportSchema = z
       .string()
       .nullable()
       .describe(
-        "ユーザーの主張を20文字以内でまとめたもの。「」書きで書けるようなテキスト（ただし「」は記載しない）"
+        "ユーザーの主張を40文字以内でまとめたもの。「」書きで書けるようなテキスト（ただし「」は記載しない）"
       ),
     stance: z
       .enum(["for", "against", "neutral"])
@@ -69,7 +61,7 @@ export const interviewReportSchema = z
       .array(opinionSchema)
       .max(3)
       .describe(
-        "ユーザーの具体的な主張（最大3件）。メインの主張を補強するように記載。元の対話ログにないことは記載しない"
+        "ユーザーの具体的な主張（最大3件）。メインの主張を補強する内容を最低1つは含める。元の対話ログにないことは記載しない"
       ),
     scores: scoresSchema.describe(
       "インタビューを「法案検討の参考資料」として評価したスコア"
