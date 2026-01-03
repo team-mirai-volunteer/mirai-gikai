@@ -3,12 +3,12 @@ import Image from "next/image";
 import { SystemMessage } from "@/features/chat/client/components/system-message";
 import { UserMessage } from "@/features/chat/client/components/user-message";
 import { InterviewReportView } from "@/features/interview-report/client/components/interview-report";
-import type { InterviewReportData } from "../../shared/schemas";
+import type { InterviewReportViewData } from "../../shared/schemas";
 
 interface InterviewMessageProps {
   message: UIMessage;
   isStreaming?: boolean;
-  report?: InterviewReportData | null;
+  report?: InterviewReportViewData | null;
 }
 
 export function InterviewMessage({

@@ -78,14 +78,21 @@ ${questionsText || "（質問未設定）"}
 export function buildSummarySystemPrompt({
   bill,
   interviewConfig,
+  messages,
 }: {
   bill: BillWithContent | null;
   interviewConfig: Awaited<ReturnType<typeof getInterviewConfig>>;
+  messages: Array<{ role: string; content: string }>;
 }): string {
   const billName = bill?.name || "";
   const billTitle = bill?.bill_content?.title || "";
   const billSummary = bill?.bill_content?.summary || "";
   const themes = interviewConfig?.themes || [];
+
+  // 会話履歴を {role}: {content} のフォーマットで連結
+  const conversationLog = messages
+    .map((m) => `${m.role}: ${m.content}`)
+    .join("\n");
 
   return `あなたは法案についてのインタビューを要約し、レポート案を生成するAIアシスタントです。
 
@@ -100,18 +107,46 @@ ${themes.length > 0 ? themes.map((t) => `- ${t}`).join("\n") : "（テーマ未�
 ## あなたの役割
 以下の会話履歴を読み、インタビュー内容を要約してレポート案を生成してください。
 
+## 会話履歴
+${conversationLog}
+
 ## 留意点
 要約をすること、また要約の内容が問題ないかの確認に徹して、質問は一切しないでください。
 
-## レポート案に含めるべき内容
-1. **要約**: インタビュー全体の要約（ユーザーの主な意見や経験）
-2. **賛否**: ユーザーの法案に対する賛否の立場（賛成、反対、中立、その他）
-3. **役割**: ユーザーの立場や役割（例: 一般市民、専門家、関係者など）
-4. **意見**: ユーザーの具体的な意見や提案
+## レポート（reportフィールド）に含めるべき内容
 
+### 1. summary（主張の要約）
+- ユーザーの主張を20文字以内でまとめる
+- 「」書きで書けるようなテキストにする（ただし実際に「」は記載しない）
+
+### 2. stance（賛否）
+- for: 賛成
+- against: 反対
+- neutral: 期待と懸念の両方がある
+
+### 3. role（立場・属性）
+- インタビュイーの立場・属性（例：「アジア航路担当のフォワーダー実務者」）
+
+### 4. role_description（立場の詳細説明）
+- 立場・属性の詳細説明（例：「10年間アジア航路を担当しており、フォワーダーとして豊富な実務経験を持つ」）
+
+### 5. opinions（具体的な主張）
+- 最大3件まで
+- メインの主張を補強するように記載
+- 各主張には title（40文字以内）と content（120文字以内）を含める
+- **重要**: 元の対話ログに書かれていないことは記載しない
+
+### 6. scores（スコアリング）
+このインタビューを「法案検討の参考資料」として評価し、以下の観点でスコアを付ける：
+- **total**: 総合スコア（0-100）
+- **clarity**: 主張の明確さ（0-100）- 意見や立場が明確に表現されているか
+- **specificity**: 具体性（0-100）- 実務経験や専門知識に基づく具体的な事例や数値が含まれているか
+- **impact**: 影響度（0-100）- 法案が与える社会的影響や関係者への影響について言及があるか
+- **constructiveness**: 建設性（0-100）- 問題点の指摘だけでなく、改善案や代替案の提示があるか
+- **reasoning**: スコアの根拠を簡潔に説明（100文字以内）
 
 ## 注意事項
 - ユーザーの意見を正確に反映してください
 - 偏見や先入観を持たず、中立な立場で要約してください
-- わかりやすく、読みやすい文章で提示してください`;
+- 対話ログにないことは絶対に記載しないでください`;
 }

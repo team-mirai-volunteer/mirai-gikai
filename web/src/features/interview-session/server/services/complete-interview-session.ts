@@ -65,6 +65,7 @@ export async function completeInterviewSession({
   }
 
   // レポートを保存（UPSERT）
+  // scoresはZodスキーマでバリデーション済み（totalは0-100の整数）
   const { data: report, error: upsertError } = await supabase
     .from("interview_report")
     .upsert(
@@ -75,6 +76,7 @@ export async function completeInterviewSession({
         role: reportData.role,
         role_description: reportData.role_description,
         opinions: reportData.opinions,
+        scores: reportData.scores,
       },
       { onConflict: "interview_session_id" }
     )

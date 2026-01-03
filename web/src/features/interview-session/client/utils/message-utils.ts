@@ -1,4 +1,4 @@
-import type { InterviewReportData } from "../../shared/schemas";
+import type { InterviewReportViewData } from "../../shared/schemas";
 
 /**
  * 会話メッセージの型定義
@@ -7,7 +7,7 @@ export type ConversationMessage = {
   id: string;
   role: "assistant" | "user";
   content: string;
-  report?: InterviewReportData | null;
+  report?: InterviewReportViewData | null;
   quickReplies?: string[];
   questionId?: string | null;
 };
@@ -16,8 +16,8 @@ export type ConversationMessage = {
  * レポートが有効かどうかを判定（空オブジェクトや全てnullの場合はfalse）
  */
 export function isValidReport(
-  report: InterviewReportData | null | undefined
-): report is InterviewReportData {
+  report: InterviewReportViewData | null | undefined
+): report is InterviewReportViewData {
   if (!report) return false;
   return !!(
     report.summary ||
@@ -33,7 +33,7 @@ export function isValidReport(
  */
 export function parseMessageContent(content: string): {
   text: string;
-  report: InterviewReportData | null;
+  report: InterviewReportViewData | null;
   quickReplies: string[];
   questionId: string | null;
 } {
@@ -53,9 +53,12 @@ export function parseMessageContent(content: string): {
           : [];
 
       if (rawReport) {
-        // opinionsがnullの場合は空配列に変換
-        const report: InterviewReportData = {
-          ...rawReport,
+        // opinionsがnullの場合は空配列に変換（scoresは除外）
+        const report: InterviewReportViewData = {
+          summary: rawReport.summary ?? null,
+          stance: rawReport.stance ?? null,
+          role: rawReport.role ?? null,
+          role_description: rawReport.role_description ?? null,
           opinions: rawReport.opinions ?? [],
         };
         return {
@@ -79,7 +82,7 @@ export function parseMessageContent(content: string): {
 }
 
 /**
- * PartialObjectのレポートをInterviewReportDataに変換
+ * PartialObjectのレポートをInterviewReportViewDataに変換（表示用）
  */
 export function convertPartialReport(
   partialReport:
@@ -94,7 +97,7 @@ export function convertPartialReport(
       }
     | null
     | undefined
-): InterviewReportData | null {
+): InterviewReportViewData | null {
   if (!partialReport) return null;
 
   const opinions = partialReport.opinions
@@ -107,7 +110,7 @@ export function convertPartialReport(
         .filter((op) => op.title || op.content)
     : [];
 
-  const converted: InterviewReportData = {
+  const converted: InterviewReportViewData = {
     summary: partialReport.summary ?? null,
     stance: partialReport.stance ?? null,
     role: partialReport.role ?? null,

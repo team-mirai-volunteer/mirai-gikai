@@ -402,8 +402,10 @@ export type Database = {
           opinions: Json | null
           role: string | null
           role_description: string | null
+          scores: Json | null
           stance: Database["public"]["Enums"]["stance_type_enum"] | null
           summary: string | null
+          total_score: number | null
           updated_at: string
         }
         Insert: {
@@ -413,8 +415,10 @@ export type Database = {
           opinions?: Json | null
           role?: string | null
           role_description?: string | null
+          scores?: Json | null
           stance?: Database["public"]["Enums"]["stance_type_enum"] | null
           summary?: string | null
+          total_score?: number | null
           updated_at?: string
         }
         Update: {
@@ -424,8 +428,10 @@ export type Database = {
           opinions?: Json | null
           role?: string | null
           role_description?: string | null
+          scores?: Json | null
           stance?: Database["public"]["Enums"]["stance_type_enum"] | null
           summary?: string | null
+          total_score?: number | null
           updated_at?: string
         }
         Relationships: [

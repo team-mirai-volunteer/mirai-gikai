@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
-import type { InterviewReportData } from "@/features/interview-session/shared/schemas";
+import type { InterviewReportViewData } from "@/features/interview-session/shared/schemas";
 import { stanceLabels } from "../../shared/constants";
 
 type Props = {
-  report: InterviewReportData;
+  report: InterviewReportViewData;
 };
 
 export function InterviewReportView({ report }: Props) {
