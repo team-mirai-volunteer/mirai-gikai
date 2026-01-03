@@ -2,8 +2,8 @@ import "server-only";
 
 import { generateText, Output } from "ai";
 import { z } from "zod";
-import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
-import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
+import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id-admin";
+import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 import type { FacilitatorMessage } from "../../client/utils/message-utils";
 import { buildInterviewSystemPrompt } from "../utils/build-interview-system-prompt";
@@ -29,8 +29,8 @@ export async function facilitateInterview({
   currentStage = "chat",
 }: Params): Promise<FacilitatorResult> {
   const [interviewConfig, bill] = await Promise.all([
-    getInterviewConfig(billId),
-    getBillById(billId),
+    getInterviewConfigAdmin(billId),
+    getBillByIdAdmin(billId),
   ]);
 
   if (!interviewConfig) {

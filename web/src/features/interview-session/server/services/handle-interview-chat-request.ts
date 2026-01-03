@@ -1,8 +1,8 @@
 import "server-only";
 
 import { convertToModelMessages, Output, streamText } from "ai";
-import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
-import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
+import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id-admin";
+import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 import { createInterviewSession } from "@/features/interview-session/server/actions/create-interview-session";
 import { getInterviewSession } from "@/features/interview-session/server/loaders/get-interview-session";
@@ -32,8 +32,8 @@ export async function handleInterviewChatRequest({
 }: InterviewChatRequestParams) {
   // インタビュー設定と法案情報を取得
   const [interviewConfig, bill] = await Promise.all([
-    getInterviewConfig(billId),
-    getBillById(billId),
+    getInterviewConfigAdmin(billId),
+    getBillByIdAdmin(billId),
   ]);
 
   if (!interviewConfig) {

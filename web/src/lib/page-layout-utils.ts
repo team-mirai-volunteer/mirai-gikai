@@ -11,14 +11,14 @@ export function isMainPage(pathname: string): boolean {
   // トップページ
   if (pathname === "/") return true;
   // 法案詳細ページ（/bills/[id]）- サブパスは除外
-  if (/^\/bills\/[^/]+$/.test(pathname)) return true;
+  if (/\/bills\/[^/]+$/.test(pathname)) return true;
   return false;
 }
 
 /** インタビューチャットページかどうかを判定 */
 export function isInterviewPage(pathname: string): boolean {
   // /bills/[id]/interview/chat
-  return /^\/bills\/[^/]+\/interview\/chat$/.test(pathname);
+  return /\/bills\/[^/]+\/interview\/chat$/.test(pathname);
 }
 
 /** インタビューページからbillIdを抽出 */

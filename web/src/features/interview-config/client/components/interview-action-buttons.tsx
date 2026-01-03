@@ -12,11 +12,13 @@ import { InterviewConsentModal } from "./interview-consent-modal";
 interface InterviewActionButtonsProps {
   billId: string;
   sessionInfo: LatestInterviewSession | null;
+  previewToken?: string;
 }
 
 export function InterviewActionButtons({
   billId,
   sessionInfo,
+  previewToken,
 }: InterviewActionButtonsProps) {
   const [showConsentModal, setShowConsentModal] = useState(false);
   const isActive = sessionInfo?.status === "active";
@@ -40,9 +42,13 @@ export function InterviewActionButtons({
 
   // 進行中の場合は直接遷移
   if (isActive) {
+    const chatLink = previewToken
+      ? `/preview/bills/${billId}/interview/chat?token=${previewToken}`
+      : `/bills/${billId}/interview/chat`;
+
     return (
       <>
-        <Link href={`/bills/${billId}/interview/chat`}>
+        <Link href={chatLink}>
           <Button className="w-full bg-mirai-gradient text-black border border-black rounded-[100px] h-[48px] px-6 font-bold text-[15px] hover:opacity-90 transition-opacity flex items-center justify-center gap-4">
             <Image
               src="/icons/messages-square-icon.svg"
@@ -82,6 +88,7 @@ export function InterviewActionButtons({
         open={showConsentModal}
         onOpenChange={setShowConsentModal}
         billId={billId}
+        previewToken={previewToken}
       />
     </>
   );
