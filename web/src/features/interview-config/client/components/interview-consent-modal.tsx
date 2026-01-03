@@ -87,19 +87,24 @@ interface InterviewConsentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   billId: string;
+  previewToken?: string;
 }
 
 export function InterviewConsentModal({
   open,
   onOpenChange,
   billId,
+  previewToken,
 }: InterviewConsentModalProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleAgree = () => {
     setIsLoading(true);
-    router.push(`/bills/${billId}/interview/chat`);
+    const destination = previewToken
+      ? `/preview/bills/${billId}/interview/chat?token=${previewToken}`
+      : `/bills/${billId}/interview/chat`;
+    router.push(destination);
   };
 
   return (

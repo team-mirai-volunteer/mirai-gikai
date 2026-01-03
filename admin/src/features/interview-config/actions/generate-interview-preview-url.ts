@@ -2,9 +2,9 @@
 
 import { requireAdmin } from "@/features/auth/lib/auth-server";
 import { env } from "@/lib/env";
-import { previewTokenService } from "../services/preview-token-service";
+import { previewTokenService } from "../../bills/services/preview-token-service";
 
-interface GeneratePreviewUrlResult {
+interface GenerateInterviewPreviewUrlResult {
   success: boolean;
   url?: string;
   token?: string;
@@ -12,9 +12,9 @@ interface GeneratePreviewUrlResult {
   error?: string;
 }
 
-export async function generatePreviewUrl(
+export async function generateInterviewPreviewUrl(
   billId: string
-): Promise<GeneratePreviewUrlResult> {
+): Promise<GenerateInterviewPreviewUrlResult> {
   await requireAdmin();
 
   try {
@@ -31,7 +31,7 @@ export async function generatePreviewUrl(
       expiresAt: tokenInfo.expiresAt,
     };
   } catch (error) {
-    console.error("Error generating preview URL:", error);
+    console.error("Error generating interview preview URL:", error);
     return {
       success: false,
       error: "予期しないエラーが発生しました",
@@ -41,5 +41,5 @@ export async function generatePreviewUrl(
 
 // プレビューURLを構築
 function _buildPreviewUrl(billId: string, token: string): string {
-  return `${env.webUrl}/preview/bills/${billId}?token=${token}`;
+  return `${env.webUrl}/preview/bills/${billId}/interview?token=${token}`;
 }

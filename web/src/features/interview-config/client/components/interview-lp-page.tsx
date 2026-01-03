@@ -12,6 +12,7 @@ interface InterviewLPPageProps {
   bill: BillWithContent;
   interviewConfig: InterviewConfig;
   sessionInfo: LatestInterviewSession | null;
+  previewToken?: string;
 }
 
 const FEATURES = [
@@ -55,11 +56,17 @@ function _InterviewLPHero({
   bill,
   billId,
   sessionInfo,
+  previewToken,
 }: {
   bill: BillWithContent;
   billId: string;
   sessionInfo: LatestInterviewSession | null;
+  previewToken?: string;
 }) {
+  const billLink = previewToken
+    ? `/preview/bills/${billId}?token=${previewToken}`
+    : `/bills/${billId}`;
+
   return (
     <div className="flex flex-col items-center gap-6 px-4">
       <div className="flex flex-col items-center gap-3">
@@ -71,7 +78,7 @@ function _InterviewLPHero({
         <h1 className="text-2xl font-bold text-center leading-[1.5]">
           法案についてのAIインタビュー
         </h1>
-        <Link href={`/bills/${billId}`}>
+        <Link href={billLink}>
           <div className="inline-flex items-center justify-center gap-2.5 px-4 py-2 bg-white rounded-xl hover:bg-gray-50 transition-opacity cursor-pointer">
             <span className="text-[15px] font-bold text-black leading-[1.87]">
               {bill.bill_content?.title ?? bill.name}
@@ -101,7 +108,11 @@ function _InterviewLPHero({
       </div>
 
       <div className="w-full max-w-[370px] mt-2 flex flex-col gap-3">
-        <InterviewActionButtons billId={billId} sessionInfo={sessionInfo} />
+        <InterviewActionButtons
+          billId={billId}
+          sessionInfo={sessionInfo}
+          previewToken={previewToken}
+        />
       </div>
     </div>
   );
@@ -110,10 +121,16 @@ function _InterviewLPHero({
 function _InterviewOverviewSection({
   billId,
   billName,
+  previewToken,
 }: {
   billId: string;
   billName: string;
+  previewToken?: string;
 }) {
+  const billLink = previewToken
+    ? `/preview/bills/${billId}?token=${previewToken}`
+    : `/bills/${billId}`;
+
   return (
     <div className="w-full max-w-[370px] mx-auto bg-white rounded-2xl p-6 space-y-4">
       <h2 className="text-[22px] font-bold text-black leading-[1.64]">
@@ -123,7 +140,7 @@ function _InterviewOverviewSection({
         <p>
           国会で検討されている
           <Link
-            href={`/bills/${billId}`}
+            href={billLink}
             className="text-primary underline underline-offset-2 hover:opacity-70 transition-opacity"
           >
             {billName}
@@ -135,7 +152,7 @@ function _InterviewOverviewSection({
         </p>
       </div>
       <div>
-        <Link href={`/bills/${billId}`}>
+        <Link href={billLink}>
           <Button
             variant="outline"
             className="w-full border border-black rounded-[100px] h-[48px] px-6 font-bold text-[15px] hover:opacity-90 transition-opacity flex items-center justify-center gap-4"
@@ -220,14 +237,24 @@ function _InterviewNoticeSection() {
 function _InterviewFooterActions({
   billId,
   sessionInfo,
+  previewToken,
 }: {
   billId: string;
   sessionInfo: LatestInterviewSession | null;
+  previewToken?: string;
 }) {
+  const billLink = previewToken
+    ? `/preview/bills/${billId}?token=${previewToken}`
+    : `/bills/${billId}`;
+
   return (
     <div className="flex flex-col w-full max-w-[370px] mx-auto space-y-4">
-      <InterviewActionButtons billId={billId} sessionInfo={sessionInfo} />
-      <Link href={`/bills/${billId}`}>
+      <InterviewActionButtons
+        billId={billId}
+        sessionInfo={sessionInfo}
+        previewToken={previewToken}
+      />
+      <Link href={billLink}>
         <Button variant="outline" className="w-full">
           <Undo2 className="size-5" />
           <span>法案詳細に戻る</span>
@@ -241,6 +268,7 @@ export function InterviewLPPage({
   bill,
   interviewConfig,
   sessionInfo,
+  previewToken,
 }: InterviewLPPageProps) {
   return (
     <div className="flex flex-col gap-8 pb-8 bg-mirai-light-gradient">
@@ -250,15 +278,21 @@ export function InterviewLPPage({
           bill={bill}
           billId={bill.id}
           sessionInfo={sessionInfo}
+          previewToken={previewToken}
         />
         <_InterviewOverviewSection
           billId={bill.id}
           billName={bill.bill_content?.title ?? bill.name}
+          previewToken={previewToken}
         />
         <_InterviewDurationSection />
         <_InterviewThemesSection themes={interviewConfig.themes} />
         <_InterviewNoticeSection />
-        <_InterviewFooterActions billId={bill.id} sessionInfo={sessionInfo} />
+        <_InterviewFooterActions
+          billId={bill.id}
+          sessionInfo={sessionInfo}
+          previewToken={previewToken}
+        />
       </div>
     </div>
   );

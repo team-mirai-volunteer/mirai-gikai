@@ -2,8 +2,8 @@ import "server-only";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
 import { generateText, Output } from "ai";
-import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
-import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
+import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id-admin";
+import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 import { interviewChatTextSchema } from "../../shared/schemas";
 import type { InterviewMessage } from "../../shared/types";
@@ -25,9 +25,10 @@ export async function generateInitialQuestion({
 }: GenerateInitialQuestionParams): Promise<InterviewMessage | null> {
   try {
     // インタビュー設定と法案情報を取得
+    // どちらもサーバーサイドでの生成処理のため、常にAdmin用（非公開制限なし）を使用する
     const [interviewConfig, bill, questions] = await Promise.all([
-      getInterviewConfig(billId),
-      getBillById(billId),
+      getInterviewConfigAdmin(billId),
+      getBillByIdAdmin(billId),
       getInterviewQuestions(interviewConfigId),
     ]);
 
