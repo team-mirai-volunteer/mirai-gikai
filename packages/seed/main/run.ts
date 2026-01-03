@@ -11,72 +11,14 @@ import {
   createInterviewReports,
 } from "./data";
 import { createBillContents } from "./bill-contents-data";
-import { createClient } from "@supabase/supabase-js";
-import { Database } from "@mirai-gikai/supabase";
-
-export function createAdminClient() {
-  return createClient<Database>(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-}
+import { createAdminClient, clearAllData } from "../shared/helper";
 
 async function seedDatabase() {
   const supabase = createAdminClient();
   console.log("🌱 Starting database seeding...");
 
   try {
-    // Clear existing data (in reverse order due to foreign key constraints)
-    console.log("🧹 Clearing existing data...");
-
-    await supabase
-      .from("interview_report")
-      .delete()
-      .neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase
-      .from("interview_messages")
-      .delete()
-      .neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase
-      .from("interview_sessions")
-      .delete()
-      .neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase
-      .from("interview_questions")
-      .delete()
-      .neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase
-      .from("interview_configs")
-      .delete()
-      .neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase
-      .from("mirai_stances")
-      .delete()
-      .neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase
-      .from("chats")
-      .delete()
-      .neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase
-      .from("bill_contents")
-      .delete()
-      .neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase
-      .from("bills_tags")
-      .delete()
-      .neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase
-      .from("bills")
-      .delete()
-      .neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase
-      .from("tags")
-      .delete()
-      .neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase
-      .from("diet_sessions")
-      .delete()
-      .neq("id", "00000000-0000-0000-0000-000000000000");
+    await clearAllData(supabase);
 
     // Insert tags
     console.log("🏷️  Inserting tags...");
