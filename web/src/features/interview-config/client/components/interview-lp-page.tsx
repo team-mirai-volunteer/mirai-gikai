@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { BillWithContent } from "@/features/bills/shared/types";
+import { InterviewStatusBadge } from "@/features/interview-session/client/components/interview-status-badge";
 import type { LatestInterviewSession } from "@/features/interview-session/server/loaders/get-latest-interview-session";
 import type { InterviewConfig } from "../../server/loaders/get-interview-config";
 import { InterviewActionButtons } from "./interview-action-buttons";
@@ -77,6 +78,7 @@ function _InterviewLPHero({
             </span>
           </div>
         </Link>
+        {sessionInfo && <InterviewStatusBadge status={sessionInfo.status} />}
       </div>
 
       <div className="flex flex-col gap-4 w-full max-w-[334px] pl-4">
