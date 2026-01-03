@@ -33,13 +33,13 @@ export function InterviewReportView({ report }: Props) {
         {(report.role || report.role_description) && (
           <div className="space-y-2 font-bold">
             {report.role && (
-              <div>
+              <div className="space-y-1">
                 <p className="text-primary-accent">立場</p>
                 <p>{report.role}</p>
               </div>
             )}
             {report.role_description && (
-              <div className="whitespace-pre-wrap">
+              <div className="whitespace-pre-wrap space-y-1">
                 <p className="text-primary-accent">立場の詳細</p>
                 <p>{report.role_description}</p>
               </div>

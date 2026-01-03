@@ -10,6 +10,7 @@
 
 ## Next.js アーキテクチャ指針
 - Bulletproof React の feature ベース構成を採用します。
+- `app/` 配下の `page.tsx` は、URL パラメータ（`params` や `searchParams`）の取得と Feature コンポーネントへの受け渡しのみを担当する薄いラッパーとし、ビューやロジックは `features/` 配下に実装します。
 - export 用の `index.ts` は作成せず、必要なファイルから直接 import します。
 - Server Components を標準とし、状態管理・イベント処理が必要な場合のみ `"use client"` を付与した Client Component を追加します。
 - ファイル名はケバブケース、コンポーネントはパスカルケース、関数はキャメルケースで統一します。

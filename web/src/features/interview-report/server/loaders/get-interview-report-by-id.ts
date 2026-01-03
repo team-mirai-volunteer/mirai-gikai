@@ -59,8 +59,8 @@ export async function getInterviewReportById(
     return null;
   }
 
-  // 認可チェック: セッションの所有者と現在のユーザーが一致するか
-  if (!isSessionOwner(session.user_id, userId)) {
+  // 認可チェック: 公開設定されているか、またはセッションの所有者であるか
+  if (!session.is_public_by_user && !isSessionOwner(session.user_id, userId)) {
     console.error("Unauthorized access to interview report");
     return null;
   }
