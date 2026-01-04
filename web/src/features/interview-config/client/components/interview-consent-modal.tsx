@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getInterviewChatLink } from "@/features/interview-config/shared/utils/interview-links";
 
 const TERMS_MARKDOWN = `本サービスは、AIを活用したインタビュー機能を提供しています。ご利用にあたり、以下の事項にご同意いただく必要があります。
 
@@ -101,9 +102,7 @@ export function InterviewConsentModal({
 
   const handleAgree = () => {
     setIsLoading(true);
-    const destination = previewToken
-      ? `/preview/bills/${billId}/interview/chat?token=${previewToken}`
-      : `/bills/${billId}/interview/chat`;
+    const destination = getInterviewChatLink(billId, previewToken);
     router.push(destination);
   };
 

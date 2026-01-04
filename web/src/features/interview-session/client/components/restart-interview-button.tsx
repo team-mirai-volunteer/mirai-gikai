@@ -4,16 +4,19 @@ import { RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { getInterviewChatLink } from "@/features/interview-config/shared/utils/interview-links";
 import { archiveInterviewSession } from "../../server/actions/archive-interview-session";
 
 interface RestartInterviewButtonProps {
   sessionId: string;
   billId: string;
+  previewToken?: string;
 }
 
 export function RestartInterviewButton({
   sessionId,
   billId,
+  previewToken,
 }: RestartInterviewButtonProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +32,8 @@ export function RestartInterviewButton({
       const result = await archiveInterviewSession(sessionId);
       if (result.success) {
         // アーカイブ成功後、チャットページに遷移（新しいセッションが作成される）
-        router.push(`/bills/${billId}/interview/chat`);
+        const chatLink = getInterviewChatLink(billId, previewToken);
+        router.push(chatLink);
       } else {
         console.error("Failed to archive session:", result.error);
         alert(result.error || "やり直しに失敗しました");
