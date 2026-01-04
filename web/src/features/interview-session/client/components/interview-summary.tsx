@@ -2,13 +2,13 @@
 
 import { useMemo } from "react";
 import type { InterviewReportViewData } from "@/features/interview-session/shared/schemas";
-import { stanceLabels } from "../../shared/constants";
+import { stanceLabels } from "../../../interview-report/shared/constants";
 
 type Props = {
   report: InterviewReportViewData;
 };
 
-export function InterviewReportView({ report }: Props) {
+export function InterviewSummary({ report }: Props) {
   const opinions = useMemo(() => {
     if (!report.opinions || !Array.isArray(report.opinions)) return [];
     return report.opinions as Array<{ title: string; content: string }>;
@@ -16,8 +16,7 @@ export function InterviewReportView({ report }: Props) {
 
   return (
     <div className="rounded-[16px] bg-mirai-light-gradient p-4 shadow-sm">
-      {/* <p className="text-xs font-semibold">インタビューレポート</p> */}
-      <div className="mt-2 space-y-3 text-sm">
+      <div className="mt-2 space-y-4 text-sm">
         {report.summary && (
           <div className="font-bold space-y-1">
             <p className="text-primary-accent">💡意見の要約</p>
@@ -25,13 +24,13 @@ export function InterviewReportView({ report }: Props) {
           </div>
         )}
         {report.stance && (
-          <div className="font-bold">
+          <div className="font-bold space-y-1">
             <p className="text-primary-accent">🙋基本スタンス</p>
             <p>{stanceLabels[report.stance] || report.stance}</p>
           </div>
         )}
         {(report.role || report.role_description) && (
-          <div className="space-y-2 font-bold">
+          <div className="space-y-4 font-bold">
             {report.role && (
               <div className="space-y-1">
                 <p className="text-primary-accent">立場</p>
@@ -55,7 +54,7 @@ export function InterviewReportView({ report }: Props) {
                   key={`${op.title}-${op.content}`}
                   className="whitespace-pre-wrap"
                 >
-                  <p className="font-bold">
+                  <p className="font-bold mb-1">
                     {index + 1}. {op.title}
                   </p>
                   <p>{op.content}</p>
