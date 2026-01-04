@@ -38,8 +38,8 @@ export function getInterviewChatLink(
 }
 
 /**
- * インタビューレポートページへのリンクを取得
+ * インタビュー完了レポートページへのリンクを取得
  */
-export function getInterviewReportLink(reportId: string): string {
-  return `/report/${reportId}`;
+export function getInterviewReportCompleteLink(reportId: string): string {
+  return `/report/${reportId}/complete`;
 }

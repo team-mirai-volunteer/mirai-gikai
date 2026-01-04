@@ -19,13 +19,16 @@ import {
   formatDateTime,
 } from "../../shared/utils/report-utils";
 
-interface ReportPageProps {
+interface ReportCompletePageProps {
   reportId: string;
 }
 
-export async function ReportPage({ reportId }: ReportPageProps) {
+export async function ReportCompletePage({
+  reportId,
+}: ReportCompletePageProps) {
   // レポートIDから全ての情報を取得
-  const report = await getInterviewReportById(reportId);
+  // 完了ページなので、所有者のみが閲覧できるように制限する
+  const report = await getInterviewReportById(reportId, { onlyOwner: true });
 
   if (!report) {
     notFound();

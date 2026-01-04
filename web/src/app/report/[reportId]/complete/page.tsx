@@ -1,4 +1,4 @@
-import { ReportPage } from "@/features/interview-report/server/components/report-page";
+import { ReportCompletePage } from "@/features/interview-report/server/components/report-complete-page";
 
 interface InterviewReportPageProps {
   params: Promise<{
@@ -11,5 +11,5 @@ export default async function InterviewReportPage({
 }: InterviewReportPageProps) {
   const { reportId } = await params;
 
-  return <ReportPage reportId={reportId} />;
+  return <ReportCompletePage reportId={reportId} />;
 }

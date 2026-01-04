@@ -9,7 +9,7 @@ import { RestartInterviewButton } from "@/features/interview-session/client/comp
 import type { LatestInterviewSession } from "@/features/interview-session/server/loaders/get-latest-interview-session";
 import {
   getInterviewChatLink,
-  getInterviewReportLink,
+  getInterviewReportCompleteLink,
 } from "@/features/interview-config/shared/utils/interview-links";
 import { InterviewConsentModal } from "./interview-consent-modal";
 
@@ -32,7 +32,7 @@ export function InterviewActionButtons({
   if (isCompleted && sessionInfo?.reportId) {
     return (
       <>
-        <Link href={getInterviewReportLink(sessionInfo.reportId)}>
+        <Link href={getInterviewReportCompleteLink(sessionInfo.reportId)}>
           <Button className="w-full bg-mirai-gradient text-black border border-black rounded-[100px] h-[48px] px-6 font-bold text-[15px] hover:opacity-90 transition-opacity flex items-center justify-center gap-4">
             <FileText className="size-5" />
             <span>インタビューレポートを確認する</span>
