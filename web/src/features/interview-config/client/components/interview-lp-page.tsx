@@ -6,6 +6,7 @@ import type { BillWithContent } from "@/features/bills/shared/types";
 import { InterviewStatusBadge } from "@/features/interview-session/client/components/interview-status-badge";
 import type { LatestInterviewSession } from "@/features/interview-session/server/loaders/get-latest-interview-session";
 import type { InterviewConfig } from "../../server/loaders/get-interview-config";
+import { getBillDetailLink } from "@/features/interview-config/shared/utils/interview-links";
 import { InterviewActionButtons } from "./interview-action-buttons";
 
 interface InterviewLPPageProps {
@@ -63,9 +64,7 @@ function _InterviewLPHero({
   sessionInfo: LatestInterviewSession | null;
   previewToken?: string;
 }) {
-  const billLink = previewToken
-    ? `/preview/bills/${billId}?token=${previewToken}`
-    : `/bills/${billId}`;
+  const billLink = getBillDetailLink(billId, previewToken);
 
   return (
     <div className="flex flex-col items-center gap-6 px-4">
@@ -127,9 +126,7 @@ function _InterviewOverviewSection({
   billName: string;
   previewToken?: string;
 }) {
-  const billLink = previewToken
-    ? `/preview/bills/${billId}?token=${previewToken}`
-    : `/bills/${billId}`;
+  const billLink = getBillDetailLink(billId, previewToken);
 
   return (
     <div className="w-full max-w-[370px] mx-auto bg-white rounded-2xl p-6 space-y-4">
@@ -243,9 +240,7 @@ function _InterviewFooterActions({
   sessionInfo: LatestInterviewSession | null;
   previewToken?: string;
 }) {
-  const billLink = previewToken
-    ? `/preview/bills/${billId}?token=${previewToken}`
-    : `/bills/${billId}`;
+  const billLink = getBillDetailLink(billId, previewToken);
 
   return (
     <div className="flex flex-col w-full max-w-[370px] mx-auto space-y-4">
