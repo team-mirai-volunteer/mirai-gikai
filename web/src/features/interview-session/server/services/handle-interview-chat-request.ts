@@ -14,6 +14,7 @@ import {
   buildInterviewSystemPrompt,
   buildSummarySystemPrompt,
 } from "../utils/build-interview-system-prompt";
+import { AI_MODELS } from "@/lib/ai/models";
 import { saveInterviewMessage } from "./save-interview-message";
 
 type InterviewChatRequestParams = {
@@ -95,7 +96,7 @@ async function generateStreamingResponse({
   isSummaryPhase: boolean;
 }) {
   // summaryフェーズはGemini、chatフェーズはGPT-4o-mini
-  const model = isSummaryPhase ? "google/gemini-3-flash" : "openai/gpt-4o-mini";
+  const model = isSummaryPhase ? AI_MODELS.gemini3_flash : AI_MODELS.gpt4o_mini;
 
   const handleError = (error: unknown) => {
     console.error("LLM generation error:", error);
