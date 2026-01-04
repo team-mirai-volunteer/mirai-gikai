@@ -19,7 +19,8 @@ export type InterviewReportWithSessionInfo = InterviewReport & {
  * 認可チェック: セッションの所有者のみがレポートを取得できる
  */
 export async function getInterviewReportById(
-  reportId: string
+  reportId: string,
+  options?: { onlyOwner?: boolean }
 ): Promise<InterviewReportWithSessionInfo | null> {
   const authResult = await getAuthenticatedUser();
 
@@ -60,7 +61,12 @@ export async function getInterviewReportById(
   }
 
   // 認可チェック: 公開設定されているか、またはセッションの所有者であるか
-  if (!session.is_public_by_user && !isSessionOwner(session.user_id, userId)) {
+  const isOwner = isSessionOwner(session.user_id, userId);
+  const isAllowed = options?.onlyOwner
+    ? isOwner
+    : session.is_public_by_user || isOwner;
+
+  if (!isAllowed) {
     console.error("Unauthorized access to interview report");
     return null;
   }

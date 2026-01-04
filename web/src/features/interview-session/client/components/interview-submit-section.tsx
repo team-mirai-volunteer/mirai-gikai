@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { getInterviewReportCompleteLink } from "@/features/interview-config/shared/utils/interview-links";
 import { InterviewPublicConsentModal } from "@/features/interview-report/client/components/interview-public-consent-modal";
 import { updatePublicSetting } from "@/features/interview-report/server/actions/update-public-setting";
 
@@ -22,7 +23,7 @@ export function InterviewSubmitSection({
     try {
       const result = await updatePublicSetting(sessionId, isPublic);
       if (result.success) {
-        window.location.href = `/report/${reportId}`;
+        window.location.href = getInterviewReportCompleteLink(reportId);
       } else {
         console.error("Failed to update public setting:", result.error);
         setIsSubmitting(false);
