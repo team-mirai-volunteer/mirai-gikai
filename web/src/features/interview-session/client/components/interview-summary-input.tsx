@@ -31,14 +31,16 @@ export function InterviewSummaryInput({
 
   return (
     <>
-      <div className="mb-3 flex flex-col gap-2">
-        <Button onClick={handleAgree} disabled={isCompleting}>
-          {isCompleting ? "送信中..." : "レポート内容に同意する"}
-        </Button>
-        {completeError && (
-          <p className="text-sm text-red-500">{completeError}</p>
-        )}
-      </div>
+      {!isLoading && (
+        <div className="mb-3 flex flex-col gap-2">
+          <Button onClick={handleAgree} disabled={isCompleting}>
+            {isCompleting ? "送信中..." : "レポート内容に同意する"}
+          </Button>
+          {completeError && (
+            <p className="text-sm text-red-500">{completeError}</p>
+          )}
+        </div>
+      )}
       <InterviewChatInput
         input={input}
         onInputChange={onInputChange}
