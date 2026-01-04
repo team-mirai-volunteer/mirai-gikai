@@ -5,6 +5,7 @@ import { generateText, Output } from "ai";
 import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id-admin";
 import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
+import { AI_MODELS } from "@/lib/ai/models";
 import { interviewChatTextSchema } from "../../shared/schemas";
 import type { InterviewMessage } from "../../shared/types";
 import { buildInterviewSystemPrompt } from "../utils/build-interview-system-prompt";
@@ -49,7 +50,7 @@ export async function generateInitialQuestion({
 
     // メッセージ履歴なしで最初の質問を生成（構造化出力）
     const result = await generateText({
-      model: "openai/gpt-4o-mini",
+      model: AI_MODELS.gpt4o_mini,
       prompt: enhancedSystemPrompt,
       output: Output.object({ schema: interviewChatTextSchema }),
     });

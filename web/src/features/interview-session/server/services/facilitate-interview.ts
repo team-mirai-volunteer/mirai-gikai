@@ -6,6 +6,7 @@ import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id
 import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 import type { FacilitatorMessage } from "../../client/utils/message-utils";
+import { AI_MODELS } from "@/lib/ai/models";
 import { buildInterviewSystemPrompt } from "../utils/build-interview-system-prompt";
 
 const facilitatorResultSchema = z.object({
@@ -88,7 +89,7 @@ ${stageGuidance}
     .join("\n");
 
   const result = await generateText({
-    model: "openai/gpt-4o-mini",
+    model: AI_MODELS.gpt4o_mini,
     prompt: `${facilitatorPrompt}\n\n# 会話履歴\n${conversationText}`,
     output: Output.object({ schema: facilitatorResultSchema }),
   });

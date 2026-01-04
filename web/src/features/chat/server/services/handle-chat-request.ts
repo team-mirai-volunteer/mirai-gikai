@@ -10,6 +10,7 @@ import {
   createPromptProvider,
   type PromptProvider,
 } from "@/lib/prompt";
+import { AI_MODELS } from "@/lib/ai/models";
 import { getUsageCostUsd, recordChatUsage } from "./cost-tracker";
 
 export type ChatMessageMetadata = {
@@ -64,7 +65,7 @@ export async function handleChatRequest({
   // Model configuration
   // "openai/gpt-4o" Context 128K Input Tokens $2.50/M Output Tokens $10.00/M
   // "openai/gpt-4o-mini" Context 128K Input Tokens $0.15/M Output Tokens $0.60/M
-  const model = "openai/gpt-4o";
+  const model = AI_MODELS.gpt4o;
 
   // Generate streaming response
   try {
