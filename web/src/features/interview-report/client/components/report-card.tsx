@@ -1,7 +1,11 @@
 import { MessageSquare, ThumbsUp, User } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import type { Opinion, PublicInterviewReport, StanceTypeEnum } from "../types";
-import { STANCE_LABELS, stanceToFilterType } from "../types";
+import type {
+  Opinion,
+  PublicInterviewReport,
+  StanceTypeEnum,
+} from "../../shared/types";
+import { STANCE_LABELS, stanceToFilterType } from "../../shared/types";
 
 interface ReportCardProps {
   report: PublicInterviewReport;

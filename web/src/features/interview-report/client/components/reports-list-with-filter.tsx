@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import type { PublicInterviewReport, StanceFilterType } from "../types";
-import { FILTER_LABELS, stanceToFilterType } from "../types";
+import type {
+  PublicInterviewReport,
+  StanceFilterType,
+} from "../../shared/types";
+import { FILTER_LABELS, stanceToFilterType } from "../../shared/types";
 import { ReportCard } from "./report-card";
 
 type Props = {

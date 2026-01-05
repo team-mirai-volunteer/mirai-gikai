@@ -3,13 +3,13 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/layouts/container";
-import { getBillById } from "@/features/bills/api/get-bill-by-id";
-import { getDietSessionById } from "@/features/diet-sessions/api/get-diet-session-by-id";
+import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
+import { getDietSessionById } from "@/features/diet-sessions/server/loaders/get-diet-session-by-id";
 import {
   getPublicReports,
   getPublicReportsCount,
-} from "@/features/interview-reports/api/get-public-reports";
-import { ReportsListWithFilter } from "@/features/interview-reports/components/reports-list-with-filter";
+} from "@/features/interview-report/server/loaders/get-public-reports";
+import { ReportsListWithFilter } from "@/features/interview-report/client/components/reports-list-with-filter";
 import { env } from "@/lib/env";
 
 interface ReportsPageProps {
