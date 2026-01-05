@@ -4,6 +4,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/layouts/container";
 import { getBillById } from "@/features/bills/api/get-bill-by-id";
+import { getDietSessionById } from "@/features/diet-sessions/api/get-diet-session-by-id";
 import {
   getPublicReports,
   getPublicReportsCount,
@@ -82,6 +83,11 @@ export default async function ReportsPage({
     notFound();
   }
 
+  // 国会会期を取得
+  const dietSession = bill.diet_session_id
+    ? await getDietSessionById(bill.diet_session_id)
+    : null;
+
   const billName = bill.bill_content?.title ?? bill.name;
 
   return (
@@ -107,7 +113,7 @@ export default async function ReportsPage({
         <div className="px-4 pt-8 pb-6">
           <h1 className="text-2xl font-bold mb-3">{billName}</h1>
           <p className="text-sm text-muted-foreground font-medium">
-            {bill.name}
+            {dietSession ? `${dietSession.name} / ${bill.name}` : bill.name}
           </p>
         </div>
       </div>
