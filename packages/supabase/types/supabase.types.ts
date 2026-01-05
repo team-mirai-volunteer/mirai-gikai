@@ -399,7 +399,7 @@ export type Database = {
           created_at: string
           id: string
           interview_session_id: string
-          is_public: boolean
+          is_public_by_admin: boolean
           opinions: Json | null
           role: string | null
           role_description: string | null
@@ -411,7 +411,7 @@ export type Database = {
           created_at?: string
           id?: string
           interview_session_id: string
-          is_public?: boolean
+          is_public_by_admin?: boolean
           opinions?: Json | null
           role?: string | null
           role_description?: string | null
@@ -423,7 +423,7 @@ export type Database = {
           created_at?: string
           id?: string
           interview_session_id?: string
-          is_public?: boolean
+          is_public_by_admin?: boolean
           opinions?: Json | null
           role?: string | null
           role_description?: string | null
