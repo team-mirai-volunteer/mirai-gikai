@@ -47,10 +47,8 @@ export async function updateReportVisibilityAction(
     }
 
     // Revalidate the detail page and list page
-    if (billId && sessionId) {
-      revalidatePath(`/bills/${billId}/reports/${sessionId}`);
-      revalidatePath(`/bills/${billId}/reports`);
-    }
+    revalidatePath(`/bills/${billId}/reports/${sessionId}`);
+    revalidatePath(`/bills/${billId}/reports`);
 
     return { success: true };
   } catch (error) {
