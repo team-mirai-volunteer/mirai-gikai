@@ -35,7 +35,7 @@ export async function updateReportVisibilityAction(
 
     const { error } = await supabase
       .from("interview_report")
-      .update({ is_public: isPublic })
+      .update({ is_public_by_admin: isPublic })
       .eq("id", reportId);
 
     if (error) {

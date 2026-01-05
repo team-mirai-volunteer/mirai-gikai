@@ -82,7 +82,7 @@ export function SessionDetail({ session, billId }: SessionDetailProps) {
               reportId={report.id}
               sessionId={session.id}
               billId={billId}
-              isPublic={report.is_public ?? false}
+              isPublic={report.is_public_by_admin ?? false}
             />
           )}
         </CardHeader>

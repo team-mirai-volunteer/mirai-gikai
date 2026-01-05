@@ -112,7 +112,9 @@ export function SessionList({
                   <TableCell className="text-center">
                     {hasReport ? (
                       <VisibilityBadge
-                        isPublic={session.interview_report?.is_public ?? false}
+                        isPublic={
+                          session.interview_report?.is_public_by_admin ?? false
+                        }
                       />
                     ) : (
                       <span className="text-gray-400">-</span>
