@@ -4,20 +4,24 @@ import { createAdminClient } from "@mirai-gikai/supabase";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
 
+interface UpdateReportVisibilityParams {
+  reportId: string;
+  isPublic: boolean;
+  billId: string;
+  sessionId: string;
+}
+
 interface UpdateReportVisibilityResult {
   success: boolean;
   error?: string;
 }
 
 export async function updateReportVisibilityAction(
-  formData: FormData
+  params: UpdateReportVisibilityParams
 ): Promise<UpdateReportVisibilityResult> {
   await requireAdmin();
 
-  const reportId = formData.get("reportId") as string;
-  const isPublic = formData.get("isPublic") === "true";
-  const billId = formData.get("billId") as string;
-  const sessionId = formData.get("sessionId") as string;
+  const { reportId, isPublic, billId, sessionId } = params;
 
   if (!reportId) {
     return {

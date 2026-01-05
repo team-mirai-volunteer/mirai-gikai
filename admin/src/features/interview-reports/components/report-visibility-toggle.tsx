@@ -25,13 +25,12 @@ export function ReportVisibilityToggle({
 
   const handleToggle = (checked: boolean) => {
     startTransition(async () => {
-      const formData = new FormData();
-      formData.set("reportId", reportId);
-      formData.set("isPublic", String(checked));
-      formData.set("billId", billId);
-      formData.set("sessionId", sessionId);
-
-      const result = await updateReportVisibilityAction(formData);
+      const result = await updateReportVisibilityAction({
+        reportId,
+        isPublic: checked,
+        billId,
+        sessionId,
+      });
 
       if (result.success) {
         toast.success(
