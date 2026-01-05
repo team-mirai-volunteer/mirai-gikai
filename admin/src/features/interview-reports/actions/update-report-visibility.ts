@@ -4,20 +4,24 @@ import { createAdminClient } from "@mirai-gikai/supabase";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/features/auth/lib/auth-server";
 
+interface UpdateReportVisibilityParams {
+  reportId: string;
+  isPublic: boolean;
+  billId: string;
+  sessionId: string;
+}
+
 interface UpdateReportVisibilityResult {
   success: boolean;
   error?: string;
 }
 
 export async function updateReportVisibilityAction(
-  formData: FormData
+  params: UpdateReportVisibilityParams
 ): Promise<UpdateReportVisibilityResult> {
   await requireAdmin();
 
-  const reportId = formData.get("reportId") as string;
-  const isPublic = formData.get("isPublic") === "true";
-  const billId = formData.get("billId") as string;
-  const sessionId = formData.get("sessionId") as string;
+  const { reportId, isPublic, billId, sessionId } = params;
 
   if (!reportId) {
     return {
@@ -31,7 +35,7 @@ export async function updateReportVisibilityAction(
 
     const { error } = await supabase
       .from("interview_report")
-      .update({ is_public: isPublic })
+      .update({ is_public_by_admin: isPublic })
       .eq("id", reportId);
 
     if (error) {
@@ -43,10 +47,8 @@ export async function updateReportVisibilityAction(
     }
 
     // Revalidate the detail page and list page
-    if (billId && sessionId) {
-      revalidatePath(`/bills/${billId}/reports/${sessionId}`);
-      revalidatePath(`/bills/${billId}/reports`);
-    }
+    revalidatePath(`/bills/${billId}/reports/${sessionId}`);
+    revalidatePath(`/bills/${billId}/reports`);
 
     return { success: true };
   } catch (error) {
