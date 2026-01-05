@@ -1,7 +1,5 @@
-import type { UIMessage } from "ai";
-import { getChatSupabaseUser } from "@/features/chat/lib/supabase-server";
-import { handleInterviewChatRequest } from "@/features/interview-session/services/handle-interview-chat-request";
-import type { InterviewChatMetadata } from "@/features/interview-session/types";
+import { getChatSupabaseUser } from "@/features/chat/server/utils/supabase-server";
+import { handleInterviewChatRequest } from "@/features/interview-session/server/services/handle-interview-chat-request";
 import { registerNodeTelemetry } from "@/lib/telemetry/register";
 
 export async function POST(req: Request) {
@@ -9,13 +7,16 @@ export async function POST(req: Request) {
   // 明示的にtelemetryを初期化
   await registerNodeTelemetry();
 
+  const body = await req.json();
   const {
     messages,
     billId,
+    currentStage,
   }: {
-    messages: UIMessage<InterviewChatMetadata>[];
+    messages: Array<{ role: string; content: string }>;
     billId: string;
-  } = await req.json();
+    currentStage: "chat" | "summary" | "summary_complete";
+  } = body;
 
   const {
     data: { user },
@@ -44,6 +45,7 @@ export async function POST(req: Request) {
     return await handleInterviewChatRequest({
       messages,
       billId,
+      currentStage,
     });
   } catch (error) {
     console.error("Interview chat request error:", error);

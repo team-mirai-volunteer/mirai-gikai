@@ -1,0 +1,185 @@
+"use client";
+
+import { experimental_useObject as useObject } from "@ai-sdk/react";
+import { useState } from "react";
+import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
+import { interviewChatResponseSchema } from "@/features/interview-session/shared/schemas";
+import { callFacilitateApi } from "../utils/interview-api-client";
+import {
+  buildMessagesForApi,
+  buildMessagesForFacilitator,
+  type ConversationMessage,
+  convertPartialReport,
+} from "../utils/message-utils";
+import { type InitialMessage, useParsedMessages } from "./use-parsed-messages";
+import { useQuickReplies } from "./use-quick-replies";
+
+export type InterviewStage = "chat" | "summary" | "summary_complete";
+
+interface UseInterviewChatProps {
+  billId: string;
+  initialMessages: InitialMessage[];
+}
+
+export function useInterviewChat({
+  billId,
+  initialMessages,
+}: UseInterviewChatProps) {
+  // 初期メッセージのパース
+  const { parsedInitialMessages, initialStage } =
+    useParsedMessages(initialMessages);
+
+  // 基本状態
+  const [input, setInput] = useState("");
+  const [stage, setStage] = useState<InterviewStage>(initialStage);
+  const [conversationMessages, setConversationMessages] = useState<
+    ConversationMessage[]
+  >([]);
+  const [isFacilitating, setIsFacilitating] = useState(false);
+
+  // useObjectフックを使用（streamObjectの結果を受け取る）
+  const { object, submit, isLoading, error } = useObject({
+    api: "/api/interview/chat",
+    schema: interviewChatResponseSchema,
+    onFinish: ({ object: finishedObject, error: finishedError }) => {
+      if (finishedError) {
+        console.error("chat error", finishedError);
+        return;
+      }
+      if (finishedObject) {
+        const { text, report, quick_replies, question_id } = finishedObject;
+        const questionId = question_id ?? null;
+        setConversationMessages((prev) => [
+          ...prev,
+          {
+            id: `assistant-${Date.now()}`,
+            role: "assistant",
+            content: text ?? "",
+            report: convertPartialReport(report),
+            quickReplies:
+              questionId && Array.isArray(quick_replies) ? quick_replies : [],
+            questionId,
+          },
+        ]);
+      }
+    },
+  });
+
+  // 統合ローディング状態（useObjectのisLoading + ファシリテーターAPI呼び出し中）
+  const isChatLoading = isLoading || isFacilitating;
+
+  // 完了時のコールバック（summary_completeへの遷移用）
+  const handleComplete = (reportId: string | null) => {
+    setStage("summary_complete");
+    setCompletedReportId(reportId);
+  };
+
+  const [completedReportId, setCompletedReportId] = useState<string | null>(
+    null
+  );
+
+  // 初期メッセージと会話履歴を統合
+  const messages = [...parsedInitialMessages, ...conversationMessages];
+
+  // クイックリプライ
+  const currentQuickReplies = useQuickReplies({
+    messages,
+    isLoading: isChatLoading,
+  });
+
+  // objectからreportを取得
+  const streamingReportData = convertPartialReport(object?.report);
+
+  // チャットAPI送信のヘルパー
+  const submitChatMessage = (
+    userMessageText: string,
+    currentStage: InterviewStage
+  ) => {
+    submit({
+      messages: buildMessagesForApi(
+        parsedInitialMessages,
+        conversationMessages,
+        userMessageText
+      ),
+      billId,
+      currentStage,
+    });
+  };
+
+  // メッセージ送信
+  const handleSubmit = async (message: PromptInputMessage) => {
+    const hasText = Boolean(message.text);
+    if (!hasText || isChatLoading || stage === "summary_complete") {
+      return;
+    }
+
+    const userMessageText = message.text ?? "";
+    const userMessageId = `user-${Date.now()}`;
+
+    // ユーザーメッセージを会話履歴に追加
+    setConversationMessages((prev) => [
+      ...prev,
+      {
+        id: userMessageId,
+        role: "user",
+        content: userMessageText,
+      },
+    ]);
+    setInput("");
+
+    // summaryフェーズではファシリテーターを呼ばず、直接チャットAPIを呼ぶ
+    if (stage === "summary") {
+      submitChatMessage(userMessageText, "summary");
+      return;
+    }
+
+    // 通常のチャットフェーズでは、送信前にファシリテーターAPIを同期呼び出し
+    setIsFacilitating(true);
+    try {
+      const facilitatorResult = await callFacilitateApi({
+        messages: buildMessagesForFacilitator(
+          parsedInitialMessages,
+          conversationMessages,
+          { content: userMessageText }
+        ),
+        billId,
+        currentStage: "chat",
+      });
+
+      if (facilitatorResult?.status === "summary") {
+        setStage("summary");
+        submitChatMessage(userMessageText, "summary");
+        return;
+      }
+
+      // 通常のチャットフェーズでのメッセージ送信
+      submitChatMessage(userMessageText, "chat");
+    } finally {
+      setIsFacilitating(false);
+    }
+  };
+
+  // クイックリプライを選択した時の処理
+  const handleQuickReply = (reply: string) => {
+    handleSubmit({ text: reply });
+  };
+
+  return {
+    // 状態
+    input,
+    setInput,
+    stage,
+    messages,
+    isLoading: isChatLoading,
+    error,
+    object,
+    streamingReportData,
+    currentQuickReplies,
+    completedReportId,
+
+    // アクション
+    handleSubmit,
+    handleQuickReply,
+    handleComplete,
+  };
+}

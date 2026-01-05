@@ -403,8 +403,10 @@ export type Database = {
           opinions: Json | null
           role: string | null
           role_description: string | null
+          scores: Json | null
           stance: Database["public"]["Enums"]["stance_type_enum"] | null
           summary: string | null
+          total_score: number | null
           updated_at: string
         }
         Insert: {
@@ -415,8 +417,10 @@ export type Database = {
           opinions?: Json | null
           role?: string | null
           role_description?: string | null
+          scores?: Json | null
           stance?: Database["public"]["Enums"]["stance_type_enum"] | null
           summary?: string | null
+          total_score?: number | null
           updated_at?: string
         }
         Update: {
@@ -427,8 +431,10 @@ export type Database = {
           opinions?: Json | null
           role?: string | null
           role_description?: string | null
+          scores?: Json | null
           stance?: Database["public"]["Enums"]["stance_type_enum"] | null
           summary?: string | null
+          total_score?: number | null
           updated_at?: string
         }
         Relationships: [
@@ -443,30 +449,36 @@ export type Database = {
       }
       interview_sessions: {
         Row: {
+          archived_at: string | null
           completed_at: string | null
           created_at: string
           id: string
           interview_config_id: string
+          is_public_by_user: boolean
           langfuse_session_id: string | null
           started_at: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          archived_at?: string | null
           completed_at?: string | null
           created_at?: string
           id?: string
           interview_config_id: string
+          is_public_by_user?: boolean
           langfuse_session_id?: string | null
           started_at?: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          archived_at?: string | null
           completed_at?: string | null
           created_at?: string
           id?: string
           interview_config_id?: string
+          is_public_by_user?: boolean
           langfuse_session_id?: string | null
           started_at?: string
           updated_at?: string
