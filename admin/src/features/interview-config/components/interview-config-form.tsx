@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -33,6 +34,7 @@ import {
   textToArray,
 } from "../types";
 import { upsertInterviewConfig } from "../actions/upsert-interview-config";
+import { generateInterviewPreviewUrl } from "../actions/generate-interview-preview-url";
 
 interface InterviewConfigFormProps {
   billId: string;
@@ -74,95 +76,147 @@ export function InterviewConfigForm({
     }
   };
 
+  const [isPreviewing, setIsPreviewing] = useState(false);
+  const handlePreview = async () => {
+    // プレビューの前に保存を実行
+    const data = form.getValues();
+    const isValid = await form.trigger();
+    if (!isValid) {
+      toast.error("入力内容を確認してください");
+      return;
+    }
+
+    setIsPreviewing(true);
+    try {
+      // 1. 保存
+      const saveResult = await upsertInterviewConfig(billId, data);
+      if (!saveResult.success) {
+        toast.error(saveResult.error || "保存に失敗しました");
+        return;
+      }
+
+      // 2. プレビューURL生成
+      const result = await generateInterviewPreviewUrl(billId);
+
+      if (result.success && result.url) {
+        window.open(result.url, "_blank");
+      } else {
+        toast.error(result.error || "プレビューURLの生成に失敗しました");
+      }
+    } catch (error) {
+      console.error("Preview URL generation failed:", error);
+      toast.error("プレビューURLの生成中にエラーが発生しました");
+    } finally {
+      setIsPreviewing(false);
+    }
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>インタビュー設定</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-6"
+    <div className="space-y-4">
+      {config && (
+        <div className="flex justify-end">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handlePreview}
+            disabled={isPreviewing}
           >
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ステータス</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+            <Eye className="mr-2 h-4 w-4" />
+            {isPreviewing ? "準備中..." : "プレビュー"}
+          </Button>
+        </div>
+      )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>インタビュー設定</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-6"
+            >
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ステータス</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="ステータスを選択" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="public">公開（有効）</SelectItem>
+                        <SelectItem value="closed">非公開（無効）</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      インタビュー機能の有効/無効を設定します
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="themes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>質問テーマ</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="ステータスを選択" />
-                      </SelectTrigger>
+                      <Textarea
+                        placeholder="質問テーマを改行区切りで入力"
+                        className="min-h-[100px] resize-y"
+                        value={arrayToText(field.value)}
+                        onChange={(e) => {
+                          field.onChange(textToArray(e.target.value));
+                        }}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="public">公開（有効）</SelectItem>
-                      <SelectItem value="closed">非公開（無効）</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    インタビュー機能の有効/無効を設定します
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormDescription>
+                      質問テーマを1行ずつ入力してください
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="themes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>質問テーマ</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="質問テーマを改行区切りで入力"
-                      className="min-h-[100px] resize-y"
-                      value={arrayToText(field.value)}
-                      onChange={(e) => {
-                        field.onChange(textToArray(e.target.value));
-                      }}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    質問テーマを1行ずつ入力してください
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="knowledge_source"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ナレッジソース</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="議案の詳細情報やチームみらいの仮説などの情報を入力"
+                        className="min-h-[200px] resize-y"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      AIが質問を生成する際に参照する情報を入力してください。法案コンテンツは自動で読み込まれます。
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="knowledge_source"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ナレッジソース</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="議案の詳細情報やチームみらいの仮説などの情報を入力"
-                      className="min-h-[200px] resize-y"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    AIが質問を生成する際に参照する情報を入力してください。法案コンテンツは自動で読み込まれます。
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex gap-2">
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "保存中..." : "保存"}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+              <div className="flex gap-2">
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "保存中..." : "保存"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

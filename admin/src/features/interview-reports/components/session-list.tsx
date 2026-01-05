@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { SESSIONS_PER_PAGE } from "../api/get-interview-sessions";
+import { SESSIONS_PER_PAGE } from "../loaders/get-interview-sessions";
 import type { InterviewSessionWithDetails } from "../types";
 import { formatDuration, getSessionStatus } from "../types";
 import { SessionStatusBadge } from "./session-status-badge";
