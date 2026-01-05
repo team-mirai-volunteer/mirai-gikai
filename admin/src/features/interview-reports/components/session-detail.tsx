@@ -11,14 +11,16 @@ import {
 import { Clock, MessageCircle, User } from "lucide-react";
 import type { InterviewSessionDetail } from "../types";
 import { formatDuration, getSessionStatus } from "../types";
+import { ReportVisibilityToggle } from "./report-visibility-toggle";
 import { SessionStatusBadge } from "./session-status-badge";
 import { StanceBadge } from "./stance-badge";
 
 interface SessionDetailProps {
   session: InterviewSessionDetail;
+  billId: string;
 }
 
-export function SessionDetail({ session }: SessionDetailProps) {
+export function SessionDetail({ session, billId }: SessionDetailProps) {
   const status = getSessionStatus(session);
   const duration = formatDuration(session.started_at, session.completed_at);
   const report = session.interview_report;
@@ -73,8 +75,16 @@ export function SessionDetail({ session }: SessionDetailProps) {
 
       {/* レポート情報 */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">レポート</CardTitle>
+          {report && (
+            <ReportVisibilityToggle
+              reportId={report.id}
+              sessionId={session.id}
+              billId={billId}
+              isPublic={report.is_public_by_admin ?? false}
+            />
+          )}
         </CardHeader>
         <CardContent>
           {report ? (

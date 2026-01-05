@@ -49,7 +49,7 @@ export default async function ReportDetailPage({
         </p>
       </div>
 
-      <SessionDetail session={session} />
+      <SessionDetail session={session} billId={id} />
     </div>
   );
 }

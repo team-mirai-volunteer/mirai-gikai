@@ -26,6 +26,7 @@ import type { InterviewSessionWithDetails } from "../types";
 import { formatDuration, getSessionStatus } from "../types";
 import { SessionStatusBadge } from "./session-status-badge";
 import { StanceBadge } from "./stance-badge";
+import { VisibilityBadge } from "./visibility-badge";
 
 interface SessionListProps {
   billId: string;
@@ -75,6 +76,7 @@ export function SessionList({
               <TableHead className="w-32">セッションID</TableHead>
               <TableHead className="w-24">ステータス</TableHead>
               <TableHead className="w-20 text-center">レポート</TableHead>
+              <TableHead className="w-20 text-center">公開</TableHead>
               <TableHead className="w-28">スタンス</TableHead>
               <TableHead className="w-28">役割</TableHead>
               <TableHead className="w-44">開始時刻</TableHead>
@@ -106,6 +108,17 @@ export function SessionList({
                   </TableCell>
                   <TableCell className="text-center">
                     <BooleanIcon value={hasReport} />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {hasReport ? (
+                      <VisibilityBadge
+                        isPublic={
+                          session.interview_report?.is_public_by_admin ?? false
+                        }
+                      />
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <StanceBadge
