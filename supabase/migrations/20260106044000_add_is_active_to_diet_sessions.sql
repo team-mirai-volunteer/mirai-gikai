@@ -12,3 +12,16 @@ WHERE is_active = true;
 
 -- Add comment for documentation
 COMMENT ON COLUMN diet_sessions.is_active IS 'Whether this session is the active one displayed on the top page. Only one session can be active at a time.';
+
+-- Atomic function to set a diet session as active
+-- This ensures only one session can be active at a time, avoiding race conditions
+CREATE OR REPLACE FUNCTION set_active_diet_session(target_session_id uuid)
+RETURNS void
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  -- Single atomic UPDATE: set is_active based on whether id matches target
+  UPDATE diet_sessions
+  SET is_active = (id = target_session_id);
+END;
+$$;

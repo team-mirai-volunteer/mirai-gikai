@@ -14,29 +14,28 @@ export async function setActiveDietSession(input: SetActiveDietSessionInput) {
 
     const supabase = createAdminClient();
 
-    // まず、既存のactiveセッションを全て非アクティブにする
-    const { error: deactivateError } = await supabase
-      .from("diet_sessions")
-      .update({ is_active: false })
-      .eq("is_active", true);
+    // Atomic operation: set only the target session as active
+    // Uses a database function to avoid race conditions
+    const { error: rpcError } = await supabase.rpc("set_active_diet_session", {
+      target_session_id: input.id,
+    });
 
-    if (deactivateError) {
+    if (rpcError) {
       return {
-        error: `既存のアクティブセッションの解除に失敗しました: ${deactivateError.message}`,
+        error: `アクティブセッションの設定に失敗しました: ${rpcError.message}`,
       };
     }
 
-    // 指定されたセッションをアクティブにする
+    // Fetch the updated session to return
     const { data, error } = await supabase
       .from("diet_sessions")
-      .update({ is_active: true })
-      .eq("id", input.id)
       .select()
+      .eq("id", input.id)
       .single();
 
     if (error) {
       return {
-        error: `アクティブセッションの設定に失敗しました: ${error.message}`,
+        error: `セッション情報の取得に失敗しました: ${error.message}`,
       };
     }
 

@@ -607,6 +607,10 @@ export type Database = {
         }[]
       }
       is_admin: { Args: never; Returns: boolean }
+      set_active_diet_session: {
+        Args: { target_session_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       bill_publish_status: "draft" | "published" | "coming_soon"
