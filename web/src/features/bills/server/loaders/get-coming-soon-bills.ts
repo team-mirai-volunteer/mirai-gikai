@@ -2,21 +2,32 @@ import { createAdminClient } from "@mirai-gikai/supabase";
 import { unstable_cache } from "next/cache";
 import { getDifficultyLevel } from "@/features/bill-difficulty/server/loaders/get-difficulty-level";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/types";
+import { getActiveDietSession } from "@/features/diet-sessions/server/loaders/get-active-diet-session";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import type { ComingSoonBill } from "../../shared/types";
 
 /**
  * Coming Soon議案を取得する
- * publish_status = 'coming_soon' の議案を取得
+ * publish_status = 'coming_soon' でアクティブな国会会期の議案を取得
  */
 export async function getComingSoonBills(): Promise<ComingSoonBill[]> {
   // キャッシュ外でcookiesにアクセス
   const difficultyLevel = await getDifficultyLevel();
-  return _getCachedComingSoonBills(difficultyLevel);
+  const activeSession = await getActiveDietSession();
+
+  // アクティブな国会会期がない場合は空配列を返す
+  if (!activeSession) {
+    return [];
+  }
+
+  return _getCachedComingSoonBills(difficultyLevel, activeSession.id);
 }
 
 const _getCachedComingSoonBills = unstable_cache(
-  async (difficultyLevel: DifficultyLevelEnum): Promise<ComingSoonBill[]> => {
+  async (
+    difficultyLevel: DifficultyLevelEnum,
+    dietSessionId: string
+  ): Promise<ComingSoonBill[]> => {
     const supabase = createAdminClient();
 
     // bill_contentsからタイトルも取得（指定された難易度レベルを使用）
@@ -35,6 +46,7 @@ const _getCachedComingSoonBills = unstable_cache(
       `
       )
       .eq("publish_status", "coming_soon")
+      .eq("diet_session_id", dietSessionId)
       .order("created_at", { ascending: false });
 
     if (error) {
