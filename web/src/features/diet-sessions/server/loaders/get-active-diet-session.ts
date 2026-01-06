@@ -5,7 +5,8 @@ import type { DietSession } from "../../shared/types";
 
 /**
  * アクティブな国会会期を取得
- * is_active = true の会期を返す（1つのみ存在する想定）
+ * is_active = true の会期を返す
+ * アクティブな会期がない場合は、最新の会期（start_date降順で最初）にフォールバック
  */
 export async function getActiveDietSession(): Promise<DietSession | null> {
   return _getCachedActiveDietSession();
@@ -15,18 +16,36 @@ const _getCachedActiveDietSession = unstable_cache(
   async (): Promise<DietSession | null> => {
     const supabase = createAdminClient();
 
-    const { data, error } = await supabase
+    // まずアクティブな会期を取得
+    const { data: activeSession, error: activeError } = await supabase
       .from("diet_sessions")
       .select("*")
       .eq("is_active", true)
       .maybeSingle();
 
-    if (error) {
-      console.error("Failed to fetch active diet session:", error);
+    if (activeError) {
+      console.error("Failed to fetch active diet session:", activeError);
       return null;
     }
 
-    return data;
+    if (activeSession) {
+      return activeSession;
+    }
+
+    // アクティブな会期がない場合は最新の会期にフォールバック
+    const { data: latestSession, error: latestError } = await supabase
+      .from("diet_sessions")
+      .select("*")
+      .order("start_date", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (latestError) {
+      console.error("Failed to fetch latest diet session:", latestError);
+      return null;
+    }
+
+    return latestSession;
   },
   ["active-diet-session"],
   {
