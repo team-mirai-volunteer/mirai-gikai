@@ -1,10 +1,11 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Undo2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { getBillDetailLink } from "@/features/interview-config/shared/utils/interview-links";
 import { SpeechBubble } from "@/components/ui/speech-bubble";
+import { Footer } from "@/components/layouts/footer/footer";
 import { getReportWithMessages } from "../loaders/get-report-with-messages";
 import { stanceLabels } from "../../shared/constants";
 import {
@@ -31,6 +32,8 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
     report.session_completed_at
   );
   const characterCount = countCharacters(messages);
+  const opinions =
+    (report.opinions as Array<{ title: string; content: string }>) || [];
 
   return (
     <div className="min-h-screen bg-[#F7F4F0]">
@@ -137,23 +140,67 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
             </div>
           </div>
 
+          {/* Opinions Section */}
+          {opinions.length > 0 && (
+            <div className="flex flex-col gap-4">
+              <h2 className="text-xl font-bold text-gray-800">意見の要約</h2>
+              <div className="bg-white rounded-2xl p-6 flex flex-col gap-6">
+                {opinions.map((opinion, index) => (
+                  <div key={opinion.title} className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-1">
+                      <div className="inline-flex">
+                        <span className="bg-[#2AA693] text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                          意見{index + 1}
+                        </span>
+                      </div>
+                      <p className="text-base font-bold text-gray-800">
+                        {opinion.title}
+                      </p>
+                    </div>
+                    <p className="text-sm text-gray-600">{opinion.content}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Back to Bill Button */}
+          <div className="flex flex-col gap-3">
+            <Link
+              href={getBillDetailLink(report.bill_id)}
+              className="flex items-center justify-center gap-2.5 px-6 py-3 border border-gray-800 rounded-full bg-white"
+            >
+              <Undo2 className="w-5 h-5 text-gray-800" />
+              <span className="text-base font-bold text-gray-800">
+                法案の記事に戻る
+              </span>
+            </Link>
+          </div>
+
           {/* Breadcrumb Navigation */}
-          <nav className="flex items-center gap-2 text-sm text-gray-800">
+          <nav className="flex flex-wrap items-center gap-2 text-sm text-gray-800">
             <Link href="/" className="hover:underline">
               TOP
             </Link>
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4" />
             <Link
               href={getBillDetailLink(report.bill_id)}
               className="hover:underline"
             >
               法案詳細
             </Link>
-            <ChevronRight className="w-5 h-5" />
-            <span>会話ログ</span>
+            <ChevronRight className="w-4 h-4" />
+            <span>AIインタビュー</span>
+            <ChevronRight className="w-4 h-4" />
+            <span>レポート</span>
+            <ChevronRight className="w-4 h-4" />
+            <span>すべての会話ログ</span>
           </nav>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
