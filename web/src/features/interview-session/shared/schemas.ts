@@ -48,10 +48,15 @@ export const interviewReportSchema = z
         "法案に対するユーザーのスタンス。for=賛成、against=反対、neutral=期待と懸念の両方がある"
       ),
     role: z
-      .string()
+      .enum([
+        "subject_expert",
+        "work_related",
+        "daily_life_affected",
+        "general_citizen",
+      ])
       .nullable()
       .describe(
-        "インタビュイーの立場・属性（例：「中国航路担当のフォワーダー実務者」）"
+        "インタビュイーの立場・属性。必ず以下の4つのいずれかを選択すること: subject_expert（専門家）, work_related（仕事関係者）, daily_life_affected（生活影響を受ける人）, general_citizen（一般市民）"
       ),
     role_description: z
       .string()

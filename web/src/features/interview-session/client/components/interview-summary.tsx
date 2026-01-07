@@ -2,7 +2,10 @@
 
 import { useMemo } from "react";
 import type { InterviewReportViewData } from "@/features/interview-session/shared/schemas";
-import { stanceLabels } from "../../../interview-report/shared/constants";
+import {
+  roleLabels,
+  stanceLabels,
+} from "../../../interview-report/shared/constants";
 
 type Props = {
   report: InterviewReportViewData;
@@ -34,7 +37,7 @@ export function InterviewSummary({ report }: Props) {
             {report.role && (
               <div className="space-y-1">
                 <p className="text-primary-accent">立場</p>
-                <p>{report.role}</p>
+                <p>{roleLabels[report.role] || report.role}</p>
               </div>
             )}
             {report.role_description && (
