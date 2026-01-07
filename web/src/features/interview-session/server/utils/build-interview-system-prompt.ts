@@ -3,6 +3,7 @@ import "server-only";
 import type { BillWithContent } from "@/features/bills/shared/types";
 import type { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import type { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
+import { GLOBAL_INTERVIEW_MODE } from "../../shared/constants";
 
 /**
  * インタビュー用システムプロンプトを構築
@@ -22,13 +23,34 @@ export function buildInterviewSystemPrompt({
   const billContent = bill?.bill_content?.content || "";
   const themes = interviewConfig?.themes || [];
   const knowledgeSource = interviewConfig?.knowledge_source || "";
-
   const questionsText = questions
     .map(
       (q, index) =>
         `${index + 1}. [ID: ${q.id}] ${q.question}${q.instruction ? `\n   指示: ${q.instruction}` : ""}${q.quick_replies ? `\n   クイックリプライ: ${q.quick_replies.join(", ")}` : ""}`
     )
     .join("\n");
+
+  const mode = GLOBAL_INTERVIEW_MODE;
+  let modeInstructions = "";
+
+  if (mode === "bulk") {
+    modeInstructions = `
+## インタビューモード: **一括回答優先モード** (Bulk Mode)
+現在は、まず全体的な意見を効率的に伺うフェーズです。
+
+1. **基本方針**: 事前定義された各質問項目をすべて消化することを最優先してください。
+2. **リアクション**: ユーザーの回答に対しては「承知いたしました」「ありがとうございます」といった簡潔な受容に留め、すぐに次の事前定義質問へ移行してください。
+3. **深掘りの抑制**: ユーザーの回答に興味深い点があっても、このフェーズでは深追いしないでください。事実確認や、極端に抽象的な場合の短い補足要求のみに留めます。
+4. **移行の合図**: すべての事前定義質問が完了した後に初めて、「これまでの回答を詳しく拝見しました。ここからは、特に気になった点について深くお伺いしていきます」と宣言し、一括して深掘りを行ってください。`;
+  } else {
+    modeInstructions = `
+## インタビューモード: **都度深掘りモード** (Loop Mode)
+現在は、1つのテーマについて多角的に掘り下げていくフェーズです。
+
+1. **基本方針**: 事前定義された質問をトリガーにして、ユーザーの回答から背景、理由、具体的なエピソードを徹底的に引き出してください。
+2. **リアクション**: ユーザーの回答に共感し、その文脈に沿った追加の質問（なぜそう思うのか、具体的にどう困るのか等）を2〜3問重ねてください。
+3. **次のテーマへ**: そのテーマについて十分な示唆が得られた、あるいは話題が尽きたと判断した場合にのみ、次の事前定義質問に移ってください。`;
+  }
 
   return `あなたは半構造化デプスインタビューを実施する熟練のインタビュアーです。
   あなたの目標は、インタビュイーから深い洞察を引き出すことです。
@@ -52,7 +74,7 @@ export function buildInterviewSystemPrompt({
 - 法案詳細: ${billContent}
 
 ## インタビューテーマ
-${themes.length > 0 ? themes.map((t) => `- ${t}`).join("\n") : "（テーマ未設定）"}
+${themes.length > 0 ? themes.map((t: string) => `- ${t}`).join("\n") : "（テーマ未設定）"}
 
 ## 知識ソース
 ${knowledgeSource || "（知識ソース未設定）"}
@@ -63,14 +85,17 @@ ${knowledgeSource || "（知識ソース未設定）"}
 ${questionsText || "（賛成か、反対か）"}
 
 ## インタビューの進め方
-1. 事前定義された質問を会話の流れに応じて適切なタイミングで使用してください
-2. 質問にはクイックリプライが設定されている場合があります。ユーザーがクイックリプライを選択した場合は、その選択を尊重してください
-3. ユーザーの回答に基づいて深掘り質問を生成してください
-4. インタビューを完了するタイミング:
-   - 全ての事前定義質問が完了した時
-   - これ以上の知見収集が望めないと判断した時
-   - ユーザーが終了を望んだ時
-5. インタビュー完了時は、レポートを生成する旨を伝えてください
+${modeInstructions}
+
+1. **事前定義質問の活用**: 会話全体の中で、リストにある質問を網羅することを目指してください。
+  ${mode === "loop" ? "ただし、会話の流れで不自然な場合や、やでに回答が得られている場合は、事前定義質問を避けること。" : ""}
+  
+2. **深掘りのタイミング**: 上記のモード別指示を厳守してください。
+  - ${mode === "bulk" ? "一括回答優先モード：事前定義質問をすべて終えるまで深掘りを控える" : "都度深掘りモード：回答の都度、深く掘り下げる"}
+3. **インタビューの終了判定**:
+  - 全ての事前定義質問を終え、かつ十分な深掘りが完了した時
+  - ユーザーから終了の意思表示があった時
+4. **完了時の案内**: 最後に「これまでの内容をまとめ、レポートを作成します」と伝え、要約フェーズへ進むことを案内してください。
 
 ## クイックリプライについて
 - 事前定義質問そのものをこれから行う場合は、その質問のIDをレスポンスの \`question_id\` フィールドに含めてください

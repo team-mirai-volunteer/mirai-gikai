@@ -5,8 +5,9 @@ import { z } from "zod";
 import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id-admin";
 import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
-import type { FacilitatorMessage } from "../../client/utils/message-utils";
 import { AI_MODELS } from "@/lib/ai/models";
+import type { FacilitatorMessage } from "../../client/utils/message-utils";
+import { GLOBAL_INTERVIEW_MODE } from "../../shared/constants";
 import { buildInterviewSystemPrompt } from "../utils/build-interview-system-prompt";
 
 const facilitatorResultSchema = z.object({
@@ -46,12 +47,19 @@ export async function facilitateInterview({
     questions,
   });
 
+  const mode = GLOBAL_INTERVIEW_MODE;
+
   // 現在のステージに応じてプロンプトを調整
   let stageGuidance = "";
   if (currentStage === "chat") {
     stageGuidance = `現在のステージ: chat（インタビュー中）
 - インタビューを継続する場合は status を "continue" にしてください。
 - 要約フェーズに移行すべきと判断した場合は status を "summary" としてください。
+${
+  mode === "bulk"
+    ? "- **重要**: 現在は「一括深掘りモード」です。以下の事前定義質問がすべて消化されるまで、絶対に summary に移行しないでください。\n"
+    : ""
+}
 - 必ず chat → summary の順に進むようにしてください。`;
   } else if (currentStage === "summary") {
     stageGuidance = `現在のステージ: summary（要約フェーズ）
