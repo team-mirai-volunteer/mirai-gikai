@@ -12,7 +12,7 @@ interface InterviewSummaryInputProps {
   onSubmit: (message: PromptInputMessage) => void;
   onComplete: (reportId: string | null) => void;
   isLoading: boolean;
-  error: Error | undefined;
+  error: Error | null | undefined;
 }
 
 export function InterviewSummaryInput({

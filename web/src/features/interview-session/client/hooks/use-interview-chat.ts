@@ -4,6 +4,7 @@ import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { useState } from "react";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { interviewChatResponseSchema } from "@/features/interview-session/shared/schemas";
+import { useStateWithRef } from "@/hooks/use-state-with-ref";
 import { callFacilitateApi } from "../utils/interview-api-client";
 import {
   buildMessagesForApi,
@@ -11,6 +12,7 @@ import {
   type ConversationMessage,
   convertPartialReport,
 } from "../utils/message-utils";
+import { useInterviewRetry } from "./use-interview-retry";
 import { type InitialMessage, useParsedMessages } from "./use-parsed-messages";
 import { useQuickReplies } from "./use-quick-replies";
 
@@ -32,10 +34,15 @@ export function useInterviewChat({
   // 基本状態
   const [input, setInput] = useState("");
   const [stage, setStage] = useState<InterviewStage>(initialStage);
-  const [conversationMessages, setConversationMessages] = useState<
-    ConversationMessage[]
-  >([]);
+  const [
+    conversationMessages,
+    setConversationMessages,
+    conversationMessagesRef,
+  ] = useStateWithRef<ConversationMessage[]>([]);
   const [isFacilitating, setIsFacilitating] = useState(false);
+
+  // リトライロジック
+  const retry = useInterviewRetry();
 
   // useObjectフックを使用（streamObjectの結果を受け取る）
   const { object, submit, isLoading, error } = useObject({
@@ -43,9 +50,19 @@ export function useInterviewChat({
     schema: interviewChatResponseSchema,
     onFinish: ({ object: finishedObject, error: finishedError }) => {
       if (finishedError) {
-        console.error("chat error", finishedError);
-        return;
+        // リトライ処理を委譲
+        const handled = retry.handleError(
+          finishedError,
+          conversationMessagesRef,
+          submit
+        );
+        if (handled) return; // 自動リトライ実行済み
+        return; // 手動リトライ待ち
       }
+
+      // 成功時はリトライをリセット
+      retry.resetRetry();
+
       if (finishedObject) {
         const { text, report, quick_replies, question_id } = finishedObject;
         const questionId = question_id ?? null;
@@ -90,12 +107,12 @@ export function useInterviewChat({
   // objectからreportを取得
   const streamingReportData = convertPartialReport(object?.report);
 
-  // チャットAPI送信のヘルパー
+  // チャットAPI送信のヘルパー（リクエストパラメータを保存）
   const submitChatMessage = (
     userMessageText: string,
     currentStage: InterviewStage
   ) => {
-    submit({
+    const requestParams = {
       messages: buildMessagesForApi(
         parsedInitialMessages,
         conversationMessages,
@@ -103,7 +120,9 @@ export function useInterviewChat({
       ),
       billId,
       currentStage,
-    });
+    };
+    retry.saveRequestParams(requestParams); // 失敗時の自動リトライ用に保存
+    submit(requestParams);
   };
 
   // メッセージ送信
@@ -164,6 +183,31 @@ export function useInterviewChat({
     handleSubmit({ text: reply });
   };
 
+  // 手動リトライ関数
+  const handleRetry = () => {
+    if (!retry.lastFailedMessage) return;
+
+    // 失敗したユーザーメッセージを会話から削除
+    setConversationMessages((prev) => prev.slice(0, -1));
+
+    // リトライフラグを付けて再送信
+    if (stage === "summary") {
+      const requestParams = {
+        messages: buildMessagesForApi(
+          parsedInitialMessages,
+          conversationMessages.slice(0, -1),
+          retry.lastFailedMessage
+        ),
+        billId,
+        currentStage: "summary" as const,
+        isRetry: true,
+      };
+      retry.executeRetry(requestParams, submit);
+    } else {
+      handleSubmit({ text: retry.lastFailedMessage });
+    }
+  };
+
   return {
     // 状態
     input,
@@ -171,15 +215,17 @@ export function useInterviewChat({
     stage,
     messages,
     isLoading: isChatLoading,
-    error,
+    error: error || retry.displayError,
     object,
     streamingReportData,
     currentQuickReplies,
     completedReportId,
+    canRetry: retry.canRetry,
 
     // アクション
     handleSubmit,
     handleQuickReply,
     handleComplete,
+    handleRetry,
   };
 }
