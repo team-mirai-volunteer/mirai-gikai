@@ -9,24 +9,23 @@ import type { BillsByTag } from "../../shared/types";
 /**
  * Featured表示用の議案をタグごとにグループ化して取得
  * featured_priorityが設定されているタグを持つアクティブな国会会期の議案を優先度順に取得
+ * アクティブな国会会期がない場合は全件取得
  */
 export async function getBillsByFeaturedTags(): Promise<BillsByTag[]> {
   // キャッシュ外でcookiesにアクセス
   const difficultyLevel = await getDifficultyLevel();
   const activeSession = await getActiveDietSession();
 
-  // アクティブな国会会期がない場合は空配列を返す
-  if (!activeSession) {
-    return [];
-  }
-
-  return _getCachedBillsByFeaturedTags(difficultyLevel, activeSession.id);
+  return _getCachedBillsByFeaturedTags(
+    difficultyLevel,
+    activeSession?.id ?? null
+  );
 }
 
 const _getCachedBillsByFeaturedTags = unstable_cache(
   async (
     difficultyLevel: DifficultyLevelEnum,
-    dietSessionId: string
+    dietSessionId: string | null
   ): Promise<BillsByTag[]> => {
     const supabase = createAdminClient();
 
@@ -49,7 +48,7 @@ const _getCachedBillsByFeaturedTags = unstable_cache(
     // 各タグの議案を並列で取得
     const results = await Promise.all(
       featuredTags.map(async (tag) => {
-        const { data, error } = await supabase
+        let query = supabase
           .from("bills_tags")
           .select(
             `
@@ -77,8 +76,14 @@ const _getCachedBillsByFeaturedTags = unstable_cache(
           )
           .eq("tag_id", tag.id)
           .eq("bills.publish_status", "published")
-          .eq("bills.diet_session_id", dietSessionId)
           .eq("bills.bill_contents.difficulty_level", difficultyLevel);
+
+        // アクティブな国会会期がある場合のみフィルタリング
+        if (dietSessionId) {
+          query = query.eq("bills.diet_session_id", dietSessionId);
+        }
+
+        const { data, error } = await query;
 
         if (error) {
           console.error(`Failed to fetch bills for tag ${tag.label}:`, error);
