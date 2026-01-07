@@ -6,6 +6,7 @@ interface SaveInterviewMessageParams {
   sessionId: string;
   role: "assistant" | "user";
   content: string;
+  isRetry?: boolean;
 }
 
 /**
@@ -15,7 +16,14 @@ export async function saveInterviewMessage({
   sessionId,
   role,
   content,
+  isRetry = false,
 }: SaveInterviewMessageParams): Promise<void> {
+  // リトライ時はユーザーメッセージの保存をスキップ（既に保存済み）
+  if (isRetry && role === "user") {
+    console.log("[Message Save] Skipping user message (retry)");
+    return;
+  }
+
   const supabase = createAdminClient();
 
   const { error } = await supabase.from("interview_messages").insert({
