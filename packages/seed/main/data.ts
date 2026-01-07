@@ -264,7 +264,7 @@ export function createInterviewSessions(
   for (let i = 0; i < 20; i++) {
     const baseOffset = i * 86400000 * 3; // 3日ずつずらす
 
-    // パターン1: 完了 + レポートあり（賛成）
+    // パターン1: 完了 + レポートあり（賛成）- 最初の5件は公開
     sessions.push({
       interview_config_id: interviewConfigId,
       user_id: `00000000-0000-0000-0000-${String(i * 5 + 1).padStart(12, "0")}`,
@@ -272,9 +272,10 @@ export function createInterviewSessions(
       completed_at: new Date(
         now.getTime() - baseOffset - 3000000
       ).toISOString(),
+      is_public_by_user: i < 5, // 最初の5件は公開
     });
 
-    // パターン2: 完了 + レポートあり（反対）
+    // パターン2: 完了 + レポートあり（反対）- 最初の5件は公開
     sessions.push({
       interview_config_id: interviewConfigId,
       user_id: `00000000-0000-0000-0000-${String(i * 5 + 2).padStart(12, "0")}`,
@@ -282,9 +283,10 @@ export function createInterviewSessions(
       completed_at: new Date(
         now.getTime() - baseOffset - 6600000
       ).toISOString(),
+      is_public_by_user: i < 5, // 最初の5件は公開
     });
 
-    // パターン3: 完了 + レポートあり（中立）
+    // パターン3: 完了 + レポートあり（中立）- 最初の5件は公開
     sessions.push({
       interview_config_id: interviewConfigId,
       user_id: `00000000-0000-0000-0000-${String(i * 5 + 3).padStart(12, "0")}`,
@@ -292,6 +294,7 @@ export function createInterviewSessions(
       completed_at: new Date(
         now.getTime() - baseOffset - 10200000
       ).toISOString(),
+      is_public_by_user: i < 5, // 最初の5件は公開
     });
 
     // パターン4: 完了したけどレポート未作成
@@ -302,6 +305,7 @@ export function createInterviewSessions(
       completed_at: new Date(
         now.getTime() - baseOffset - 13800000
       ).toISOString(),
+      is_public_by_user: false,
     });
 
     // パターン5: 進行中（未完了、レポートなし）
@@ -310,6 +314,7 @@ export function createInterviewSessions(
       user_id: `00000000-0000-0000-0000-${String(i * 5 + 5).padStart(12, "0")}`,
       started_at: new Date(now.getTime() - baseOffset - 1800000).toISOString(),
       completed_at: null,
+      is_public_by_user: false,
     });
   }
 
