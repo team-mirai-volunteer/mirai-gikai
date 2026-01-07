@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { validatePreviewToken } from "@/features/bills/server/loaders/validate-preview-token";
 import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
 import { InterviewChatClient } from "@/features/interview-session/client/components/interview-chat-client";
+import { InterviewSessionErrorView } from "@/features/interview-session/client/components/interview-session-error-view";
 import { initializeInterviewChat } from "@/features/interview-session/server/loaders/initialize-interview-chat";
 import { env } from "@/lib/env";
 
@@ -60,19 +61,29 @@ export default async function InterviewPreviewChatPage({
   }
 
   // インタビューチャットの初期化処理
-  const { session, messages } = await initializeInterviewChat(
-    billId,
-    interviewConfig.id
-  );
+  try {
+    const { session, messages } = await initializeInterviewChat(
+      billId,
+      interviewConfig.id
+    );
 
-  return (
-    <>
-      <PreviewBanner />
-      <InterviewChatClient
-        billId={billId}
-        sessionId={session.id}
-        initialMessages={messages}
-      />
-    </>
-  );
+    return (
+      <>
+        <PreviewBanner />
+        <InterviewChatClient
+          billId={billId}
+          sessionId={session.id}
+          initialMessages={messages}
+        />
+      </>
+    );
+  } catch (error) {
+    console.error("Failed to initialize interview session (preview):", error);
+    return (
+      <>
+        <PreviewBanner />
+        <InterviewSessionErrorView billId={billId} previewToken={token} />
+      </>
+    );
+  }
 }
