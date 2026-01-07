@@ -10,11 +10,11 @@ import {
   interviewChatTextSchema,
   interviewChatWithReportSchema,
 } from "@/features/interview-session/shared/schemas";
+import { AI_MODELS } from "@/lib/ai/models";
 import {
   buildInterviewSystemPrompt,
   buildSummarySystemPrompt,
 } from "../utils/build-interview-system-prompt";
-import { AI_MODELS } from "@/lib/ai/models";
 import { saveInterviewMessage } from "./save-interview-message";
 
 type InterviewChatRequestParams = {
