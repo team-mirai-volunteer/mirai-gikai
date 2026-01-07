@@ -5,8 +5,8 @@ import type { DietSession } from "../../shared/types";
 
 /**
  * 前回の国会会期を取得
- * 最新のセッション（start_date順）から2番目のセッションを返す
- * 2つ以上のセッションがない場合はnullを返す
+ * アクティブなセッションより古いセッションを返す
+ * アクティブなセッションがない場合、または古いセッションがない場合はnullを返す
  */
 export async function getPreviousDietSession(): Promise<DietSession | null> {
   return _getCachedPreviousDietSession();
@@ -16,25 +16,38 @@ const _getCachedPreviousDietSession = unstable_cache(
   async (): Promise<DietSession | null> => {
     const supabase = createAdminClient();
 
-    // 最新2件のセッションを取得
-    const { data, error } = await supabase
+    // まずアクティブなセッションを取得
+    const { data: activeSession, error: activeError } = await supabase
       .from("diet_sessions")
       .select("*")
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (activeError) {
+      console.error("Failed to fetch active diet session:", activeError);
+      return null;
+    }
+
+    // アクティブなセッションがない場合はnullを返す
+    if (!activeSession) {
+      return null;
+    }
+
+    // アクティブなセッションより古いセッションを取得（start_dateで比較）
+    const { data: previousSession, error: previousError } = await supabase
+      .from("diet_sessions")
+      .select("*")
+      .lt("start_date", activeSession.start_date)
       .order("start_date", { ascending: false })
-      .limit(2);
+      .limit(1)
+      .maybeSingle();
 
-    if (error) {
-      console.error("Failed to fetch previous diet session:", error);
+    if (previousError) {
+      console.error("Failed to fetch previous diet session:", previousError);
       return null;
     }
 
-    // 2つ以上のセッションがない場合はnullを返す
-    if (!data || data.length < 2) {
-      return null;
-    }
-
-    // 2番目のセッション（前回のセッション）を返す
-    return data[1];
+    return previousSession;
   },
   ["previous-diet-session"],
   {
