@@ -1,14 +1,10 @@
 import { useRef, useState } from "react";
 import type { InterviewChatRequestParams } from "@/features/interview-session/shared/types";
-import type { ConversationMessage } from "../utils/message-utils";
 
 const MAX_AUTO_RETRIES = 1;
 
 export function useInterviewRetry() {
   const retryCount = useRef(0);
-  const [lastFailedMessage, setLastFailedMessage] = useState<string | null>(
-    null
-  );
   const [displayError, setDisplayError] = useState<Error | null>(null);
   const lastFailedRequestParams = useRef<InterviewChatRequestParams | null>(
     null
@@ -27,7 +23,6 @@ export function useInterviewRetry() {
    */
   const handleError = (
     error: Error,
-    conversationMessagesRef: React.RefObject<ConversationMessage[]>,
     submit: (params: InterviewChatRequestParams) => void
   ): boolean => {
     console.error("chat error", error);
@@ -51,15 +46,7 @@ export function useInterviewRetry() {
       return true; // 自動リトライ実行
     }
 
-    // 自動リトライ上限に達した場合は手動リトライ用に保存
-    const lastUserMsg =
-      conversationMessagesRef.current?.[
-        conversationMessagesRef.current.length - 1
-      ];
-    console.log("Last user message:", lastUserMsg);
-    if (lastUserMsg?.role === "user") {
-      setLastFailedMessage(lastUserMsg.content);
-    }
+    // 自動リトライ上限に達した場合は手動リトライ待ち
     // エラーを表示用stateに保存
     setDisplayError(
       new Error("エラーが発生しました。もう一度お試しください。")
@@ -72,35 +59,36 @@ export function useInterviewRetry() {
    */
   const resetRetry = () => {
     retryCount.current = 0;
-    setLastFailedMessage(null);
     setDisplayError(null);
     lastFailedRequestParams.current = null;
   };
 
   /**
    * 手動リトライの実行
+   * 保存されているリクエストパラメータを使って再送信
    */
-  const executeRetry = (
-    params: InterviewChatRequestParams,
+  const manualRetry = (
     submit: (params: InterviewChatRequestParams) => void
   ) => {
+    if (!lastFailedRequestParams.current) return;
+
     retryCount.current = 0;
     setDisplayError(null);
-    lastFailedRequestParams.current = params;
+
+    // 保存されたパラメータにisRetryフラグを追加して再送信
+    const params = { ...lastFailedRequestParams.current, isRetry: true };
     submit(params);
-    setLastFailedMessage(null);
   };
 
   return {
     // State
     displayError,
-    lastFailedMessage,
-    canRetry: !!lastFailedMessage,
+    canRetry: !!lastFailedRequestParams.current,
 
     // Actions
     saveRequestParams,
     handleError,
     resetRetry,
-    executeRetry,
+    manualRetry,
   };
 }

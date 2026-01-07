@@ -4,7 +4,6 @@ import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { useState } from "react";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { interviewChatResponseSchema } from "@/features/interview-session/shared/schemas";
-import { useStateWithRef } from "@/hooks/use-state-with-ref";
 import { callFacilitateApi } from "../utils/interview-api-client";
 import {
   buildMessagesForApi,
@@ -34,11 +33,9 @@ export function useInterviewChat({
   // 基本状態
   const [input, setInput] = useState("");
   const [stage, setStage] = useState<InterviewStage>(initialStage);
-  const [
-    conversationMessages,
-    setConversationMessages,
-    conversationMessagesRef,
-  ] = useStateWithRef<ConversationMessage[]>([]);
+  const [conversationMessages, setConversationMessages] = useState<
+    ConversationMessage[]
+  >([]);
   const [isFacilitating, setIsFacilitating] = useState(false);
 
   // リトライロジック
@@ -51,11 +48,7 @@ export function useInterviewChat({
     onFinish: ({ object: finishedObject, error: finishedError }) => {
       if (finishedError) {
         // リトライ処理を委譲
-        const handled = retry.handleError(
-          finishedError,
-          conversationMessagesRef,
-          submit
-        );
+        const handled = retry.handleError(finishedError, submit);
         if (handled) return; // 自動リトライ実行済み
         return; // 手動リトライ待ち
       }
@@ -185,27 +178,10 @@ export function useInterviewChat({
 
   // 手動リトライ関数
   const handleRetry = () => {
-    if (!retry.lastFailedMessage) return;
+    if (!retry.canRetry) return;
 
-    // 失敗したユーザーメッセージを会話から削除
-    setConversationMessages((prev) => prev.slice(0, -1));
-
-    // リトライフラグを付けて再送信
-    if (stage === "summary") {
-      const requestParams = {
-        messages: buildMessagesForApi(
-          parsedInitialMessages,
-          conversationMessages.slice(0, -1),
-          retry.lastFailedMessage
-        ),
-        billId,
-        currentStage: "summary" as const,
-        isRetry: true,
-      };
-      retry.executeRetry(requestParams, submit);
-    } else {
-      handleSubmit({ text: retry.lastFailedMessage });
-    }
+    // 保存されたリクエストパラメータでリトライ
+    retry.manualRetry(submit);
   };
 
   return {
