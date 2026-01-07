@@ -9,7 +9,7 @@ import { getInterviewReportById } from "@/features/interview-report/server/loade
 import { stanceLabels } from "@/features/interview-report/shared/constants";
 import {
   getBillDetailLink,
-  getInterviewChatLink,
+  getInterviewChatLogLink,
 } from "@/features/interview-config/shared/utils/interview-links";
 import { getInterviewMessages } from "@/features/interview-session/server/loaders/get-interview-messages";
 import { SpeechBubble } from "@/components/ui/speech-bubble";
@@ -220,7 +220,7 @@ export async function ReportCompletePage({
 
                   {/* すべての会話ログを読むボタン */}
                   <Link
-                    href={getInterviewChatLink(billId)}
+                    href={getInterviewChatLogLink(reportId)}
                     className="flex items-center justify-center gap-2.5 px-6 py-3 border border-gray-800 rounded-full"
                   >
                     <MessageSquareMore className="w-6 h-6 text-gray-800" />
