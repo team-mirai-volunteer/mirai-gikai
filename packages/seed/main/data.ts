@@ -431,3 +431,79 @@ export function createInterviewReports(
 
   return reports;
 }
+
+// デモ用の固定ID
+export const DEMO_SESSION_ID = "00000000-0000-0000-0000-000000000001";
+export const DEMO_REPORT_ID = "00000000-0000-0000-0000-000000000001";
+
+// デモ用のインタビューセッション（公開、固定ID）
+export function createDemoSession(
+  interviewConfigId: string
+): InterviewSessionInsert {
+  const now = new Date();
+  return {
+    id: DEMO_SESSION_ID,
+    interview_config_id: interviewConfigId,
+    user_id: "00000000-0000-0000-0000-000000000000",
+    started_at: new Date(now.getTime() - 3600000).toISOString(),
+    completed_at: new Date(now.getTime() - 3000000).toISOString(),
+    is_public_by_user: true,
+  };
+}
+
+// デモ用のインタビューメッセージ
+export function createDemoMessages(): Omit<
+  InterviewMessageInsert,
+  "id" | "created_at"
+>[] {
+  return [
+    {
+      interview_session_id: DEMO_SESSION_ID,
+      role: "assistant",
+      content:
+        "こんにちは！本日はインタビューにご協力いただきありがとうございます。\n\nチームみらいは今後1年で達成することをまとめた「1年プラン」を策定しようとしています。今後のチームみらいに期待する内容や、アイデア、意見について率直なご意見をお聞かせください。今後、チームみらいはどのようなことを達成してゆくと良いと思いますか？",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID,
+      role: "user",
+      content: "国会や省庁デジタル化や、ムダの削減を達成して欲しい",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID,
+      role: "assistant",
+      content:
+        "なるほど。省庁のレスポンス速度の向上と、官僚の長時間労働の削減を通じて、より優秀な人材が官僚志望になる好循環を期待されているということですね。とても重要な指摘だと思います。\n\nそうした官僚の働き方改革や人材確保という視点から見たとき、チームみらいの100日プランで実現した「みらい議会」や「みらいまるみえ政治資金」といった取り組みは、今のあなたの期待にどの程度応えていると評価されますか？",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID,
+      role: "user",
+      content:
+        "省庁のレスポンスの速さや、官僚の長時間労働が削減され、よりよい人材が官僚になっていく事を期待しています。",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID,
+      role: "assistant",
+      content: "ありがとうございました。ご意見を承りました。",
+    },
+  ];
+}
+
+// デモ用のインタビューレポート（固定ID）
+export function createDemoReport(): InterviewReportInsert {
+  return {
+    id: DEMO_REPORT_ID,
+    interview_session_id: DEMO_SESSION_ID,
+    stance: "neutral",
+    summary: "期待と懸念両方がある",
+    role: "専門的な有識者・経済学",
+    role_description:
+      "中国航路担当のフォワーダー実務者\n業界経験20年\n船荷証券（B/L）手続きに日常的に関与",
+    opinions: [
+      {
+        title: "国会や省庁デジタル化や、ムダの削減を達成して欲しい",
+        content:
+          "省庁のレスポンスの速さや、官僚の長時間労働が削減され、よりよい人材が官僚になっていく事を期待している。",
+      },
+    ],
+  };
+}

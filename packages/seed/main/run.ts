@@ -9,6 +9,10 @@ import {
   createInterviewSessions,
   createInterviewMessages,
   createInterviewReports,
+  createDemoSession,
+  createDemoMessages,
+  createDemoReport,
+  DEMO_REPORT_ID,
 } from "./data";
 import { createBillContents } from "./bill-contents-data";
 import { createAdminClient, clearAllData } from "../shared/helper";
@@ -265,6 +269,45 @@ async function seedDatabase() {
             insertedReportsCount = insertedReports.length;
             console.log(`✅ Inserted ${insertedReportsCount} interview reports`);
           }
+
+          // Insert demo session, messages, and report with fixed IDs
+          console.log("🎯 Inserting demo data with fixed IDs...");
+
+          const demoSession = createDemoSession(insertedConfig.id);
+          const { error: demoSessionError } = await supabase
+            .from("interview_sessions")
+            .insert(demoSession);
+
+          if (demoSessionError) {
+            throw new Error(
+              `Failed to insert demo session: ${demoSessionError.message}`
+            );
+          }
+
+          const demoMessages = createDemoMessages();
+          const { error: demoMessagesError } = await supabase
+            .from("interview_messages")
+            .insert(demoMessages);
+
+          if (demoMessagesError) {
+            throw new Error(
+              `Failed to insert demo messages: ${demoMessagesError.message}`
+            );
+          }
+
+          const demoReport = createDemoReport();
+          const { error: demoReportError } = await supabase
+            .from("interview_report")
+            .insert(demoReport);
+
+          if (demoReportError) {
+            throw new Error(
+              `Failed to insert demo report: ${demoReportError.message}`
+            );
+          }
+
+          console.log(`✅ Inserted demo data`);
+          console.log(`   Demo report URL: /report/${DEMO_REPORT_ID}/chat-log`);
         }
       }
     } else {
