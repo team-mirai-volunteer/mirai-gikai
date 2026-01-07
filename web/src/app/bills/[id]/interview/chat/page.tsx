@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
 import { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import { InterviewChatClient } from "@/features/interview-session/client/components/interview-chat-client";
+import { InterviewSessionErrorView } from "@/features/interview-session/client/components/interview-session-error-view";
 import { initializeInterviewChat } from "@/features/interview-session/server/loaders/initialize-interview-chat";
 
 interface InterviewChatPageProps {
@@ -26,16 +27,21 @@ export default async function InterviewChatPage({
   }
 
   // インタビューチャットの初期化処理
-  const { session, messages } = await initializeInterviewChat(
-    billId,
-    interviewConfig.id
-  );
+  try {
+    const { session, messages } = await initializeInterviewChat(
+      billId,
+      interviewConfig.id
+    );
 
-  return (
-    <InterviewChatClient
-      billId={billId}
-      sessionId={session.id}
-      initialMessages={messages}
-    />
-  );
+    return (
+      <InterviewChatClient
+        billId={billId}
+        sessionId={session.id}
+        initialMessages={messages}
+      />
+    );
+  } catch (error) {
+    console.error("Failed to initialize interview session:", error);
+    return <InterviewSessionErrorView billId={billId} />;
+  }
 }
