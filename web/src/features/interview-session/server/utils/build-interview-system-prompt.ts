@@ -140,11 +140,11 @@ ${conversationLog}
 - neutral: 期待と懸念の両方がある
 
 ### 3. role（立場・属性）
-- インタビュイーの立場・属性を以下の4つから**必ず1つ選択すること**:
-  - subject_expert: 専門家（法案の対象領域における専門的知識や経験を持つ）
-  - work_related: 仕事関係者（法案が業務に直接影響する立場）
-  - daily_life_affected: 生活影響を受ける人（法案が日常生活に影響を与える立場）
-  - general_citizen: 一般市民（上記に該当しない、一般的な関心を持つ市民）
+- インタビュイーの立場タイプを以下の4つから**必ず1つ選択すること**:
+  - subject_expert: 専門的な有識者
+  - work_related: 業務に関係
+  - daily_life_affected: 暮らしに影響
+  - general_citizen: 一市民として関心
 
 ### 4. role_description（立場の詳細説明）
 - 立場・属性の詳細説明（例：「10年間アジア航路を担当しており、フォワーダーとして豊富な実務経験を持つ」）
