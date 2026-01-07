@@ -89,7 +89,12 @@ export function convertPartialReport(
     | {
         summary?: string | null;
         stance?: "for" | "against" | "neutral" | null;
-        role?: string | null;
+        role?:
+          | "subject_expert"
+          | "work_related"
+          | "daily_life_affected"
+          | "general_citizen"
+          | null;
         role_description?: string | null;
         opinions?: Array<
           { title?: string; content?: string } | undefined

@@ -37,7 +37,10 @@ export function InterviewSummary({ report }: Props) {
             {report.role && (
               <div className="space-y-1">
                 <p className="text-primary-accent">立場</p>
-                <p>{roleLabels[report.role] || report.role}</p>
+                <p>
+                  {roleLabels[report.role as keyof typeof roleLabels] ||
+                    report.role}
+                </p>
               </div>
             )}
             {report.role_description && (

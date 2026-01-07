@@ -155,7 +155,8 @@ export async function ReportCompletePage({
                   {/* 役割 */}
                   {report.role && (
                     <p className="text-sm text-gray-600">
-                      {roleLabels[report.role] || report.role}
+                      {roleLabels[report.role as keyof typeof roleLabels] ||
+                        report.role}
                     </p>
                   )}
                 </div>

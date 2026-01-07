@@ -8,9 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { roleLabels } from "@/features/interview-report/shared/constants";
 import { Clock, MessageCircle, User } from "lucide-react";
 import type { InterviewSessionDetail } from "../types";
+import { roleLabels } from "../shared/constants";
 import { formatDuration, getSessionStatus } from "../types";
 import { ReportVisibilityToggle } from "./report-visibility-toggle";
 import { SessionStatusBadge } from "./session-status-badge";
@@ -101,7 +101,10 @@ export function SessionDetail({ session, billId }: SessionDetailProps) {
                   <div className="text-sm text-gray-500">役割</div>
                   <div className="flex items-center gap-1 text-sm">
                     <User className="h-4 w-4 text-gray-400" />
-                    {report.role ? roleLabels[report.role] || report.role : "-"}
+                    {report.role
+                      ? roleLabels[report.role as keyof typeof roleLabels] ||
+                        report.role
+                      : "-"}
                   </div>
                 </div>
                 <div>
