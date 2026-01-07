@@ -15,13 +15,18 @@ COMMENT ON COLUMN diet_sessions.is_active IS 'Whether this session is the active
 
 -- Atomic function to set a diet session as active
 -- This ensures only one session can be active at a time, avoiding race conditions
+-- SECURITY DEFINER allows this function to bypass RLS restrictions
 CREATE OR REPLACE FUNCTION set_active_diet_session(target_session_id uuid)
 RETURNS void
 LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
   -- Single atomic UPDATE: set is_active based on whether id matches target
+  -- WHERE clause required by Supabase
   UPDATE diet_sessions
-  SET is_active = (id = target_session_id);
+  SET is_active = (id = target_session_id)
+  WHERE id IS NOT NULL;
 END;
 $$;
