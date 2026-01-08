@@ -4,7 +4,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { getBillDetailLink } from "@/features/interview-config/shared/utils/interview-links";
-import { SpeechBubble } from "@/components/ui/speech-bubble";
 import { getReportWithMessages } from "../loaders/get-report-with-messages";
 import { stanceLabels } from "../../shared/constants";
 import {
@@ -37,7 +36,7 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
   return (
     <div className="min-h-screen bg-[#F7F4F0]">
       {/* Header Section */}
-      <div className="bg-white rounded-b-[32px] px-4 py-8">
+      <div className="px-4 py-8">
         <div className="flex flex-col items-center gap-4">
           {/* Title */}
           <h1 className="text-2xl font-bold text-center text-gray-800">
@@ -45,18 +44,12 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
           </h1>
 
           {/* Bill Name */}
-          <div className="bg-[#F2F2F7] rounded-xl px-4 py-2">
-            <p className="text-sm text-gray-800">{billName}</p>
-          </div>
-
-          {/* Summary Speech Bubble */}
-          {report.summary && (
-            <SpeechBubble>
-              <p className="text-lg font-bold text-gray-800 leading-relaxed relative z-10 text-center">
-                {report.summary}
-              </p>
-            </SpeechBubble>
-          )}
+          <Link
+            href={getBillDetailLink(report.bill_id)}
+            className="text-sm text-black underline"
+          >
+            {billName}
+          </Link>
 
           {/* Stance and Meta Info */}
           <div className="flex flex-col items-center gap-6">
