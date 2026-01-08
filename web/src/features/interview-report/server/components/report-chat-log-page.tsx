@@ -31,7 +31,7 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
   return (
     <div className="min-h-screen bg-[#F7F4F0]">
       {/* Header Section */}
-      <div className="px-4 py-8">
+      <div className="px-4 pt-24 pb-8">
         <div className="flex flex-col items-center gap-4">
           {/* Title */}
           <h1 className="text-2xl font-bold text-center text-gray-800">
