@@ -7,7 +7,6 @@ import { getBillDetailLink } from "@/features/interview-config/shared/utils/inte
 import { getReportWithMessages } from "../loaders/get-report-with-messages";
 import { stanceLabels } from "../../shared/constants";
 import {
-  calculateDuration,
   countCharacters,
   formatDateTime,
 } from "../../shared/utils/report-utils";
@@ -25,10 +24,6 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
 
   const { report, messages, bill } = data;
   const billName = bill.bill_content?.title || bill.name;
-  const duration = calculateDuration(
-    report.session_started_at,
-    report.session_completed_at
-  );
   const characterCount = countCharacters(messages);
   const opinions =
     (report.opinions as Array<{ title: string; content: string }>) || [];
@@ -83,12 +78,13 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
             </div>
 
             {/* Date, Duration, Character Count */}
-            <div className="flex flex-col items-center gap-1 font-medium">
-              <p className="text-sm text-gray-800">
+            <div className="text-sm text-black text-center">
+              <p className="font-medium">
                 {formatDateTime(report.session_started_at)}
               </p>
-              <p className="text-sm text-gray-800">
-                {duration} / {characterCount} 文字
+              <p className="font-normal">
+                インタビューの分量{" "}
+                <span className="underline">{characterCount}文字</span>
               </p>
             </div>
           </div>
