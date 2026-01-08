@@ -495,7 +495,7 @@ export function createDemoReport(): InterviewReportInsert {
     interview_session_id: DEMO_SESSION_ID,
     stance: "neutral",
     summary: "期待と懸念両方がある",
-    role: "専門的な有識者・経済学",
+    role: "subject_expert",
     role_description:
       "中国航路担当のフォワーダー実務者\n業界経験20年\n船荷証券（B/L）手続きに日常的に関与",
     opinions: [
