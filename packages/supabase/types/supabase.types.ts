@@ -255,6 +255,7 @@ export type Database = {
           created_at: string
           end_date: string
           id: string
+          is_active: boolean
           name: string
           shugiin_url: string | null
           slug: string | null
@@ -265,6 +266,7 @@ export type Database = {
           created_at?: string
           end_date: string
           id?: string
+          is_active?: boolean
           name: string
           shugiin_url?: string | null
           slug?: string | null
@@ -275,6 +277,7 @@ export type Database = {
           created_at?: string
           end_date?: string
           id?: string
+          is_active?: boolean
           name?: string
           shugiin_url?: string | null
           slug?: string | null
@@ -608,6 +611,10 @@ export type Database = {
         }[]
       }
       is_admin: { Args: never; Returns: boolean }
+      set_active_diet_session: {
+        Args: { target_session_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       bill_publish_status: "draft" | "published" | "coming_soon"
