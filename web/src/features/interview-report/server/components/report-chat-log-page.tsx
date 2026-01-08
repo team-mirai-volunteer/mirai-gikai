@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { getBillDetailLink } from "@/features/interview-config/shared/utils/interview-links";
 import { SpeechBubble } from "@/components/ui/speech-bubble";
-import { Footer } from "@/components/layouts/footer/footer";
 import { getReportWithMessages } from "../loaders/get-report-with-messages";
 import { stanceLabels } from "../../shared/constants";
 import {
@@ -198,9 +197,6 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
           </nav>
         </div>
       </div>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }
