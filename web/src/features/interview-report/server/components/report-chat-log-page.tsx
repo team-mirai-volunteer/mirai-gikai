@@ -234,10 +234,10 @@ function ChatMessage({ message }: ChatMessageProps) {
     );
   }
 
-  // User message: gradient bubble on the right
+  // User message: light gradient bubble on the right
   return (
     <div className="flex justify-end">
-      <div className="bg-mirai-gradient rounded-2xl px-4 py-3 max-w-[85%]">
+      <div className="bg-mirai-light-gradient rounded-2xl px-4 py-3 max-w-[85%]">
         <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap text-gray-800">
           {message.content}
         </p>
