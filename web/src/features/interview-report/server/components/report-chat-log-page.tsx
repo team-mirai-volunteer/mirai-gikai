@@ -1,11 +1,30 @@
-import { ChevronRight, Undo2 } from "lucide-react";
+import {
+  Briefcase,
+  ChevronRight,
+  GraduationCap,
+  Home,
+  Undo2,
+  User,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getBillDetailLink } from "@/features/interview-config/shared/utils/interview-links";
 import { getReportWithMessages } from "../loaders/get-report-with-messages";
-import { roleLabels, stanceLabels } from "../../shared/constants";
+import {
+  type InterviewReportRole,
+  roleLabels,
+  stanceLabels,
+} from "../../shared/constants";
+
+const roleIcons: Record<InterviewReportRole, LucideIcon> = {
+  subject_expert: GraduationCap,
+  work_related: Briefcase,
+  daily_life_affected: Home,
+  general_citizen: User,
+};
 import {
   countCharacters,
   formatDateTime,
@@ -72,12 +91,18 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
                 </div>
               )}
               {/* Role */}
-              {report.role && (
-                <p className="text-sm text-gray-600">
-                  {roleLabels[report.role as keyof typeof roleLabels] ||
-                    report.role}
-                </p>
-              )}
+              {report.role &&
+                (() => {
+                  const RoleIcon =
+                    roleIcons[report.role as InterviewReportRole];
+                  return (
+                    <p className="text-sm text-gray-600 flex items-center gap-1">
+                      {RoleIcon && <RoleIcon size={16} strokeWidth={1.5} />}
+                      {roleLabels[report.role as keyof typeof roleLabels] ||
+                        report.role}
+                    </p>
+                  );
+                })()}
             </div>
 
             {/* Date, Duration, Character Count */}
