@@ -6,7 +6,10 @@ import { cn } from "@/lib/utils";
 import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
 import { PublicStatusSection } from "@/features/interview-report/client/components/public-status-section";
 import { getInterviewReportById } from "@/features/interview-report/server/loaders/get-interview-report-by-id";
-import { stanceLabels } from "@/features/interview-report/shared/constants";
+import {
+  roleLabels,
+  stanceLabels,
+} from "@/features/interview-report/shared/constants";
 import {
   getBillDetailLink,
   getInterviewChatLogLink,
@@ -151,7 +154,10 @@ export async function ReportCompletePage({
                   )}
                   {/* 役割 */}
                   {report.role && (
-                    <p className="text-sm text-gray-600">{report.role}</p>
+                    <p className="text-sm text-gray-600">
+                      {roleLabels[report.role as keyof typeof roleLabels] ||
+                        report.role}
+                    </p>
                   )}
                 </div>
 

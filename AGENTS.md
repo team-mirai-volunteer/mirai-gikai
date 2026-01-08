@@ -50,6 +50,8 @@ src/features/{feature}/
 - Biome が 2 スペースインデント、LF、ダブルクォート、セミコロン、80 文字幅を強制します。
 - React コンポーネントと公開型は PascalCase、フックやユーティリティは camelCase を維持します。
 - ファイル名は `bill-contents-data.ts` のようにローワーハイフンで表記し、スタイルは Tailwind ユーティリティを先に検討します。
+- **アイコン**: インラインSVGは禁止です。必ず `lucide-react` からアイコンコンポーネントをインポートして使用してください。
+- **ボタン**: `<button>` タグの使用は禁止です。必ず `@/components/ui/button` の `Button` コンポーネントを使用してください。
 
 ## Testing Guidelines
 - Vitest の単体テストを `*.test.ts` として実装と同階層に配置し、AI コスト計算や Markdown 処理などデータ変換の変更時は必ず回帰テストを追加します。

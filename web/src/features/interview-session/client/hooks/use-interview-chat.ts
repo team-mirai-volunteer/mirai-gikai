@@ -11,6 +11,7 @@ import {
   type ConversationMessage,
   convertPartialReport,
 } from "../utils/message-utils";
+import { useInterviewRetry } from "./use-interview-retry";
 import { type InitialMessage, useParsedMessages } from "./use-parsed-messages";
 import { useQuickReplies } from "./use-quick-replies";
 
@@ -37,15 +38,24 @@ export function useInterviewChat({
   >([]);
   const [isFacilitating, setIsFacilitating] = useState(false);
 
+  // リトライロジック
+  const retry = useInterviewRetry();
+
   // useObjectフックを使用（streamObjectの結果を受け取る）
   const { object, submit, isLoading, error } = useObject({
     api: "/api/interview/chat",
     schema: interviewChatResponseSchema,
     onFinish: ({ object: finishedObject, error: finishedError }) => {
       if (finishedError) {
-        console.error("chat error", finishedError);
-        return;
+        // リトライ処理を委譲
+        const handled = retry.handleError(finishedError, submit);
+        if (handled) return; // 自動リトライ実行済み
+        return; // 手動リトライ待ち
       }
+
+      // 成功時はリトライをリセット
+      retry.resetRetry();
+
       if (finishedObject) {
         const { text, report, quick_replies, question_id } = finishedObject;
         const questionId = question_id ?? null;
@@ -90,12 +100,12 @@ export function useInterviewChat({
   // objectからreportを取得
   const streamingReportData = convertPartialReport(object?.report);
 
-  // チャットAPI送信のヘルパー
+  // チャットAPI送信のヘルパー（リクエストパラメータを保存）
   const submitChatMessage = (
     userMessageText: string,
     currentStage: InterviewStage
   ) => {
-    submit({
+    const requestParams = {
       messages: buildMessagesForApi(
         parsedInitialMessages,
         conversationMessages,
@@ -103,7 +113,9 @@ export function useInterviewChat({
       ),
       billId,
       currentStage,
-    });
+    };
+    retry.saveRequestParams(requestParams); // 失敗時の自動リトライ用に保存
+    submit(requestParams);
   };
 
   // メッセージ送信
@@ -164,6 +176,14 @@ export function useInterviewChat({
     handleSubmit({ text: reply });
   };
 
+  // 手動リトライ関数
+  const handleRetry = () => {
+    if (!retry.canRetry) return;
+
+    // 保存されたリクエストパラメータでリトライ
+    retry.manualRetry(submit);
+  };
+
   return {
     // 状態
     input,
@@ -171,15 +191,17 @@ export function useInterviewChat({
     stage,
     messages,
     isLoading: isChatLoading,
-    error,
+    error: error || retry.displayError,
     object,
     streamingReportData,
     currentQuickReplies,
     completedReportId,
+    canRetry: retry.canRetry,
 
     // アクション
     handleSubmit,
     handleQuickReply,
     handleComplete,
+    handleRetry,
   };
 }

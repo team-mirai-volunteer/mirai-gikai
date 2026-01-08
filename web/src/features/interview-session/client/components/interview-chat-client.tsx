@@ -6,6 +6,7 @@ import {
 } from "@/components/ai-elements/conversation";
 import { useInterviewChat } from "../hooks/use-interview-chat";
 import { InterviewChatInput } from "./interview-chat-input";
+import { InterviewErrorDisplay } from "./interview-error-display";
 import { InterviewMessage } from "./interview-message";
 import { InterviewSubmitSection } from "./interview-submit-section";
 import { InterviewSummaryInput } from "./interview-summary-input";
@@ -38,9 +39,11 @@ export function InterviewChatClient({
     streamingReportData,
     currentQuickReplies,
     completedReportId,
+    canRetry,
     handleSubmit,
     handleQuickReply,
     handleComplete,
+    handleRetry,
   } = useInterviewChat({
     billId,
     initialMessages,
@@ -104,11 +107,12 @@ export function InterviewChatClient({
           )}
 
           {/* エラー表示 */}
-          {error && (
-            <div className="text-sm text-red-500">
-              エラーが発生しました: {error.message}
-            </div>
-          )}
+          <InterviewErrorDisplay
+            error={error}
+            canRetry={canRetry}
+            onRetry={handleRetry}
+            isRetrying={isLoading}
+          />
 
           {/* 完了メッセージ */}
           {stage === "summary_complete" && (
@@ -158,7 +162,6 @@ export function InterviewChatClient({
             onSubmit={handleSubmit}
             placeholder="AIに質問に回答する"
             isResponding={isLoading}
-            error={error}
           />
         )}
       </div>

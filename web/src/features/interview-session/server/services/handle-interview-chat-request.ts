@@ -10,18 +10,13 @@ import {
   interviewChatTextSchema,
   interviewChatWithReportSchema,
 } from "@/features/interview-session/shared/schemas";
+import type { InterviewChatRequestParams } from "@/features/interview-session/shared/types";
+import { AI_MODELS } from "@/lib/ai/models";
 import {
   buildInterviewSystemPrompt,
   buildSummarySystemPrompt,
 } from "../utils/build-interview-system-prompt";
-import { AI_MODELS } from "@/lib/ai/models";
 import { saveInterviewMessage } from "./save-interview-message";
-
-type InterviewChatRequestParams = {
-  messages: { role: string; content: string }[];
-  billId: string;
-  currentStage: "chat" | "summary" | "summary_complete";
-};
 
 /**
  * インタビューチャットリクエストを処理してストリーミングレスポンスを返す
@@ -30,6 +25,7 @@ export async function handleInterviewChatRequest({
   messages,
   billId,
   currentStage,
+  isRetry = false,
 }: InterviewChatRequestParams) {
   // インタビュー設定と法案情報を取得
   const [interviewConfig, bill] = await Promise.all([
@@ -59,6 +55,7 @@ export async function handleInterviewChatRequest({
         sessionId: session.id,
         role: "user",
         content: userMessageText,
+        isRetry,
       });
     }
   }

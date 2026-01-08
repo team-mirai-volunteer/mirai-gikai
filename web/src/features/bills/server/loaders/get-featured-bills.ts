@@ -2,25 +2,32 @@ import { createAdminClient } from "@mirai-gikai/supabase";
 import { unstable_cache } from "next/cache";
 import { getDifficultyLevel } from "@/features/bill-difficulty/server/loaders/get-difficulty-level";
 import type { DifficultyLevelEnum } from "@/features/bill-difficulty/shared/types";
+import { getActiveDietSession } from "@/features/diet-sessions/server/loaders/get-active-diet-session";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import type { BillWithContent } from "../../shared/types";
 import { fetchTagsByBillIds } from "./helpers/get-bill-tags";
 
 /**
  * 注目の議案を取得する
- * is_featured = true で公開済みの議案を最新順に取得
+ * is_featured = true でアクティブな国会会期の公開済み議案を最新順に取得
+ * アクティブな国会会期がない場合は全件取得
  */
 export async function getFeaturedBills(): Promise<BillWithContent[]> {
   // キャッシュ外でcookiesにアクセス
   const difficultyLevel = await getDifficultyLevel();
-  return _getCachedFeaturedBills(difficultyLevel);
+  const activeSession = await getActiveDietSession();
+
+  return _getCachedFeaturedBills(difficultyLevel, activeSession?.id ?? null);
 }
 
 const _getCachedFeaturedBills = unstable_cache(
-  async (difficultyLevel: DifficultyLevelEnum): Promise<BillWithContent[]> => {
+  async (
+    difficultyLevel: DifficultyLevelEnum,
+    dietSessionId: string | null
+  ): Promise<BillWithContent[]> => {
     const supabase = createAdminClient();
 
-    const { data, error } = await supabase
+    let query = supabase
       .from("bills")
       .select(
         `
@@ -46,6 +53,13 @@ const _getCachedFeaturedBills = unstable_cache(
       .eq("is_featured", true)
       .eq("bill_contents.difficulty_level", difficultyLevel)
       .order("published_at", { ascending: false });
+
+    // アクティブな国会会期がある場合のみフィルタリング
+    if (dietSessionId) {
+      query = query.eq("diet_session_id", dietSessionId);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error("Failed to fetch featured bills:", error);

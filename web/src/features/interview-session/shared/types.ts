@@ -20,3 +20,11 @@ export type InterviewReportInsert =
 
 export type InterviewQuestion =
   Database["public"]["Tables"]["interview_questions"]["Row"];
+
+// Request types
+export interface InterviewChatRequestParams {
+  messages: Array<{ role: string; content: string }>;
+  billId: string;
+  currentStage: "chat" | "summary" | "summary_complete";
+  isRetry?: boolean;
+}

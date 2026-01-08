@@ -255,6 +255,7 @@ export type Database = {
           created_at: string
           end_date: string
           id: string
+          is_active: boolean
           name: string
           shugiin_url: string | null
           slug: string | null
@@ -265,6 +266,7 @@ export type Database = {
           created_at?: string
           end_date: string
           id?: string
+          is_active?: boolean
           name: string
           shugiin_url?: string | null
           slug?: string | null
@@ -275,6 +277,7 @@ export type Database = {
           created_at?: string
           end_date?: string
           id?: string
+          is_active?: boolean
           name?: string
           shugiin_url?: string | null
           slug?: string | null
@@ -401,7 +404,7 @@ export type Database = {
           interview_session_id: string
           is_public_by_admin: boolean
           opinions: Json | null
-          role: string | null
+          role: Database["public"]["Enums"]["interview_report_role_enum"] | null
           role_description: string | null
           scores: Json | null
           stance: Database["public"]["Enums"]["stance_type_enum"] | null
@@ -415,7 +418,9 @@ export type Database = {
           interview_session_id: string
           is_public_by_admin?: boolean
           opinions?: Json | null
-          role?: string | null
+          role?:
+            | Database["public"]["Enums"]["interview_report_role_enum"]
+            | null
           role_description?: string | null
           scores?: Json | null
           stance?: Database["public"]["Enums"]["stance_type_enum"] | null
@@ -429,7 +434,9 @@ export type Database = {
           interview_session_id?: string
           is_public_by_admin?: boolean
           opinions?: Json | null
-          role?: string | null
+          role?:
+            | Database["public"]["Enums"]["interview_report_role_enum"]
+            | null
           role_description?: string | null
           scores?: Json | null
           stance?: Database["public"]["Enums"]["stance_type_enum"] | null
@@ -604,6 +611,10 @@ export type Database = {
         }[]
       }
       is_admin: { Args: never; Returns: boolean }
+      set_active_diet_session: {
+        Args: { target_session_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       bill_publish_status: "draft" | "published" | "coming_soon"
@@ -618,6 +629,11 @@ export type Database = {
       difficulty_level_enum: "normal" | "hard"
       house_enum: "HR" | "HC"
       interview_config_status_enum: "public" | "closed"
+      interview_report_role_enum:
+        | "subject_expert"
+        | "work_related"
+        | "daily_life_affected"
+        | "general_citizen"
       interview_role_enum: "assistant" | "user"
       stance_type_enum:
         | "for"
@@ -770,6 +786,12 @@ export const Constants = {
       difficulty_level_enum: ["normal", "hard"],
       house_enum: ["HR", "HC"],
       interview_config_status_enum: ["public", "closed"],
+      interview_report_role_enum: [
+        "subject_expert",
+        "work_related",
+        "daily_life_affected",
+        "general_citizen",
+      ],
       interview_role_enum: ["assistant", "user"],
       stance_type_enum: [
         "for",
