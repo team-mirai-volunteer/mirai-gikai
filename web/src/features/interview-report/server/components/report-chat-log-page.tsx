@@ -32,7 +32,7 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
     <div className="min-h-screen bg-[#F7F4F0]">
       {/* Header Section */}
       <div className="px-4 pt-24 pb-8">
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center">
           {/* Title */}
           <h1 className="text-2xl font-bold text-center text-gray-800">
             インタビューレポート
@@ -41,14 +41,14 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
           {/* Bill Name */}
           <Link
             href={getBillDetailLink(report.bill_id)}
-            className="text-sm text-black underline"
+            className="text-sm text-black underline mt-2"
           >
             {billName}
           </Link>
 
           {/* Stance and Meta Info */}
-          <div className="flex flex-col items-center gap-6">
-            <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-6 mt-8">
+            <div className="flex flex-col items-center gap-1">
               {/* Stance */}
               {report.stance && (
                 <div className="flex flex-col items-center gap-2">
