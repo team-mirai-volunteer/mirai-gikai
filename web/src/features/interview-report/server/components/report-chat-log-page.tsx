@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { getBillDetailLink } from "@/features/interview-config/shared/utils/interview-links";
 import { getReportWithMessages } from "../loaders/get-report-with-messages";
-import { stanceLabels } from "../../shared/constants";
+import { roleLabels, stanceLabels } from "../../shared/constants";
 import {
   countCharacters,
   formatDateTime,
@@ -73,7 +73,10 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
               )}
               {/* Role */}
               {report.role && (
-                <p className="text-sm text-gray-600">{report.role}</p>
+                <p className="text-sm text-gray-600">
+                  {roleLabels[report.role as keyof typeof roleLabels] ||
+                    report.role}
+                </p>
               )}
             </div>
 
