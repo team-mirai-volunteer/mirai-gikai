@@ -436,6 +436,14 @@ export function createInterviewReports(
 export const DEMO_SESSION_ID = "00000000-0000-0000-0000-000000000001";
 export const DEMO_REPORT_ID = "00000000-0000-0000-0000-000000000001";
 
+// 4種類のロールを確認するためのデモ用ID
+export const DEMO_SESSION_ID_WORK = "00000000-0000-0000-0000-000000000002";
+export const DEMO_SESSION_ID_DAILY = "00000000-0000-0000-0000-000000000003";
+export const DEMO_SESSION_ID_CITIZEN = "00000000-0000-0000-0000-000000000004";
+export const DEMO_REPORT_ID_WORK = "00000000-0000-0000-0000-000000000002";
+export const DEMO_REPORT_ID_DAILY = "00000000-0000-0000-0000-000000000003";
+export const DEMO_REPORT_ID_CITIZEN = "00000000-0000-0000-0000-000000000004";
+
 // デモ用のインタビューセッション（公開、固定ID）
 export function createDemoSession(
   interviewConfigId: string
@@ -506,4 +514,177 @@ export function createDemoReport(): InterviewReportInsert {
       },
     ],
   };
+}
+
+// 追加のデモ用セッション（3種類のロール確認用）
+export function createAdditionalDemoSessions(
+  interviewConfigId: string
+): InterviewSessionInsert[] {
+  const now = new Date();
+  return [
+    {
+      id: DEMO_SESSION_ID_WORK,
+      interview_config_id: interviewConfigId,
+      user_id: "00000000-0000-0000-0000-000000000010",
+      started_at: new Date(now.getTime() - 7200000).toISOString(),
+      completed_at: new Date(now.getTime() - 6600000).toISOString(),
+      is_public_by_user: true,
+    },
+    {
+      id: DEMO_SESSION_ID_DAILY,
+      interview_config_id: interviewConfigId,
+      user_id: "00000000-0000-0000-0000-000000000011",
+      started_at: new Date(now.getTime() - 10800000).toISOString(),
+      completed_at: new Date(now.getTime() - 10200000).toISOString(),
+      is_public_by_user: true,
+    },
+    {
+      id: DEMO_SESSION_ID_CITIZEN,
+      interview_config_id: interviewConfigId,
+      user_id: "00000000-0000-0000-0000-000000000012",
+      started_at: new Date(now.getTime() - 14400000).toISOString(),
+      completed_at: new Date(now.getTime() - 13800000).toISOString(),
+      is_public_by_user: true,
+    },
+  ];
+}
+
+// 追加のデモ用メッセージ（3種類のロール確認用）
+export function createAdditionalDemoMessages(): Omit<
+  InterviewMessageInsert,
+  "id" | "created_at"
+>[] {
+  return [
+    // work_related セッション用
+    {
+      interview_session_id: DEMO_SESSION_ID_WORK,
+      role: "assistant",
+      content: "こんにちは！本日はインタビューにご協力いただきありがとうございます。",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID_WORK,
+      role: "user",
+      content: "ガソリン価格の高騰で物流コストが上がっています。この法案には賛成です。",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID_WORK,
+      role: "assistant",
+      content: "物流業界で働かれている立場からのご意見ですね。具体的にどのような影響がありますか？",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID_WORK,
+      role: "user",
+      content: "運送会社を経営していますが、燃料費が経営を圧迫しています。暫定税率廃止で少しでも負担が減れば助かります。",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID_WORK,
+      role: "assistant",
+      content: "ありがとうございました。ご意見を承りました。",
+    },
+    // daily_life_affected セッション用
+    {
+      interview_session_id: DEMO_SESSION_ID_DAILY,
+      role: "assistant",
+      content: "こんにちは！本日はインタビューにご協力いただきありがとうございます。",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID_DAILY,
+      role: "user",
+      content: "地方在住で車が生活必需品なので、ガソリン代が下がるのは嬉しいです。",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID_DAILY,
+      role: "assistant",
+      content: "生活への影響が大きいとのことですね。どのような場面で車を使われますか？",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID_DAILY,
+      role: "user",
+      content: "通勤や買い物、子供の送り迎えなど、毎日使っています。公共交通機関がほとんどない地域なので。",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID_DAILY,
+      role: "assistant",
+      content: "ありがとうございました。ご意見を承りました。",
+    },
+    // general_citizen セッション用
+    {
+      interview_session_id: DEMO_SESSION_ID_CITIZEN,
+      role: "assistant",
+      content: "こんにちは！本日はインタビューにご協力いただきありがとうございます。",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID_CITIZEN,
+      role: "user",
+      content: "環境問題も気になりますが、今の物価高を考えると減税は必要だと思います。",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID_CITIZEN,
+      role: "assistant",
+      content: "環境と経済のバランスを考えていらっしゃるのですね。どのような点が気になりますか？",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID_CITIZEN,
+      role: "user",
+      content: "ガソリン車から電気自動車への移行も進めつつ、当面の生活支援として減税があってもいいと思います。",
+    },
+    {
+      interview_session_id: DEMO_SESSION_ID_CITIZEN,
+      role: "assistant",
+      content: "ありがとうございました。ご意見を承りました。",
+    },
+  ];
+}
+
+// 追加のデモ用レポート（3種類のロール確認用）
+export function createAdditionalDemoReports(): InterviewReportInsert[] {
+  return [
+    {
+      id: DEMO_REPORT_ID_WORK,
+      interview_session_id: DEMO_SESSION_ID_WORK,
+      stance: "for",
+      summary: "物流コスト削減のため賛成",
+      role: "work_related",
+      role_description:
+        "運送会社経営者\n従業員50名規模\n燃料費高騰の影響を直接受けている",
+      opinions: [
+        {
+          title: "燃料費が経営を圧迫している",
+          content:
+            "運送会社を経営しているが、燃料費が経営を圧迫している。暫定税率廃止で少しでも負担が減れば助かる。",
+        },
+      ],
+    },
+    {
+      id: DEMO_REPORT_ID_DAILY,
+      interview_session_id: DEMO_SESSION_ID_DAILY,
+      stance: "for",
+      summary: "地方在住者として生活必需品のガソリン代軽減を期待",
+      role: "daily_life_affected",
+      role_description:
+        "地方在住の主婦\n車が唯一の移動手段\n子育て中で送り迎えに車を使用",
+      opinions: [
+        {
+          title: "車が生活必需品",
+          content:
+            "通勤や買い物、子供の送り迎えなど毎日車を使っている。公共交通機関がほとんどない地域なのでガソリン代が下がると助かる。",
+        },
+      ],
+    },
+    {
+      id: DEMO_REPORT_ID_CITIZEN,
+      interview_session_id: DEMO_SESSION_ID_CITIZEN,
+      stance: "neutral",
+      summary: "環境と経済のバランスを考慮して判断",
+      role: "general_citizen",
+      role_description: "会社員\n環境問題に関心あり\n電気自動車への乗り換えを検討中",
+      opinions: [
+        {
+          title: "環境と経済のバランス",
+          content:
+            "ガソリン車から電気自動車への移行も進めつつ、当面の生活支援として減税があってもいいと考える。",
+        },
+      ],
+    },
+  ];
 }
