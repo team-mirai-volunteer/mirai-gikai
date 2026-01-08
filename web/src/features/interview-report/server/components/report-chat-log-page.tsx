@@ -98,7 +98,7 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
           {(report.role || report.role_description) && (
             <div className="flex flex-col gap-4">
               <h2 className="text-xl font-bold text-gray-800">
-                インタビューを受けた人
+                👫インタビューを受けた人
               </h2>
               <div className="bg-white rounded-2xl p-6">
                 <div className="text-sm text-gray-800 whitespace-pre-wrap font-medium">
@@ -119,7 +119,7 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
           {/* Chat Log Section */}
           <div className="flex flex-col gap-4">
             <h2 className="text-xl font-bold text-gray-800">
-              すべての会話ログ
+              🎤すべての会話ログ
             </h2>
             <div className="bg-white rounded-2xl p-6">
               <div className="flex flex-col gap-4">
@@ -133,7 +133,7 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
           {/* Opinions Section */}
           {opinions.length > 0 && (
             <div className="flex flex-col gap-4">
-              <h2 className="text-xl font-bold text-gray-800">意見の要約</h2>
+              <h2 className="text-xl font-bold text-gray-800">💬意見の要約</h2>
               <div className="bg-white rounded-2xl p-6 flex flex-col gap-6">
                 {opinions.map((opinion, index) => (
                   <div key={opinion.title} className="flex flex-col gap-2">
