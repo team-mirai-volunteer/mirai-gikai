@@ -19,9 +19,10 @@ SET search_path = public
 AS $$
 BEGIN
   -- Single atomic UPDATE: set is_active based on whether id matches target
-  -- WHERE clause required by Supabase
   UPDATE diet_sessions
   SET is_active = (id = target_session_id)
+  -- WHERE clause required by Supabase on UPDATE queries
+  -- https://supabase.com/docs/reference/javascript/update
   WHERE id IS NOT NULL;
 END;
 $$;
