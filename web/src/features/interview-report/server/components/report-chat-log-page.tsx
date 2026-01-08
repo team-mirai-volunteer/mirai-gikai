@@ -132,10 +132,12 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
             <h2 className="text-xl font-bold text-gray-800">
               すべての会話ログ
             </h2>
-            <div className="flex flex-col gap-4">
-              {messages.map((message) => (
-                <ChatMessage key={message.id} message={message} />
-              ))}
+            <div className="bg-white rounded-2xl p-6">
+              <div className="flex flex-col gap-4">
+                {messages.map((message) => (
+                  <ChatMessage key={message.id} message={message} />
+                ))}
+              </div>
             </div>
           </div>
 
@@ -212,9 +214,10 @@ interface ChatMessageProps {
 function ChatMessage({ message }: ChatMessageProps) {
   const isAssistant = message.role === "assistant";
 
-  return (
-    <div className={cn("flex gap-3", !isAssistant && "justify-end")}>
-      {isAssistant && (
+  if (isAssistant) {
+    // AI message: icon + plain text (no bubble)
+    return (
+      <div className="flex gap-3">
         <div className="flex-shrink-0">
           <Image
             src="/icons/ai-chat.svg"
@@ -224,16 +227,18 @@ function ChatMessage({ message }: ChatMessageProps) {
             className="rounded-full"
           />
         </div>
-      )}
-      <div
-        className={cn(
-          "rounded-2xl px-4 py-3 max-w-[85%]",
-          isAssistant
-            ? "bg-white text-gray-800"
-            : "bg-mirai-gradient text-gray-800"
-        )}
-      >
-        <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap">
+        <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap text-gray-800 pt-2">
+          {message.content}
+        </p>
+      </div>
+    );
+  }
+
+  // User message: gradient bubble on the right
+  return (
+    <div className="flex justify-end">
+      <div className="bg-mirai-gradient rounded-2xl px-4 py-3 max-w-[85%]">
+        <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap text-gray-800">
           {message.content}
         </p>
       </div>
