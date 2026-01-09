@@ -5,6 +5,7 @@ import {
   Home,
   Undo2,
   User,
+  UserRound,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -255,13 +256,9 @@ function ChatMessage({ message }: ChatMessageProps) {
   // User message: icon on top right, then bubble below
   return (
     <div className="flex flex-col items-end gap-2">
-      <Image
-        src="/icons/user-chat.svg"
-        alt="User"
-        width={36}
-        height={36}
-        className="rounded-full"
-      />
+      <div className="w-9 h-9 rounded-full bg-mirai-light-gradient flex items-center justify-center">
+        <UserRound size={20} className="text-gray-600" />
+      </div>
       <div className="bg-mirai-light-gradient rounded-2xl px-4 py-3 max-w-[85%]">
         <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap text-gray-800">
           {message.content}
