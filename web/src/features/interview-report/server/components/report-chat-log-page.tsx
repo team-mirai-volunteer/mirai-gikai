@@ -108,7 +108,7 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
 
             {/* Date, Duration, Character Count */}
             <div className="text-black text-center">
-              <p className="text-sm font-medium">
+              <p className="text-base font-medium">
                 {formatDateTime(report.session_started_at)}
               </p>
               <p className="text-xs font-normal">
@@ -252,9 +252,16 @@ function ChatMessage({ message }: ChatMessageProps) {
     );
   }
 
-  // User message: light gradient bubble on the right
+  // User message: icon on top right, then bubble below
   return (
-    <div className="flex justify-end">
+    <div className="flex flex-col items-end gap-2">
+      <Image
+        src="/icons/user-chat.svg"
+        alt="User"
+        width={36}
+        height={36}
+        className="rounded-full"
+      />
       <div className="bg-mirai-light-gradient rounded-2xl px-4 py-3 max-w-[85%]">
         <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap text-gray-800">
           {message.content}
