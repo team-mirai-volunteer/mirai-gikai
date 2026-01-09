@@ -3,30 +3,26 @@ import "server-only";
 import {
   Bot,
   Briefcase,
-  ChevronRight,
   GraduationCap,
   Home,
-  Undo2,
   User,
   UserRound,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { getBillDetailLink } from "@/features/interview-config/shared/utils/interview-links";
 import { getReportWithMessages } from "../loaders/get-report-with-messages";
-import {
-  type InterviewReportRole,
-  roleLabels,
-  stanceLabels,
-} from "../../shared/constants";
-
+import { type InterviewReportRole, roleLabels } from "../../shared/constants";
 import {
   countCharacters,
   formatDateTime,
 } from "../../shared/utils/report-utils";
+import { StanceDisplay } from "../../shared/components/stance-display";
+import { BackToBillButton } from "../../shared/components/back-to-bill-button";
+import { ReportBreadcrumb } from "../../shared/components/report-breadcrumb";
+import { IntervieweeInfo } from "../../shared/components/interviewee-info";
+import { OpinionsList } from "../../shared/components/opinions-list";
 
 const roleIcons: Record<InterviewReportRole, LucideIcon> = {
   subject_expert: GraduationCap,
@@ -75,27 +71,7 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
           <div className="flex flex-col items-center gap-6 mt-8">
             <div className="flex flex-col items-center gap-1">
               {/* Stance */}
-              {report.stance && (
-                <div className="flex flex-col items-center gap-2">
-                  <Image
-                    src={`/icons/stance-${report.stance}.png`}
-                    alt={stanceLabels[report.stance] || report.stance}
-                    width={48}
-                    height={48}
-                    className="rounded-full"
-                  />
-                  <p
-                    className={cn(
-                      "text-lg font-bold",
-                      report.stance === "for" && "text-primary-accent",
-                      report.stance === "against" && "text-[#D23C3F]",
-                      report.stance === "neutral" && "text-[#805F34]"
-                    )}
-                  >
-                    {stanceLabels[report.stance] || report.stance}
-                  </p>
-                </div>
-              )}
+              {report.stance && <StanceDisplay stance={report.stance} />}
               {/* Role */}
               {report.role &&
                 (() => {
@@ -129,34 +105,10 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
       <div className="px-4 py-8">
         <div className="flex flex-col gap-9">
           {/* Interviewee Info */}
-          {(report.role || report.role_description) && (
-            <div className="flex flex-col gap-4">
-              <h2 className="text-xl font-bold text-gray-800">
-                👫インタビューを受けた人
-              </h2>
-              <div className="bg-white rounded-2xl p-6">
-                <div className="text-sm text-gray-800 whitespace-pre-wrap font-medium">
-                  {report.role_description
-                    ? report.role_description
-                        .split("\n")
-                        .map((line) => line.trim())
-                        .filter((line) => line.length > 0)
-                        .map((line, index) => (
-                          <p key={`${index}-${line.slice(0, 20)}`}>
-                            {line.startsWith("・") ? line : `・${line}`}
-                          </p>
-                        ))
-                    : report.role && (
-                        <p>
-                          ・
-                          {roleLabels[report.role as keyof typeof roleLabels] ||
-                            report.role}
-                        </p>
-                      )}
-                </div>
-              </div>
-            </div>
-          )}
+          <IntervieweeInfo
+            role={report.role}
+            roleDescription={report.role_description}
+          />
 
           {/* Chat Log Section */}
           <div className="flex flex-col gap-4">
@@ -173,61 +125,18 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
           </div>
 
           {/* Opinions Section */}
-          {opinions.length > 0 && (
-            <div className="flex flex-col gap-4">
-              <h2 className="text-xl font-bold text-gray-800">💬意見の要約</h2>
-              <div className="bg-white rounded-2xl p-6 flex flex-col gap-6">
-                {opinions.map((opinion, index) => (
-                  <div key={opinion.title} className="flex flex-col gap-2">
-                    <div className="flex flex-col gap-1">
-                      <div className="inline-flex">
-                        <span className="bg-[#2AA693] text-white text-xs font-bold px-1.5 py-0.5 rounded">
-                          意見{index + 1}
-                        </span>
-                      </div>
-                      <p className="text-base font-bold text-gray-800">
-                        {opinion.title}
-                      </p>
-                    </div>
-                    <p className="text-sm text-gray-600">{opinion.content}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <OpinionsList opinions={opinions} showBackground={false} />
 
           {/* Back to Bill Button */}
           <div className="flex flex-col gap-3">
-            <Link
-              href={getBillDetailLink(report.bill_id)}
-              className="flex items-center justify-center gap-2.5 px-6 py-3 border border-gray-800 rounded-full bg-white"
-            >
-              <Undo2 className="w-5 h-5 text-gray-800" />
-              <span className="text-base font-bold text-gray-800">
-                法案の記事に戻る
-              </span>
-            </Link>
+            <BackToBillButton billId={report.bill_id} />
           </div>
 
           {/* Breadcrumb Navigation */}
-          <nav className="flex flex-wrap items-center gap-2 text-sm text-gray-800">
-            <Link href="/" className="hover:underline">
-              TOP
-            </Link>
-            <ChevronRight className="w-4 h-4" />
-            <Link
-              href={getBillDetailLink(report.bill_id)}
-              className="hover:underline"
-            >
-              法案詳細
-            </Link>
-            <ChevronRight className="w-4 h-4" />
-            <span>AIインタビュー</span>
-            <ChevronRight className="w-4 h-4" />
-            <span>レポート</span>
-            <ChevronRight className="w-4 h-4" />
-            <span>すべての会話ログ</span>
-          </nav>
+          <ReportBreadcrumb
+            billId={report.bill_id}
+            additionalItems={[{ label: "すべての会話ログ" }]}
+          />
         </div>
       </div>
     </div>
