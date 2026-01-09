@@ -19,16 +19,17 @@ import {
   stanceLabels,
 } from "../../shared/constants";
 
+import {
+  countCharacters,
+  formatDateTime,
+} from "../../shared/utils/report-utils";
+
 const roleIcons: Record<InterviewReportRole, LucideIcon> = {
   subject_expert: GraduationCap,
   work_related: Briefcase,
   daily_life_affected: Home,
   general_citizen: User,
 };
-import {
-  countCharacters,
-  formatDateTime,
-} from "../../shared/utils/report-utils";
 
 interface ReportChatLogPageProps {
   reportId: string;
