@@ -27,7 +27,10 @@ export function OpinionsList({
       <h2 className="text-xl font-bold text-gray-800">{title}</h2>
       <div className="bg-white rounded-2xl p-6 flex flex-col gap-6">
         {opinions.map((opinion, index) => (
-          <div key={`opinion-${opinion.title}`} className="flex flex-col gap-2">
+          <div
+            key={`opinion-${index}-${opinion.title.slice(0, 20)}`}
+            className="flex flex-col gap-2"
+          >
             <div className="flex flex-col gap-1">
               <div className="inline-flex">
                 <span className="bg-[#2AA693] text-white text-xs font-bold px-1.5 py-0.5 rounded">
