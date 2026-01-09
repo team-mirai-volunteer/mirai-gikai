@@ -48,8 +48,9 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
   const { report, messages, bill } = data;
   const billName = bill.bill_content?.title || bill.name;
   const characterCount = countCharacters(messages);
-  const opinions =
-    (report.opinions as Array<{ title: string; content: string }>) || [];
+  const opinions = Array.isArray(report.opinions)
+    ? (report.opinions as Array<{ title: string; content: string }>)
+    : [];
 
   return (
     <div className="min-h-screen bg-[#F7F4F0]">
