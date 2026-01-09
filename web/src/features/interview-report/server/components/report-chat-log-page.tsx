@@ -1,35 +1,16 @@
 import "server-only";
 
-import {
-  Bot,
-  Briefcase,
-  GraduationCap,
-  Home,
-  User,
-  UserRound,
-} from "lucide-react";
+import { Bot, UserRound } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
 import { getBillDetailLink } from "@/features/interview-config/shared/utils/interview-links";
 import { getReportWithMessages } from "../loaders/get-report-with-messages";
-import { type InterviewReportRole, roleLabels } from "../../shared/constants";
-import {
-  countCharacters,
-  formatDateTime,
-} from "../../shared/utils/report-utils";
-import { StanceDisplay } from "../../shared/components/stance-display";
+import { countCharacters } from "../../shared/utils/report-utils";
 import { BackToBillButton } from "../../shared/components/back-to-bill-button";
 import { ReportBreadcrumb } from "../../shared/components/report-breadcrumb";
 import { IntervieweeInfo } from "../../shared/components/interviewee-info";
 import { OpinionsList } from "../../shared/components/opinions-list";
-
-const roleIcons: Record<InterviewReportRole, LucideIcon> = {
-  subject_expert: GraduationCap,
-  work_related: Briefcase,
-  daily_life_affected: Home,
-  general_citizen: User,
-};
+import { ReportMetaInfo } from "../../shared/components/report-meta-info";
 
 interface ReportChatLogPageProps {
   reportId: string;
@@ -68,35 +49,14 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
           </Link>
 
           {/* Stance and Meta Info */}
-          <div className="flex flex-col items-center gap-6 mt-8">
-            <div className="flex flex-col items-center gap-1">
-              {/* Stance */}
-              {report.stance && <StanceDisplay stance={report.stance} />}
-              {/* Role */}
-              {report.role &&
-                (() => {
-                  const RoleIcon =
-                    roleIcons[report.role as InterviewReportRole];
-                  return (
-                    <p className="text-sm text-gray-600 flex items-center gap-1">
-                      {RoleIcon && <RoleIcon size={16} strokeWidth={1.5} />}
-                      {roleLabels[report.role as keyof typeof roleLabels] ||
-                        report.role}
-                    </p>
-                  );
-                })()}
-            </div>
-
-            {/* Date, Duration, Character Count */}
-            <div className="text-black text-center">
-              <p className="text-base font-medium">
-                {formatDateTime(report.session_started_at)}
-              </p>
-              <p className="text-xs font-normal">
-                インタビューの分量{" "}
-                <span className="underline">{characterCount}文字</span>
-              </p>
-            </div>
+          <div className="mt-8">
+            <ReportMetaInfo
+              stance={report.stance}
+              role={report.role}
+              sessionStartedAt={report.session_started_at}
+              characterCount={characterCount}
+              variant="chat-log"
+            />
           </div>
         </div>
       </div>

@@ -7,20 +7,18 @@ import { notFound } from "next/navigation";
 import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
 import { PublicStatusSection } from "@/features/interview-report/client/components/public-status-section";
 import { getInterviewReportById } from "@/features/interview-report/server/loaders/get-interview-report-by-id";
-import { roleLabels } from "@/features/interview-report/shared/constants";
 import { getInterviewChatLogLink } from "@/features/interview-config/shared/utils/interview-links";
 import { getInterviewMessages } from "@/features/interview-session/server/loaders/get-interview-messages";
 import { SpeechBubble } from "@/components/ui/speech-bubble";
 import {
   calculateDuration,
   countCharacters,
-  formatDateTime,
 } from "../../shared/utils/report-utils";
-import { StanceDisplay } from "../../shared/components/stance-display";
 import { BackToBillButton } from "../../shared/components/back-to-bill-button";
 import { ReportBreadcrumb } from "../../shared/components/report-breadcrumb";
 import { IntervieweeInfo } from "../../shared/components/interviewee-info";
 import { OpinionsList } from "../../shared/components/opinions-list";
+import { ReportMetaInfo } from "../../shared/components/report-meta-info";
 
 interface ReportCompletePageProps {
   reportId: string;
@@ -129,29 +127,13 @@ export async function ReportCompletePage({
               </SpeechBubble>
 
               {/* スタンスと日時情報 */}
-              <div className="flex flex-col items-center gap-6">
-                <div className="flex flex-col items-center gap-3">
-                  {/* スタンス */}
-                  {report.stance && <StanceDisplay stance={report.stance} />}
-                  {/* 役割 */}
-                  {report.role && (
-                    <p className="text-sm text-gray-600">
-                      {roleLabels[report.role as keyof typeof roleLabels] ||
-                        report.role}
-                    </p>
-                  )}
-                </div>
-
-                {/* 日時・時間・文字数 */}
-                <div className="flex flex-col items-center gap-1 font-medium">
-                  <p className="text-sm text-gray-800">
-                    {formatDateTime(report.session_started_at)}
-                  </p>
-                  <p className="text-sm text-gray-800">
-                    {duration} / {characterCount} 文字
-                  </p>
-                </div>
-              </div>
+              <ReportMetaInfo
+                stance={report.stance}
+                role={report.role}
+                sessionStartedAt={report.session_started_at}
+                duration={duration}
+                characterCount={characterCount}
+              />
             </div>
 
             {/* インタビューを受けた人 */}
