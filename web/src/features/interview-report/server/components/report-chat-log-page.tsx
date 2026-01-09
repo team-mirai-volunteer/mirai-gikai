@@ -107,11 +107,11 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
             </div>
 
             {/* Date, Duration, Character Count */}
-            <div className="text-sm text-black text-center">
-              <p className="font-medium">
+            <div className="text-black text-center">
+              <p className="text-sm font-medium">
                 {formatDateTime(report.session_started_at)}
               </p>
-              <p className="font-normal">
+              <p className="text-xs font-normal">
                 インタビューの分量{" "}
                 <span className="underline">{characterCount}文字</span>
               </p>
