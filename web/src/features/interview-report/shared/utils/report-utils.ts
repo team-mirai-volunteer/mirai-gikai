@@ -1,7 +1,8 @@
 /**
  * 日時フォーマット
  */
-export function formatDateTime(dateString: string): string {
+export function formatDateTime(dateString: string | null): string {
+  if (!dateString) return "-";
   const date = new Date(dateString);
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
