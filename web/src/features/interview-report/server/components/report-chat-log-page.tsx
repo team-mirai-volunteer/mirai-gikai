@@ -1,6 +1,7 @@
 import "server-only";
 
 import {
+  Bot,
   Briefcase,
   ChevronRight,
   GraduationCap,
@@ -249,12 +250,7 @@ function ChatMessage({ message }: ChatMessageProps) {
     return (
       <div className="flex flex-col items-start gap-2">
         <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
-          <Image
-            src="/icons/bot-message-square.svg"
-            alt="AI"
-            width={24}
-            height={24}
-          />
+          <Bot size={24} className="text-gray-600" />
         </div>
         <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap text-gray-800">
           {message.content}
