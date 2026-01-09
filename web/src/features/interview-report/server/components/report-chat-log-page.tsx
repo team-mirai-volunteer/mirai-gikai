@@ -138,12 +138,20 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
                   {report.role_description
                     ? report.role_description
                         .split("\n")
-                        .map((line) => (
-                          <p key={line}>
+                        .map((line) => line.trim())
+                        .filter((line) => line.length > 0)
+                        .map((line, index) => (
+                          <p key={`${index}-${line.slice(0, 20)}`}>
                             {line.startsWith("・") ? line : `・${line}`}
                           </p>
                         ))
-                    : report.role && <p>・{report.role}</p>}
+                    : report.role && (
+                        <p>
+                          ・
+                          {roleLabels[report.role as keyof typeof roleLabels] ||
+                            report.role}
+                        </p>
+                      )}
                 </div>
               </div>
             </div>
