@@ -234,19 +234,18 @@ function ChatMessage({ message }: ChatMessageProps) {
   const isAssistant = message.role === "assistant";
 
   if (isAssistant) {
-    // AI message: icon + plain text (no bubble)
+    // AI message: icon on top left with gray background, then plain text below
     return (
-      <div className="flex gap-3">
-        <div className="flex-shrink-0">
+      <div className="flex flex-col items-start gap-2">
+        <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
           <Image
-            src="/icons/ai-chat.svg"
+            src="/icons/bot-message-square.svg"
             alt="AI"
-            width={36}
-            height={36}
-            className="rounded-full"
+            width={24}
+            height={24}
           />
         </div>
-        <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap text-gray-800 pt-2">
+        <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap text-gray-800">
           {message.content}
         </p>
       </div>
