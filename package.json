@@ -16,10 +16,18 @@
     "postinstall": "npx simple-git-hooks"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.2",
+    "@biomejs/biome": "^2.3.11",
     "dotenv-cli": "^7.4.2",
     "lint-staged": "^15.5.2",
     "simple-git-hooks": "^2.13.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "prismjs": ">=1.30.0",
+      "tar": ">=7.5.2",
+      "mdast-util-to-hast": ">=13.2.1",
+      "vite": ">=7.1.11"
+    }
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
