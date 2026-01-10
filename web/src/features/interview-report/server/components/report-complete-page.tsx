@@ -1,26 +1,24 @@
-import { ChevronRight, MessageSquareMore, Undo2 } from "lucide-react";
+import "server-only";
+
+import { MessageSquareMore } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { getBillById } from "@/features/bills/server/loaders/get-bill-by-id";
 import { PublicStatusSection } from "@/features/interview-report/client/components/public-status-section";
 import { getInterviewReportById } from "@/features/interview-report/server/loaders/get-interview-report-by-id";
-import {
-  roleLabels,
-  stanceLabels,
-} from "@/features/interview-report/shared/constants";
-import {
-  getBillDetailLink,
-  getInterviewChatLink,
-} from "@/features/interview-config/shared/utils/interview-links";
+import { getInterviewChatLogLink } from "@/features/interview-config/shared/utils/interview-links";
 import { getInterviewMessages } from "@/features/interview-session/server/loaders/get-interview-messages";
 import { SpeechBubble } from "@/components/ui/speech-bubble";
 import {
   calculateDuration,
   countCharacters,
-  formatDateTime,
 } from "../../shared/utils/report-utils";
+import { BackToBillButton } from "../../shared/components/back-to-bill-button";
+import { ReportBreadcrumb } from "../../shared/components/report-breadcrumb";
+import { IntervieweeInfo } from "../../shared/components/interviewee-info";
+import { OpinionsList } from "../../shared/components/opinions-list";
+import { ReportMetaInfo } from "../../shared/components/report-meta-info";
 
 interface ReportCompletePageProps {
   reportId: string;
@@ -49,8 +47,9 @@ export async function ReportCompletePage({
     notFound();
   }
 
-  const opinions =
-    (report.opinions as Array<{ title: string; content: string }>) || [];
+  const opinions = Array.isArray(report.opinions)
+    ? (report.opinions as Array<{ title: string; content: string }>)
+    : [];
   const duration = calculateDuration(
     report.session_started_at,
     report.session_completed_at
@@ -128,146 +127,47 @@ export async function ReportCompletePage({
               </SpeechBubble>
 
               {/* スタンスと日時情報 */}
-              <div className="flex flex-col items-center gap-6">
-                <div className="flex flex-col items-center gap-3">
-                  {/* スタンス */}
-                  {report.stance && (
-                    <div className="flex flex-col items-center gap-2">
-                      <Image
-                        src={`/icons/stance-${report.stance}.png`}
-                        alt={stanceLabels[report.stance] || report.stance}
-                        width={48}
-                        height={48}
-                        className="rounded-full"
-                      />
-                      <p
-                        className={cn(
-                          "text-lg font-bold",
-                          report.stance === "for" && "text-primary-accent",
-                          report.stance === "against" && "text-[#D23C3F]",
-                          report.stance === "neutral" && "text-[#805F34]"
-                        )}
-                      >
-                        {stanceLabels[report.stance] || report.stance}
-                      </p>
-                    </div>
-                  )}
-                  {/* 役割 */}
-                  {report.role && (
-                    <p className="text-sm text-gray-600">
-                      {roleLabels[report.role as keyof typeof roleLabels] ||
-                        report.role}
-                    </p>
-                  )}
-                </div>
-
-                {/* 日時・時間・文字数 */}
-                <div className="flex flex-col items-center gap-1 font-medium">
-                  <p className="text-sm text-gray-800">
-                    {formatDateTime(report.session_started_at)}
-                  </p>
-                  <p className="text-sm text-gray-800">
-                    {duration} / {characterCount} 文字
-                  </p>
-                </div>
-              </div>
+              <ReportMetaInfo
+                stance={report.stance}
+                role={report.role}
+                sessionStartedAt={report.session_started_at}
+                duration={duration}
+                characterCount={characterCount}
+              />
             </div>
 
             {/* インタビューを受けた人 */}
-            {(report.role || report.role_description) && (
-              <div className="flex flex-col gap-4">
-                <h3 className="text-xl font-bold text-gray-800">
-                  👫インタビューを受けた人
-                </h3>
-                <div className="bg-white rounded-2xl p-6">
-                  <div className="text-sm text-gray-800 whitespace-pre-wrap font-medium">
-                    {report.role_description
-                      ? report.role_description
-                          .split("\n")
-                          .map((line) => (
-                            <p key={line}>
-                              {line.startsWith("・") ? line : `・${line}`}
-                            </p>
-                          ))
-                      : report.role && <p>・{report.role}</p>}
-                  </div>
-                </div>
-              </div>
-            )}
+            <IntervieweeInfo
+              role={report.role}
+              roleDescription={report.role_description}
+              headingLevel="h3"
+            />
 
             {/* 主な意見 */}
-            {opinions.length > 0 && (
-              <div className="flex flex-col gap-4">
-                <h3 className="text-xl font-bold text-gray-800">💬主な意見</h3>
-                <div className="bg-white rounded-2xl p-6 flex flex-col gap-9">
-                  {opinions.map((opinion, index) => (
-                    <div
-                      key={`opinion-${opinion.title}`}
-                      className="flex flex-col gap-2.5"
-                    >
-                      <div className="flex flex-col gap-1">
-                        <div className="inline-flex">
-                          <span className="bg-[#2AA693] text-white text-xs font-bold px-1.5 py-0.5 rounded">
-                            意見{index + 1}
-                          </span>
-                        </div>
-                        <p className="text-lg font-bold text-gray-800">
-                          {opinion.title}
-                        </p>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <p className="text-sm font-bold text-gray-500">背景</p>
-                        <p className="text-sm text-gray-800">
-                          {opinion.content}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-
-                  {/* すべての会話ログを読むボタン */}
-                  <Link
-                    href={getInterviewChatLink(billId)}
-                    className="flex items-center justify-center gap-2.5 px-6 py-3 border border-gray-800 rounded-full"
-                  >
-                    <MessageSquareMore className="w-6 h-6 text-gray-800" />
-                    <span className="text-base font-bold text-gray-800">
-                      すべての会話ログを読む
-                    </span>
-                  </Link>
-                </div>
-              </div>
-            )}
+            <OpinionsList
+              opinions={opinions}
+              title="💬主な意見"
+              showBackground={true}
+              footer={
+                <Link
+                  href={getInterviewChatLogLink(reportId)}
+                  className="flex items-center justify-center gap-2.5 px-6 py-3 border border-gray-800 rounded-full"
+                >
+                  <MessageSquareMore className="w-6 h-6 text-gray-800" />
+                  <span className="text-base font-bold text-gray-800">
+                    すべての会話ログを読む
+                  </span>
+                </Link>
+              }
+            />
 
             {/* 法案の記事に戻るボタン */}
             <div className="flex flex-col gap-3">
-              <Link
-                href={getBillDetailLink(billId)}
-                className="flex items-center justify-center gap-2.5 px-6 py-3 border border-gray-800 rounded-full bg-white"
-              >
-                <Undo2 className="w-5 h-5 text-gray-800" />
-                <span className="text-base font-bold text-gray-800">
-                  法案の記事に戻る
-                </span>
-              </Link>
+              <BackToBillButton billId={billId} />
             </div>
 
             {/* パンくずリスト */}
-            <nav className="flex items-center gap-2 text-sm text-gray-800">
-              <Link href="/" className="hover:underline">
-                TOP
-              </Link>
-              <ChevronRight className="w-5 h-5" />
-              <Link
-                href={getBillDetailLink(billId)}
-                className="hover:underline"
-              >
-                法案詳細
-              </Link>
-              <ChevronRight className="w-5 h-5" />
-              <span>AIインタビュー</span>
-              <ChevronRight className="w-5 h-5" />
-              <span>レポート</span>
-            </nav>
+            <ReportBreadcrumb billId={billId} />
           </div>
         </div>
       </div>

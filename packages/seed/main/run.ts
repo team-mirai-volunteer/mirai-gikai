@@ -9,6 +9,16 @@ import {
   createInterviewSessions,
   createInterviewMessages,
   createInterviewReports,
+  createDemoSession,
+  createDemoMessages,
+  createDemoReport,
+  createAdditionalDemoSessions,
+  createAdditionalDemoMessages,
+  createAdditionalDemoReports,
+  DEMO_REPORT_ID,
+  DEMO_REPORT_ID_WORK,
+  DEMO_REPORT_ID_DAILY,
+  DEMO_REPORT_ID_CITIZEN,
 } from "./data";
 import { createBillContents } from "./bill-contents-data";
 import { createAdminClient, clearAllData } from "../shared/helper";
@@ -265,6 +275,87 @@ async function seedDatabase() {
             insertedReportsCount = insertedReports.length;
             console.log(`✅ Inserted ${insertedReportsCount} interview reports`);
           }
+
+          // Insert demo session, messages, and report with fixed IDs
+          console.log("🎯 Inserting demo data with fixed IDs...");
+
+          const demoSession = createDemoSession(insertedConfig.id);
+          const { error: demoSessionError } = await supabase
+            .from("interview_sessions")
+            .insert(demoSession);
+
+          if (demoSessionError) {
+            throw new Error(
+              `Failed to insert demo session: ${demoSessionError.message}`
+            );
+          }
+
+          const demoMessages = createDemoMessages();
+          const { error: demoMessagesError } = await supabase
+            .from("interview_messages")
+            .insert(demoMessages);
+
+          if (demoMessagesError) {
+            throw new Error(
+              `Failed to insert demo messages: ${demoMessagesError.message}`
+            );
+          }
+
+          const demoReport = createDemoReport();
+          const { error: demoReportError } = await supabase
+            .from("interview_report")
+            .insert(demoReport);
+
+          if (demoReportError) {
+            throw new Error(
+              `Failed to insert demo report: ${demoReportError.message}`
+            );
+          }
+
+          console.log(`✅ Inserted demo data`);
+          console.log(`   Demo report URL: /report/${DEMO_REPORT_ID}/chat-log`);
+
+          // Insert additional demo sessions, messages, and reports (for 4 role types)
+          console.log("🎭 Inserting additional demo data for all role types...");
+
+          const additionalDemoSessions = createAdditionalDemoSessions(insertedConfig.id);
+          const { error: additionalSessionsError } = await supabase
+            .from("interview_sessions")
+            .insert(additionalDemoSessions);
+
+          if (additionalSessionsError) {
+            throw new Error(
+              `Failed to insert additional demo sessions: ${additionalSessionsError.message}`
+            );
+          }
+
+          const additionalDemoMessages = createAdditionalDemoMessages();
+          const { error: additionalMessagesError } = await supabase
+            .from("interview_messages")
+            .insert(additionalDemoMessages);
+
+          if (additionalMessagesError) {
+            throw new Error(
+              `Failed to insert additional demo messages: ${additionalMessagesError.message}`
+            );
+          }
+
+          const additionalDemoReports = createAdditionalDemoReports();
+          const { error: additionalReportsError } = await supabase
+            .from("interview_report")
+            .insert(additionalDemoReports);
+
+          if (additionalReportsError) {
+            throw new Error(
+              `Failed to insert additional demo reports: ${additionalReportsError.message}`
+            );
+          }
+
+          console.log(`✅ Inserted additional demo data for all 4 role types`);
+          console.log(`   subject_expert: /report/${DEMO_REPORT_ID}/chat-log`);
+          console.log(`   work_related: /report/${DEMO_REPORT_ID_WORK}/chat-log`);
+          console.log(`   daily_life_affected: /report/${DEMO_REPORT_ID_DAILY}/chat-log`);
+          console.log(`   general_citizen: /report/${DEMO_REPORT_ID_CITIZEN}/chat-log`);
         }
       }
     } else {

@@ -43,3 +43,10 @@ export function getInterviewChatLink(
 export function getInterviewReportCompleteLink(reportId: string): string {
   return `/report/${reportId}/complete`;
 }
+
+/**
+ * インタビュー会話ログページへのリンクを取得
+ */
+export function getInterviewChatLogLink(reportId: string): string {
+  return `/report/${reportId}/chat-log`;
+}
