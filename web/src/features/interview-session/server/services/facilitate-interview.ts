@@ -6,8 +6,8 @@ import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id
 import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 import { AI_MODELS } from "@/lib/ai/models";
-import type { FacilitatorMessage } from "../../client/utils/message-utils";
 import { GLOBAL_INTERVIEW_MODE } from "../../shared/constants";
+import type { FacilitatorMessage } from "../../shared/types";
 import { getInterviewMessages } from "../loaders/get-interview-messages";
 import { getInterviewSession } from "../loaders/get-interview-session";
 import { collectAskedQuestionIds } from "../utils/interview-logic";

@@ -29,3 +29,9 @@ export interface InterviewChatRequestParams {
   isRetry?: boolean;
   nextQuestionId?: string;
 }
+
+/** ファシリテーターAPI用のシンプルなメッセージ型 */
+export type FacilitatorMessage = {
+  role: "assistant" | "user";
+  content: string;
+};

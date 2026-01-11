@@ -3,7 +3,7 @@ import "server-only";
 import type { BillWithContent } from "@/features/bills/shared/types";
 import type { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import type { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
-import type { FacilitatorMessage } from "../../../client/utils/message-utils";
+import type { FacilitatorMessage } from "../../../shared/types";
 
 /**
  * システムプロンプト構築用パラメータ

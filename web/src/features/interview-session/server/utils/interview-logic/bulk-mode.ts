@@ -1,6 +1,6 @@
 import "server-only";
 
-import { parseMessageContent } from "../../../client/utils/message-utils";
+import { parseMessageContent } from "../../../shared/message-utils";
 import { collectAskedQuestionIds } from "../interview-logic";
 import type {
   FacilitatorParams,

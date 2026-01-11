@@ -1,4 +1,6 @@
-import { parseMessageContent } from "../../client/utils/message-utils";
+import "server-only";
+
+import { parseMessageContent } from "../../shared/message-utils";
 
 /**
  * すでに聞いた質問IDを収集する
