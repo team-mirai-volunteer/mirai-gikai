@@ -65,11 +65,7 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
       <div className="px-4 py-8">
         <div className="flex flex-col gap-9">
           {/* Interviewee Info */}
-          <IntervieweeInfo
-            role={report.role}
-            roleDescription={report.role_description}
-            roleTitle={report.role_title}
-          />
+          <IntervieweeInfo roleDescription={report.role_description} />
 
           {/* Chat Log Section */}
           <div className="flex flex-col gap-4">
