@@ -17,7 +17,6 @@ import type { InterviewChatRequestParams } from "@/features/interview-session/sh
 import { AI_MODELS } from "@/lib/ai/models";
 import { logger } from "@/lib/logger";
 import { injectJsonFields } from "@/lib/stream/inject-json-fields";
-import { GLOBAL_INTERVIEW_MODE } from "../../shared/constants";
 import {
   buildInterviewSystemPrompt,
   buildSummarySystemPrompt,
@@ -82,8 +81,8 @@ export async function handleInterviewChatRequest({
   // 事前定義質問を取得
   const questions = await getInterviewQuestions(interviewConfig.id);
 
-  // モードに応じたロジックを取得
-  const mode = GLOBAL_INTERVIEW_MODE;
+  // モードに応じたロジックを取得（DBの設定を使用）
+  const mode = interviewConfig.mode;
   const logic = modeLogicMap[mode] ?? bulkModeLogic;
 
   // DBから最新を含む全メッセージを取得

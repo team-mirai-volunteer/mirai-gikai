@@ -292,6 +292,7 @@ export type Database = {
           created_at: string
           id: string
           knowledge_source: string | null
+          mode: Database["public"]["Enums"]["interview_mode_enum"]
           name: string
           status: Database["public"]["Enums"]["interview_config_status_enum"]
           themes: string[] | null
@@ -302,6 +303,7 @@ export type Database = {
           created_at?: string
           id?: string
           knowledge_source?: string | null
+          mode?: Database["public"]["Enums"]["interview_mode_enum"]
           name: string
           status?: Database["public"]["Enums"]["interview_config_status_enum"]
           themes?: string[] | null
@@ -312,6 +314,7 @@ export type Database = {
           created_at?: string
           id?: string
           knowledge_source?: string | null
+          mode?: Database["public"]["Enums"]["interview_mode_enum"]
           name?: string
           status?: Database["public"]["Enums"]["interview_config_status_enum"]
           themes?: string[] | null
@@ -635,6 +638,7 @@ export type Database = {
       difficulty_level_enum: "normal" | "hard"
       house_enum: "HR" | "HC"
       interview_config_status_enum: "public" | "closed"
+      interview_mode_enum: "loop" | "bulk"
       interview_report_role_enum:
         | "subject_expert"
         | "work_related"
@@ -792,6 +796,7 @@ export const Constants = {
       difficulty_level_enum: ["normal", "hard"],
       house_enum: ["HR", "HC"],
       interview_config_status_enum: ["public", "closed"],
+      interview_mode_enum: ["loop", "bulk"],
       interview_report_role_enum: [
         "subject_expert",
         "work_related",
