@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import type { InterviewStage } from "../utils/interview-api-client";
+import type { InterviewStage } from "@/features/interview-session/shared/schemas";
 import {
   type ConversationMessage,
   parseMessageContent,
