@@ -1,0 +1,13 @@
+# ポスティングイベント定義
+# このファイルで定義されたイベントは `pnpm posting:sync` でデータベースに同期されます
+
+events:
+  - slug: "sample-event-2026"
+    title: "サンプルポスティングイベント2026"
+    description: "これはサンプルのポスティングイベントです。実際のイベントに置き換えてください。"
+    active: true
+
+  - slug: "inactive-event-example"
+    title: "非アクティブイベントサンプル"
+    description: "このイベントは非アクティブです。active: false に設定されています。"
+    active: false

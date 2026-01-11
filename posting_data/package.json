@@ -1,0 +1,22 @@
+{
+  "name": "@mirai-gikai/posting-data",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync": "tsx src/sync.ts",
+    "sync:dry": "tsx src/sync.ts --dry-run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mirai-gikai/supabase": "workspace:*",
+    "@supabase/supabase-js": "^2.57.0",
+    "commander": "^13.1.0",
+    "yaml": "^2.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.5",
+    "tsx": "^4.19.1",
+    "typescript": "^5.0.0"
+  }
+}

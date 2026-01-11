@@ -9,6 +9,8 @@
     "dev": "dotenv -e .env -- pnpm -r --stream --parallel run dev",
     "seed": "dotenv -e .env -- pnpm --filter @mirai-gikai/seed seed",
     "seed:csv": "dotenv -e .env -- pnpm --filter @mirai-gikai/seed seed:csv",
+    "posting:sync": "dotenv -e .env -- pnpm --filter @mirai-gikai/posting-data sync",
+    "posting:sync:dry": "dotenv -e .env -- pnpm --filter @mirai-gikai/posting-data sync:dry",
     "test": "pnpm -r --parallel run test",
     "typecheck": "pnpm -r run typecheck",
     "lint": "biome format . && biome lint .",
