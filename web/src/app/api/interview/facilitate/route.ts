@@ -1,6 +1,6 @@
 import { getChatSupabaseUser } from "@/features/chat/server/utils/supabase-server";
-import type { FacilitatorMessage } from "@/features/interview-session/client/utils/message-utils";
 import { facilitateInterview } from "@/features/interview-session/server/services/facilitate-interview";
+import type { SimpleMessage } from "@/features/interview-session/shared/types";
 
 export async function POST(req: Request) {
   const {
@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     billId,
     currentStage,
   }: {
-    messages: FacilitatorMessage[];
+    messages: SimpleMessage[];
     billId: string;
     currentStage?: "chat" | "summary" | "summary_complete";
   } = await req.json();

@@ -27,4 +27,11 @@ export interface InterviewChatRequestParams {
   billId: string;
   currentStage: "chat" | "summary" | "summary_complete";
   isRetry?: boolean;
+  nextQuestionId?: string;
 }
+
+/** ファシリテーターAPI用のシンプルなメッセージ型 */
+export type SimpleMessage = {
+  role: "assistant" | "user";
+  content: string;
+};

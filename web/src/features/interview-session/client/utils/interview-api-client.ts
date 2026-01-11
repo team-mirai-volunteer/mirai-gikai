@@ -1,15 +1,17 @@
-import type { FacilitatorMessage } from "./message-utils";
+import type { SimpleMessage } from "./message-utils";
 
-export type FacilitatorStatus = "continue" | "summary" | "summary_complete";
+export type InterviewStage = "chat" | "summary" | "summary_complete";
 
 interface FacilitateInterviewParams {
-  messages: FacilitatorMessage[];
+  messages: SimpleMessage[];
   billId: string;
-  currentStage: "chat" | "summary" | "summary_complete";
+  currentStage: InterviewStage;
 }
 
 interface FacilitateInterviewResult {
-  status: FacilitatorStatus;
+  nextStage: InterviewStage;
+  source: "algorithm" | "llm";
+  next_question_id?: string;
 }
 
 /**

@@ -29,7 +29,6 @@ export function InterviewChatInput({
   placeholder,
   isResponding,
   error,
-  showHint = false,
 }: InterviewChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isDesktop = useIsDesktop();
