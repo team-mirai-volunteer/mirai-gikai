@@ -1,6 +1,7 @@
 import "server-only";
 
-import { convertToModelMessages, Output, streamText } from "ai";
+import { convertToModelMessages, generateText, Output, streamText } from "ai";
+import { z } from "zod";
 import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id-admin";
 import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
@@ -8,20 +9,34 @@ import { createInterviewSession } from "@/features/interview-session/server/acti
 import { getInterviewMessages } from "@/features/interview-session/server/loaders/get-interview-messages";
 import { getInterviewSession } from "@/features/interview-session/server/loaders/get-interview-session";
 import {
+  type InterviewStage,
   interviewChatTextSchema,
   interviewChatWithReportSchema,
 } from "@/features/interview-session/shared/schemas";
 import type { InterviewChatRequestParams } from "@/features/interview-session/shared/types";
 import { AI_MODELS } from "@/lib/ai/models";
 import { logger } from "@/lib/logger";
+import { injectJsonFields } from "@/lib/stream/inject-json-fields";
 import { GLOBAL_INTERVIEW_MODE } from "../../shared/constants";
 import {
   buildInterviewSystemPrompt,
   buildSummarySystemPrompt,
 } from "../utils/build-interview-system-prompt";
+import { collectAskedQuestionIds } from "../utils/interview-logic";
 import { bulkModeLogic } from "../utils/interview-logic/bulk-mode";
 import { loopModeLogic } from "../utils/interview-logic/loop-mode";
 import { saveInterviewMessage } from "./save-interview-message";
+
+// ファシリテーター結果のスキーマ
+const facilitatorResultSchema = z.object({
+  nextStage: z.enum(["chat", "summary", "summary_complete"]),
+});
+
+// モードロジックのマップ
+const modeLogicMap = {
+  bulk: bulkModeLogic,
+  loop: loopModeLogic,
+} as const;
 
 /**
  * インタビューチャットリクエストを処理してストリーミングレスポンスを返す
@@ -49,7 +64,6 @@ export async function handleInterviewChatRequest({
 
   // 最新のメッセージを取得
   const lastMessage = messages[messages.length - 1];
-  const isSummaryPhase = currentStage === "summary";
 
   // ユーザーメッセージを保存
   if (lastMessage?.role === "user") {
@@ -69,17 +83,26 @@ export async function handleInterviewChatRequest({
   const questions = await getInterviewQuestions(interviewConfig.id);
 
   // モードに応じたロジックを取得
-  const modeLogicMap = {
-    bulk: bulkModeLogic,
-    loop: loopModeLogic,
-  } as const;
   const mode = GLOBAL_INTERVIEW_MODE;
   const logic = modeLogicMap[mode] ?? bulkModeLogic;
 
-  // 次に聞くべき質問を特定（モードに応じてロジックが異なる）
   // DBから最新を含む全メッセージを取得
-  // クライアントからのmessagesはassistantメッセージの内容（JSON）が不完全な場合があるため
   const dbMessages = await getInterviewMessages(session.id);
+
+  // ファシリテーション判定を実行（バックエンドでnext_stageを決定）
+  const nextStage = await determinNextStage({
+    messages,
+    currentStage,
+    questions,
+    dbMessages,
+    logic,
+  });
+
+  // 実際に使用するステージ（ファシリテーション結果を反映）
+  const effectiveStage = nextStage;
+  const isSummaryPhase = effectiveStage === "summary";
+
+  // 次に聞くべき質問を特定（モードに応じてロジックが異なる）
   const effectiveNextQuestionId = logic.calculateNextQuestionId({
     messages: dbMessages,
     questions,
@@ -97,28 +120,107 @@ export async function handleInterviewChatRequest({
 
   logger.debug("System Prompt:", systemPrompt);
 
-  // ストリーミングレスポンスを生成
+  // ストリーミングレスポンスを生成（next_stageを注入）
   return generateStreamingResponse({
     systemPrompt,
     messages,
     sessionId: session.id,
     isSummaryPhase,
+    nextStage,
   });
 }
 
 /**
- * ストリーミングレスポンスを生成
+ * ファシリテーション判定を実行してnext_stageを決定
+ */
+async function determinNextStage({
+  messages,
+  currentStage,
+  questions,
+  dbMessages,
+  logic,
+}: {
+  messages: Array<{ role: string; content: string }>;
+  currentStage: InterviewStage;
+  questions: Awaited<ReturnType<typeof getInterviewQuestions>>;
+  dbMessages: Array<{ role: string; content: string }>;
+  logic: (typeof modeLogicMap)[keyof typeof modeLogicMap];
+}): Promise<InterviewStage> {
+  // ファシリテーション不要な場合は現在のステージを維持
+  if (!logic.shouldFacilitate({ currentStage })) {
+    return currentStage;
+  }
+
+  // 既に聞いた質問IDを収集
+  const askedQuestionIds = collectAskedQuestionIds(dbMessages);
+
+  // 質問の進捗状況を計算
+  const totalQuestions = questions.length;
+  const completedQuestions = askedQuestionIds.size;
+  const remainingQuestions = totalQuestions - completedQuestions;
+
+  // SimpleMessage形式に変換
+  const simpleMessages = messages.map((m) => ({
+    role: m.role as "assistant" | "user",
+    content: m.content,
+  }));
+
+  // ファシリテーターパラメータを構築
+  const facilitatorParams = {
+    messages: simpleMessages,
+    currentStage,
+    questions,
+    askedQuestionIds,
+    dbMessages: dbMessages.map((m) => ({
+      id: "",
+      interview_session_id: "",
+      role: m.role as "assistant" | "user",
+      content: m.content,
+      created_at: "",
+    })),
+    totalQuestions,
+    completedQuestions,
+    remainingQuestions,
+  };
+
+  // モード固有のアルゴリズム判定を試みる
+  const algorithmResult = logic.checkProgress(facilitatorParams);
+  if (algorithmResult) {
+    return algorithmResult.nextStage;
+  }
+
+  // アルゴリズム判定できなかった場合はLLMで判定
+  const facilitatorPrompt = logic.buildFacilitatorPrompt(facilitatorParams);
+
+  const conversationText = simpleMessages
+    .map((m) => `${m.role === "assistant" ? "AI" : "User"}: ${m.content}`)
+    .join("\n");
+
+  logger.debug("Facilitator Prompt:", facilitatorPrompt);
+  const result = await generateText({
+    model: AI_MODELS.gpt4o_mini,
+    prompt: `${facilitatorPrompt}\n\n# 会話履歴\n${conversationText}`,
+    output: Output.object({ schema: facilitatorResultSchema }),
+  });
+
+  return result.output.nextStage;
+}
+
+/**
+ * ストリーミングレスポンスを生成（next_stageを注入）
  */
 async function generateStreamingResponse({
   systemPrompt,
   messages,
   sessionId,
   isSummaryPhase,
+  nextStage,
 }: {
   systemPrompt: string;
   messages: { role: string; content: string }[];
   sessionId: string;
   isSummaryPhase: boolean;
+  nextStage: InterviewStage;
 }) {
   // summaryフェーズはGemini、chatフェーズはGPT-4o-mini
   const model = isSummaryPhase ? AI_MODELS.gemini3_flash : AI_MODELS.gpt4o_mini;
@@ -159,19 +261,30 @@ async function generateStreamingResponse({
   } as const;
 
   try {
+    let textStream: ReadableStream<string>;
+
     if (isSummaryPhase) {
       const result = streamText({
         ...streamParams,
         output: Output.object({ schema: interviewChatWithReportSchema }),
       });
-      return result.toTextStreamResponse();
+      textStream = result.textStream;
+    } else {
+      const result = streamText({
+        ...streamParams,
+        output: Output.object({ schema: interviewChatTextSchema }),
+      });
+      textStream = result.textStream;
     }
 
-    const result = streamText({
-      ...streamParams,
-      output: Output.object({ schema: interviewChatTextSchema }),
+    // ストリームにnext_stageを注入
+    const transformedStream = injectJsonFields(textStream, {
+      next_stage: nextStage,
     });
-    return result.toTextStreamResponse();
+
+    return new Response(transformedStream, {
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    });
   } catch (error) {
     handleError(error);
     throw error;

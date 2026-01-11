@@ -86,7 +86,15 @@ export type InterviewReportData = z.infer<typeof interviewReportSchema>;
 // クライアント表示用の型（scoresはユーザーには表示しない）
 export type InterviewReportViewData = Omit<InterviewReportData, "scores">;
 
-// 通常チャット用スキーマ（textとquick_replies）
+// ステージ遷移の型
+export const interviewStageSchema = z.enum([
+  "chat",
+  "summary",
+  "summary_complete",
+]);
+export type InterviewStage = z.infer<typeof interviewStageSchema>;
+
+// 通常チャット用スキーマ（LLM出力用 - next_stageはバックエンドで注入）
 export const interviewChatTextSchema = z.object({
   text: z.string(),
   quick_replies: z.array(z.string()).nullable(),
@@ -95,7 +103,7 @@ export const interviewChatTextSchema = z.object({
 
 export type InterviewChatText = z.infer<typeof interviewChatTextSchema>;
 
-// summaryフェーズ用スキーマ（textとreportを含む）
+// summaryフェーズ用スキーマ（LLM出力用 - next_stageはバックエンドで注入）
 export const interviewChatWithReportSchema = z.object({
   text: z.string(),
   report: interviewReportSchema,
@@ -111,6 +119,7 @@ export const interviewChatResponseSchema = z.object({
   report: interviewReportSchema.optional(),
   quick_replies: z.array(z.string()).optional().nullable(),
   question_id: z.string().optional().nullable(),
+  next_stage: interviewStageSchema.optional(),
 });
 
 export type InterviewChatResponse = z.infer<typeof interviewChatResponseSchema>;

@@ -64,6 +64,13 @@ export interface NextQuestionParams {
 }
 
 /**
+ * shouldFacilitate 判定用パラメータ
+ */
+export interface ShouldFacilitateParams {
+  currentStage: "chat" | "summary" | "summary_complete";
+}
+
+/**
  * モードの実装インターフェース
  *
  * 各モード（bulk, loop）はこのインターフェースを実装する
@@ -92,4 +99,10 @@ export interface InterviewModeLogic {
    * ファシリテーター用のプロンプトを構築
    */
   buildFacilitatorPrompt(params: FacilitatorParams): string;
+
+  /**
+   * ファシリテーション処理を実行すべきかどうかを判定
+   * @returns true の場合、バックエンドでファシリテーションを実行する
+   */
+  shouldFacilitate(params: ShouldFacilitateParams): boolean;
 }

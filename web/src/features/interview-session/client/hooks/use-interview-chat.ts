@@ -3,14 +3,12 @@
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { useState } from "react";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
-import { interviewChatResponseSchema } from "@/features/interview-session/shared/schemas";
 import {
-  callFacilitateApi,
   type InterviewStage,
-} from "../utils/interview-api-client";
+  interviewChatResponseSchema,
+} from "@/features/interview-session/shared/schemas";
 import {
   buildMessagesForApi,
-  buildMessagesForFacilitator,
   type ConversationMessage,
   convertPartialReport,
 } from "../utils/message-utils";
@@ -37,7 +35,6 @@ export function useInterviewChat({
   const [conversationMessages, setConversationMessages] = useState<
     ConversationMessage[]
   >([]);
-  const [isFacilitating, setIsFacilitating] = useState(false);
 
   // リトライロジック
   const retry = useInterviewRetry();
@@ -58,8 +55,15 @@ export function useInterviewChat({
       retry.resetRetry();
 
       if (finishedObject) {
-        const { text, report, quick_replies, question_id } = finishedObject;
+        const { text, report, quick_replies, question_id, next_stage } =
+          finishedObject;
         const questionId = question_id ?? null;
+
+        // レスポンスからnext_stageを取得してステージを更新
+        if (next_stage) {
+          setStage(next_stage);
+        }
+
         setConversationMessages((prev) => [
           ...prev,
           {
@@ -76,8 +80,8 @@ export function useInterviewChat({
     },
   });
 
-  // 統合ローディング状態（useObjectのisLoading + ファシリテーターAPI呼び出し中）
-  const isChatLoading = isLoading || isFacilitating;
+  // ローディング状態
+  const isChatLoading = isLoading;
 
   // 完了時のコールバック（summary_completeへの遷移用）
   const handleComplete = (reportId: string | null) => {
@@ -122,7 +126,8 @@ export function useInterviewChat({
   };
 
   // メッセージ送信
-  const handleSubmit = async (message: PromptInputMessage) => {
+  // ファシリテーション判定はバックエンドで行われ、レスポンスのnext_stageでステージが更新される
+  const handleSubmit = (message: PromptInputMessage) => {
     const hasText = Boolean(message.text);
     if (!hasText || isChatLoading || stage === "summary_complete") {
       return;
@@ -142,41 +147,9 @@ export function useInterviewChat({
     ]);
     setInput("");
 
-    // ファシリテーターAPIを呼び出してステージ遷移を判定
-    setIsFacilitating(true);
-    try {
-      const facilitatorResult = await callFacilitateApi({
-        messages: buildMessagesForFacilitator(
-          parsedInitialMessages,
-          conversationMessages,
-          { content: userMessageText }
-        ),
-        billId,
-        currentStage: stage,
-      });
-
-      const nextStage = facilitatorResult?.nextStage;
-
-      // ステージ遷移の処理
-      if (nextStage === "summary" && stage === "chat") {
-        // chat → summary への遷移
-        setStage("summary");
-        submitChatMessage(userMessageText, "summary");
-        return;
-      }
-
-      if (nextStage === "chat" && stage === "summary") {
-        // summary → chat への逆遷移（ユーザーがインタビュー再開を希望）
-        setStage("chat");
-        submitChatMessage(userMessageText, "chat");
-        return;
-      }
-
-      // 現在のステージを維持してメッセージ送信
-      submitChatMessage(userMessageText, stage);
-    } finally {
-      setIsFacilitating(false);
-    }
+    // 現在のステージでメッセージ送信
+    // バックエンドでファシリテーション判定が行われ、レスポンスにnext_stageが含まれる
+    submitChatMessage(userMessageText, stage);
   };
 
   // クイックリプライを選択した時の処理
