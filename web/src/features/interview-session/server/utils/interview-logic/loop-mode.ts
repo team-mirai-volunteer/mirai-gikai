@@ -150,7 +150,7 @@ ${modeInstructions}
       stageGuidance = `現在のステージ: summary（要約フェーズ）
 - ユーザーがレポート内容に同意し、完了すべきと判断した場合は nextStage を "summary_complete" にしてください。
 - まだ修正や追加の要約が必要な場合は nextStage を "summary" にしてください。
-- 必ず summary → summary_complete の順に進むようにしてください。`;
+- ユーザーが明確にインタビューの再開や追加の質問への回答を希望した場合は nextStage を "chat" にしてください。`;
     } else {
       stageGuidance = `現在のステージ: summary_complete（完了済み）
 - このステージでは判定は不要です。nextStage を "summary_complete" にしてください。`;
@@ -198,7 +198,7 @@ ${remainingQuestionsList}
 
 ## 注意
 - JSON以外のテキストを出力しないでください。
-- ステージ遷移は必ず chat → summary → summary_complete の順に進むようにしてください。
+- 基本的なステージ遷移は chat → summary → summary_complete の順ですが、summaryフェーズでユーザーがインタビュー再開を希望した場合は chat に戻ることができます。
 `;
   },
 };

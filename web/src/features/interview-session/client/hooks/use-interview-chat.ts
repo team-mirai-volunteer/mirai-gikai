@@ -142,13 +142,7 @@ export function useInterviewChat({
     ]);
     setInput("");
 
-    // summaryフェーズではファシリテーターを呼ばず、直接チャットAPIを呼ぶ
-    if (stage === "summary") {
-      submitChatMessage(userMessageText, "summary");
-      return;
-    }
-
-    // 通常のチャットフェーズでは、送信前にファシリテーターAPIを同期呼び出し
+    // ファシリテーターAPIを呼び出してステージ遷移を判定
     setIsFacilitating(true);
     try {
       const facilitatorResult = await callFacilitateApi({
@@ -158,17 +152,28 @@ export function useInterviewChat({
           { content: userMessageText }
         ),
         billId,
-        currentStage: "chat",
+        currentStage: stage,
       });
 
-      if (facilitatorResult?.nextStage === "summary") {
+      const nextStage = facilitatorResult?.nextStage;
+
+      // ステージ遷移の処理
+      if (nextStage === "summary" && stage === "chat") {
+        // chat → summary への遷移
         setStage("summary");
         submitChatMessage(userMessageText, "summary");
         return;
       }
 
-      // 通常のチャットフェーズでのメッセージ送信（nextStageがchatの場合）
-      submitChatMessage(userMessageText, "chat");
+      if (nextStage === "chat" && stage === "summary") {
+        // summary → chat への逆遷移（ユーザーがインタビュー再開を希望）
+        setStage("chat");
+        submitChatMessage(userMessageText, "chat");
+        return;
+      }
+
+      // 現在のステージを維持してメッセージ送信
+      submitChatMessage(userMessageText, stage);
     } finally {
       setIsFacilitating(false);
     }
