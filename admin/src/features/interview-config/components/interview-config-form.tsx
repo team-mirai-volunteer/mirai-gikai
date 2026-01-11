@@ -18,6 +18,7 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -33,7 +34,10 @@ import {
   arrayToText,
   textToArray,
 } from "../types";
-import { upsertInterviewConfig } from "../actions/upsert-interview-config";
+import {
+  createInterviewConfig,
+  updateInterviewConfig,
+} from "../actions/upsert-interview-config";
 import { generateInterviewPreviewUrl } from "../actions/generate-interview-preview-url";
 
 interface InterviewConfigFormProps {
@@ -47,10 +51,12 @@ export function InterviewConfigForm({
 }: InterviewConfigFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isNew = !config;
 
   const form = useForm<InterviewConfigInput>({
     resolver: zodResolver(interviewConfigSchema),
     defaultValues: {
+      name: config?.name || "",
       status: config?.status || "closed",
       themes: config?.themes || [],
       knowledge_source: config?.knowledge_source || "",
@@ -60,11 +66,21 @@ export function InterviewConfigForm({
   const handleSubmit = async (data: InterviewConfigInput) => {
     setIsSubmitting(true);
     try {
-      const result = await upsertInterviewConfig(billId, data);
+      const result = isNew
+        ? await createInterviewConfig(billId, data)
+        : await updateInterviewConfig(config.id, data);
 
       if (result.success) {
-        toast.success("インタビュー設定を保存しました");
-        router.refresh();
+        toast.success(
+          isNew
+            ? "インタビュー設定を作成しました"
+            : "インタビュー設定を保存しました"
+        );
+        if (isNew) {
+          router.push(`/bills/${billId}/interview/${result.data.id}/edit`);
+        } else {
+          router.refresh();
+        }
       } else {
         toast.error(result.error || "エラーが発生しました");
       }
@@ -78,6 +94,11 @@ export function InterviewConfigForm({
 
   const [isPreviewing, setIsPreviewing] = useState(false);
   const handlePreview = async () => {
+    if (!config) {
+      toast.error("プレビューは設定保存後に利用できます");
+      return;
+    }
+
     // プレビューの前に保存を実行
     const data = form.getValues();
     const isValid = await form.trigger();
@@ -89,7 +110,7 @@ export function InterviewConfigForm({
     setIsPreviewing(true);
     try {
       // 1. 保存
-      const saveResult = await upsertInterviewConfig(billId, data);
+      const saveResult = await updateInterviewConfig(config.id, data);
       if (!saveResult.success) {
         toast.error(saveResult.error || "保存に失敗しました");
         return;
@@ -140,6 +161,26 @@ export function InterviewConfigForm({
             >
               <FormField
                 control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>設定名</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="例: デフォルト設定、A/Bテスト用など"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      設定を識別するための名前を入力してください
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="status"
                 render={({ field }) => (
                   <FormItem>
@@ -156,7 +197,7 @@ export function InterviewConfigForm({
                       </SelectContent>
                     </Select>
                     <FormDescription>
-                      インタビュー機能の有効/無効を設定します
+                      インタビュー機能の有効/無効を設定します。公開設定は法案ごとに1つのみ可能です。
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
