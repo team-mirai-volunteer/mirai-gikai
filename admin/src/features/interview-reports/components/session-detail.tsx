@@ -101,10 +101,16 @@ export function SessionDetail({ session, billId }: SessionDetailProps) {
                   <div className="text-sm text-gray-500">役割</div>
                   <div className="flex items-center gap-1 text-sm">
                     <User className="h-4 w-4 text-gray-400" />
-                    {report.role
-                      ? roleLabels[report.role as keyof typeof roleLabels] ||
-                        report.role
-                      : "-"}
+                    {(() => {
+                      const baseLabel = report.role
+                        ? roleLabels[report.role as keyof typeof roleLabels] ||
+                          report.role
+                        : null;
+                      if (baseLabel && report.role_title) {
+                        return `${baseLabel}・${report.role_title}`;
+                      }
+                      return report.role_title || baseLabel || "-";
+                    })()}
                   </div>
                 </div>
                 <div>

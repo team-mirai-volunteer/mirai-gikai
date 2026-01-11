@@ -75,6 +75,7 @@ export async function completeInterviewSession({
         stance: reportData.stance,
         role: reportData.role,
         role_description: reportData.role_description,
+        role_title: reportData.role_title,
         opinions: reportData.opinions,
         scores: reportData.scores,
       },

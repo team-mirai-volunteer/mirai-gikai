@@ -68,6 +68,7 @@ export async function ReportChatLogPage({ reportId }: ReportChatLogPageProps) {
           <IntervieweeInfo
             role={report.role}
             roleDescription={report.role_description}
+            roleTitle={report.role_title}
           />
 
           {/* Chat Log Section */}

@@ -140,6 +140,7 @@ export async function ReportCompletePage({
             <IntervieweeInfo
               role={report.role}
               roleDescription={report.role_description}
+              roleTitle={report.role_title}
               headingLevel="h3"
             />
 

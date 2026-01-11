@@ -406,6 +406,7 @@ export type Database = {
           opinions: Json | null
           role: Database["public"]["Enums"]["interview_report_role_enum"] | null
           role_description: string | null
+          role_title: string | null
           scores: Json | null
           stance: Database["public"]["Enums"]["stance_type_enum"] | null
           summary: string | null
@@ -422,6 +423,7 @@ export type Database = {
             | Database["public"]["Enums"]["interview_report_role_enum"]
             | null
           role_description?: string | null
+          role_title?: string | null
           scores?: Json | null
           stance?: Database["public"]["Enums"]["stance_type_enum"] | null
           summary?: string | null
@@ -438,6 +440,7 @@ export type Database = {
             | Database["public"]["Enums"]["interview_report_role_enum"]
             | null
           role_description?: string | null
+          role_title?: string | null
           scores?: Json | null
           stance?: Database["public"]["Enums"]["stance_type_enum"] | null
           summary?: string | null
