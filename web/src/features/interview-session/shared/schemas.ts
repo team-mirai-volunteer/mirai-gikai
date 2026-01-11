@@ -64,6 +64,7 @@ export const interviewReportSchema = z
       .describe("ユーザーの役割や背景についての詳細な説明"),
     role_title: z
       .string()
+      .max(10)
       .nullable()
       .describe(
         "ユーザーの役割を10文字以内で端的に表現したタイトル（例: 物流業者、主婦、教師）"
