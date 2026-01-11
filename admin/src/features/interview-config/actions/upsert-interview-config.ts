@@ -10,6 +10,27 @@ export type InterviewConfigResult =
   | { success: false; error: string };
 
 /**
+ * 同じ法案の他の公開設定を非公開にする
+ */
+async function closeOtherPublicConfigs(
+  supabase: ReturnType<typeof createAdminClient>,
+  billId: string,
+  excludeConfigId?: string
+): Promise<void> {
+  const query = supabase
+    .from("interview_configs")
+    .update({ status: "closed", updated_at: new Date().toISOString() })
+    .eq("bill_id", billId)
+    .eq("status", "public");
+
+  if (excludeConfigId) {
+    query.neq("id", excludeConfigId);
+  }
+
+  await query;
+}
+
+/**
  * 新しいインタビュー設定を作成する
  */
 export async function createInterviewConfig(
@@ -23,6 +44,11 @@ export async function createInterviewConfig(
     const validatedData = interviewConfigSchema.parse(input);
 
     const supabase = createAdminClient();
+
+    // 公開設定の場合、既存の公開設定を非公開にする
+    if (validatedData.status === "public") {
+      await closeOtherPublicConfigs(supabase, billId);
+    }
 
     // 新規作成
     const { data, error } = await supabase
@@ -38,14 +64,6 @@ export async function createInterviewConfig(
       .single();
 
     if (error) {
-      // publicステータスの重複エラーを検出
-      if (error.code === "23505" && error.message.includes("bill_public")) {
-        return {
-          success: false,
-          error:
-            "この法案にはすでに公開中の設定があります。公開できる設定は1つのみです。",
-        };
-      }
       return {
         success: false,
         error: `インタビュー設定の作成に失敗しました: ${error.message}`,
@@ -83,6 +101,25 @@ export async function updateInterviewConfig(
 
     const supabase = createAdminClient();
 
+    // 公開設定の場合、他の公開設定を非公開にする
+    if (validatedData.status === "public") {
+      // まず現在の設定のbill_idを取得
+      const { data: currentConfig, error: fetchError } = await supabase
+        .from("interview_configs")
+        .select("bill_id")
+        .eq("id", configId)
+        .single();
+
+      if (fetchError) {
+        return {
+          success: false,
+          error: `インタビュー設定の取得に失敗しました: ${fetchError.message}`,
+        };
+      }
+
+      await closeOtherPublicConfigs(supabase, currentConfig.bill_id, configId);
+    }
+
     // 更新
     const { data, error } = await supabase
       .from("interview_configs")
@@ -98,14 +135,6 @@ export async function updateInterviewConfig(
       .single();
 
     if (error) {
-      // publicステータスの重複エラーを検出
-      if (error.code === "23505" && error.message.includes("bill_public")) {
-        return {
-          success: false,
-          error:
-            "この法案にはすでに公開中の設定があります。公開できる設定は1つのみです。",
-        };
-      }
       return {
         success: false,
         error: `インタビュー設定の更新に失敗しました: ${error.message}`,
