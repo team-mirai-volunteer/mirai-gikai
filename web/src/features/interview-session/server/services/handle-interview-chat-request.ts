@@ -5,6 +5,7 @@ import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id
 import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 import { createInterviewSession } from "@/features/interview-session/server/actions/create-interview-session";
+import { getInterviewMessages } from "@/features/interview-session/server/loaders/get-interview-messages";
 import { getInterviewSession } from "@/features/interview-session/server/loaders/get-interview-session";
 import {
   interviewChatTextSchema,
@@ -12,10 +13,12 @@ import {
 } from "@/features/interview-session/shared/schemas";
 import type { InterviewChatRequestParams } from "@/features/interview-session/shared/types";
 import { AI_MODELS } from "@/lib/ai/models";
+import { GLOBAL_INTERVIEW_MODE } from "../../shared/constants";
 import {
   buildInterviewSystemPrompt,
   buildSummarySystemPrompt,
 } from "../utils/build-interview-system-prompt";
+import { calculateNextQuestionId } from "../utils/interview-logic";
 import { saveInterviewMessage } from "./save-interview-message";
 
 /**
@@ -60,13 +63,26 @@ export async function handleInterviewChatRequest({
     }
   }
 
+  // 事前定義質問を取得
+  const questions = await getInterviewQuestions(interviewConfig.id);
+
+  // 次に聞くべき質問を特定
+  let effectiveNextQuestionId: string | undefined;
+  if (GLOBAL_INTERVIEW_MODE === "bulk" && !effectiveNextQuestionId) {
+    // DBから最新を含む全メッセージを取得
+    // クライアントからのmessagesはassistantメッセージの内容（JSON）が不完全な場合があるため
+    const dbMessages = await getInterviewMessages(session.id);
+    effectiveNextQuestionId = calculateNextQuestionId(dbMessages, questions);
+  }
+
   // システムプロンプトを構築
   const systemPrompt = isSummaryPhase
     ? buildSummarySystemPrompt({ bill, interviewConfig, messages })
     : buildInterviewSystemPrompt({
         bill,
         interviewConfig,
-        questions: await getInterviewQuestions(interviewConfig.id),
+        questions,
+        nextQuestionId: effectiveNextQuestionId,
       });
 
   // ストリーミングレスポンスを生成

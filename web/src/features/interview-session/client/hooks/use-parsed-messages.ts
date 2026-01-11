@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
+import type { InterviewStage } from "../utils/interview-api-client";
 import {
   type ConversationMessage,
   parseMessageContent,
 } from "../utils/message-utils";
-import type { InterviewStage } from "./use-interview-chat";
 
 /** 初期メッセージの型 */
 export interface InitialMessage {

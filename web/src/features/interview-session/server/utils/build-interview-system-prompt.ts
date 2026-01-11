@@ -12,10 +12,12 @@ export function buildInterviewSystemPrompt({
   bill,
   interviewConfig,
   questions,
+  nextQuestionId,
 }: {
   bill: BillWithContent | null;
   interviewConfig: Awaited<ReturnType<typeof getInterviewConfig>>;
   questions: Awaited<ReturnType<typeof getInterviewQuestions>>;
+  nextQuestionId?: string;
 }): string {
   const billName = bill?.name || "";
   const billTitle = bill?.bill_content?.title || "";
@@ -23,25 +25,52 @@ export function buildInterviewSystemPrompt({
   const billContent = bill?.bill_content?.content || "";
   const themes = interviewConfig?.themes || [];
   const knowledgeSource = interviewConfig?.knowledge_source || "";
+  const mode = GLOBAL_INTERVIEW_MODE;
   const questionsText = questions
     .map(
       (q, index) =>
-        `${index + 1}. [ID: ${q.id}] ${q.question}${q.instruction ? `\n   指示: ${q.instruction}` : ""}${q.quick_replies ? `\n   クイックリプライ: ${q.quick_replies.join(", ")}` : ""}`
+        `${index + 1}. [ID: ${q.id}] ${q.question}${mode !== "bulk" && q.instruction ? `\n   指示: ${q.instruction}` : ""}${q.quick_replies ? `\n   クイックリプライ: ${q.quick_replies.join(", ")}` : ""}`
     )
     .join("\n");
 
-  const mode = GLOBAL_INTERVIEW_MODE;
+  if (nextQuestionId) {
+    const nextQuestion = questions.find((q) => q.id === nextQuestionId);
+    if (nextQuestion) {
+      return `あなたは熟練のインタビュアーです。現在は「一括回答優先モード」で進行しています。
+
+## 法案情報
+- 法案名: ${billName}
+- 法案要約: ${billSummary}
+
+## 重要指示
+あなたはこれから必ず事前定義質問 **[ID: ${nextQuestion.id}] ${nextQuestion.question}** を行ってください。
+深掘りや他の話題への逸脱は一切禁止されています。
+
+1つのメッセージにつき、この1つの質問のみをしてください。
+
+## クイックリプライについて
+quick_repliesフィールドについては以下を使用してください。
+${nextQuestion.quick_replies}
+`;
+    }
+  }
+
   let modeInstructions = "";
 
   if (mode === "bulk") {
+    const nextQuestion = nextQuestionId
+      ? questions.find((q) => q.id === nextQuestionId)
+      : null;
+
     modeInstructions = `
 ## インタビューモード: **一括回答優先モード** (Bulk Mode)
 現在は、まず全体的な意見を効率的に伺うフェーズです。
 
 1. **基本方針**: 事前定義された各質問項目をすべて消化することを最優先してください。
-2. **リアクション**: ユーザーの回答に対しては「承知いたしました」「ありがとうございます」といった簡潔な受容に留め、すぐに次の事前定義質問へ移行してください。
-3. **深掘りの抑制**: ユーザーの回答に興味深い点があっても、このフェーズでは深追いしないでください。事実確認や、極端に抽象的な場合の短い補足要求のみに留めます。
-4. **移行の合図**: すべての事前定義質問が完了した後に初めて、「これまでの回答を詳しく拝見しました。ここからは、特に気になった点について深くお伺いしていきます」と宣言し、一括して深掘りを行ってください。`;
+${nextQuestion ? `2. **重要指示**: あなたはこれから必ず事前定義質問 **[ID: ${nextQuestion.id}] ${nextQuestion.question}** を行ってください。深掘りや他の話題への逸脱は一切禁止されています。` : "2. **重要指示**: 事前定義された質問のうち、まだ聞いていないものを優先して選んでください。"}
+3. **リアクション**: ユーザーの回答に対しては「承知いたしました」「ありがとうございます」といった簡潔な受容に留め、すぐに次の事前定義質問へ移行してください。
+4. **深掘りの抑制**: ユーザーの回答に興味深い点があっても、このフェーズでは深追いしないでください。事実確認や、極端に抽象的な場合の短い補足要求のみに留めます。
+5. **移行の合図**: すべての事前定義質問が完了した後に初めて、「これまでの回答を詳しく拝見しました。ここからは、特に気になった点について深くお伺いしていきます」と宣言し、一括して深掘りを行ってください。`;
   } else {
     modeInstructions = `
 ## インタビューモード: **都度深掘りモード** (Loop Mode)

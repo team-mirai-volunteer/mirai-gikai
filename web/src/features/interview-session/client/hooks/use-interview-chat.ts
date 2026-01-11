@@ -4,7 +4,10 @@ import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { useState } from "react";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { interviewChatResponseSchema } from "@/features/interview-session/shared/schemas";
-import { callFacilitateApi } from "../utils/interview-api-client";
+import {
+  callFacilitateApi,
+  type InterviewStage,
+} from "../utils/interview-api-client";
 import {
   buildMessagesForApi,
   buildMessagesForFacilitator,
@@ -14,8 +17,6 @@ import {
 import { useInterviewRetry } from "./use-interview-retry";
 import { type InitialMessage, useParsedMessages } from "./use-parsed-messages";
 import { useQuickReplies } from "./use-quick-replies";
-
-export type InterviewStage = "chat" | "summary" | "summary_complete";
 
 interface UseInterviewChatProps {
   billId: string;
@@ -103,7 +104,8 @@ export function useInterviewChat({
   // チャットAPI送信のヘルパー（リクエストパラメータを保存）
   const submitChatMessage = (
     userMessageText: string,
-    currentStage: InterviewStage
+    currentStage: InterviewStage,
+    nextQuestionId?: string
   ) => {
     const requestParams = {
       messages: buildMessagesForApi(
@@ -113,6 +115,7 @@ export function useInterviewChat({
       ),
       billId,
       currentStage,
+      nextQuestionId,
     };
     retry.saveRequestParams(requestParams); // 失敗時の自動リトライ用に保存
     submit(requestParams);
@@ -158,13 +161,13 @@ export function useInterviewChat({
         currentStage: "chat",
       });
 
-      if (facilitatorResult?.status === "summary") {
+      if (facilitatorResult?.nextStage === "summary") {
         setStage("summary");
         submitChatMessage(userMessageText, "summary");
         return;
       }
 
-      // 通常のチャットフェーズでのメッセージ送信
+      // 通常のチャットフェーズでのメッセージ送信（nextStageがchatの場合）
       submitChatMessage(userMessageText, "chat");
     } finally {
       setIsFacilitating(false);

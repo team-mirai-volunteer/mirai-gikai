@@ -27,4 +27,5 @@ export interface InterviewChatRequestParams {
   billId: string;
   currentStage: "chat" | "summary" | "summary_complete";
   isRetry?: boolean;
+  nextQuestionId?: string;
 }
