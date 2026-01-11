@@ -18,7 +18,8 @@ import {
   buildInterviewSystemPrompt,
   buildSummarySystemPrompt,
 } from "../utils/build-interview-system-prompt";
-import { calculateNextQuestionId } from "../utils/interview-logic";
+import { bulkModeLogic } from "../utils/interview-logic/bulk-mode";
+import { loopModeLogic } from "../utils/interview-logic/loop-mode";
 import { saveInterviewMessage } from "./save-interview-message";
 
 /**
@@ -66,14 +67,22 @@ export async function handleInterviewChatRequest({
   // 事前定義質問を取得
   const questions = await getInterviewQuestions(interviewConfig.id);
 
-  // 次に聞くべき質問を特定
-  let effectiveNextQuestionId: string | undefined;
-  if (GLOBAL_INTERVIEW_MODE === "bulk" && !effectiveNextQuestionId) {
-    // DBから最新を含む全メッセージを取得
-    // クライアントからのmessagesはassistantメッセージの内容（JSON）が不完全な場合があるため
-    const dbMessages = await getInterviewMessages(session.id);
-    effectiveNextQuestionId = calculateNextQuestionId(dbMessages, questions);
-  }
+  // モードに応じたロジックを取得
+  const modeLogicMap = {
+    bulk: bulkModeLogic,
+    loop: loopModeLogic,
+  } as const;
+  const mode = GLOBAL_INTERVIEW_MODE;
+  const logic = modeLogicMap[mode] ?? bulkModeLogic;
+
+  // 次に聞くべき質問を特定（モードに応じてロジックが異なる）
+  // DBから最新を含む全メッセージを取得
+  // クライアントからのmessagesはassistantメッセージの内容（JSON）が不完全な場合があるため
+  const dbMessages = await getInterviewMessages(session.id);
+  const effectiveNextQuestionId = logic.calculateNextQuestionId({
+    messages: dbMessages,
+    questions,
+  });
 
   // システムプロンプトを構築
   const systemPrompt = isSummaryPhase

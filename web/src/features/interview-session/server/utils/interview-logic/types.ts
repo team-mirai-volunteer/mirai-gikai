@@ -56,6 +56,14 @@ export interface FacilitatorResult {
 }
 
 /**
+ * 次の質問ID算出用パラメータ
+ */
+export interface NextQuestionParams {
+  messages: Array<{ role: string; content: string }>;
+  questions: InterviewQuestion[];
+}
+
+/**
  * モードの実装インターフェース
  *
  * 各モード（bulk, loop）はこのインターフェースを実装する
@@ -66,6 +74,12 @@ export interface InterviewModeLogic {
    * システムプロンプトを構築
    */
   buildSystemPrompt(params: InterviewPromptParams): string;
+
+  /**
+   * 次に聞くべき質問IDを算出
+   * @returns 質問ID。このモードで次の質問を強制しない場合はundefined
+   */
+  calculateNextQuestionId(params: NextQuestionParams): string | undefined;
 
   /**
    * インタビューの進行を判定

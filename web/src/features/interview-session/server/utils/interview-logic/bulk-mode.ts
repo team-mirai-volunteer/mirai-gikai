@@ -1,11 +1,13 @@
 import "server-only";
 
 import { parseMessageContent } from "../../../client/utils/message-utils";
+import { collectAskedQuestionIds } from "../interview-logic";
 import type {
   FacilitatorParams,
   FacilitatorResult,
   InterviewModeLogic,
   InterviewPromptParams,
+  NextQuestionParams,
 } from "./types";
 
 /**
@@ -135,6 +137,15 @@ ${modeInstructions}
 - 回答が抽象的な場合は具体的な例を求めてください
 - 法案に関する質問のみに集中してください
 `;
+  },
+
+  calculateNextQuestionId(params: NextQuestionParams): string | undefined {
+    const { messages, questions } = params;
+
+    // Bulk Mode: 次に聞くべき質問を強制的に指定
+    const askedQuestionIds = collectAskedQuestionIds(messages);
+    const nextUnasked = questions.find((q) => !askedQuestionIds.has(q.id));
+    return nextUnasked?.id;
   },
 
   checkProgress(params: FacilitatorParams): FacilitatorResult | null {

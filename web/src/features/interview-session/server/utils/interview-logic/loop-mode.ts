@@ -5,6 +5,7 @@ import type {
   FacilitatorResult,
   InterviewModeLogic,
   InterviewPromptParams,
+  NextQuestionParams,
 } from "./types";
 
 /**
@@ -105,6 +106,11 @@ ${modeInstructions}
 - 回答が抽象的な場合は具体的な例を求めてください
 - 法案に関する質問のみに集中してください
 `;
+  },
+
+  calculateNextQuestionId(_params: NextQuestionParams): string | undefined {
+    // Loop Mode: 次の質問を強制しない（LLMに任せる）
+    return undefined;
   },
 
   checkProgress(_params: FacilitatorParams): FacilitatorResult | null {

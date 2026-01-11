@@ -6,13 +6,11 @@ import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id
 import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 import { AI_MODELS } from "@/lib/ai/models";
-import {
-  type FacilitatorMessage,
-  parseMessageContent,
-} from "../../client/utils/message-utils";
+import type { FacilitatorMessage } from "../../client/utils/message-utils";
 import { GLOBAL_INTERVIEW_MODE } from "../../shared/constants";
 import { getInterviewMessages } from "../loaders/get-interview-messages";
 import { getInterviewSession } from "../loaders/get-interview-session";
+import { collectAskedQuestionIds } from "../utils/interview-logic";
 import { bulkModeLogic } from "../utils/interview-logic/bulk-mode";
 import { loopModeLogic } from "../utils/interview-logic/loop-mode";
 import type { FacilitatorResult } from "../utils/interview-logic/types";
@@ -66,15 +64,7 @@ export async function facilitateInterview({
   const dbMessages = await getInterviewMessages(session.id);
 
   // 既に聞いた質問IDを収集
-  const askedQuestionIds = new Set<string>();
-  for (const m of dbMessages) {
-    if (m.role === "assistant") {
-      const { questionId } = parseMessageContent(m.content);
-      if (questionId) {
-        askedQuestionIds.add(questionId);
-      }
-    }
-  }
+  const askedQuestionIds = collectAskedQuestionIds(dbMessages);
 
   // 質問の進捗状況を計算
   const totalQuestions = questions.length;
