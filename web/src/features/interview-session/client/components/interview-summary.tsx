@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import type { InterviewReportViewData } from "@/features/interview-session/shared/schemas";
 import {
-  roleLabels,
+  formatRoleLabel,
   stanceLabels,
 } from "../../../interview-report/shared/constants";
 
@@ -37,18 +37,7 @@ export function InterviewSummary({ report }: Props) {
             {(report.role || report.role_title) && (
               <div className="space-y-1">
                 <p className="text-primary-accent">立場</p>
-                <p>
-                  {(() => {
-                    const baseLabel = report.role
-                      ? roleLabels[report.role as keyof typeof roleLabels] ||
-                        report.role
-                      : null;
-                    if (baseLabel && report.role_title) {
-                      return `${baseLabel}・${report.role_title}`;
-                    }
-                    return report.role_title || baseLabel;
-                  })()}
-                </p>
+                <p>{formatRoleLabel(report.role, report.role_title)}</p>
               </div>
             )}
             {report.role_description && (

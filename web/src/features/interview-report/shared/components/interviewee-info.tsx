@@ -1,4 +1,4 @@
-import { roleLabels } from "../constants";
+import { formatRoleLabel } from "../constants";
 
 interface IntervieweeInfoProps {
   role?: string | null;
@@ -18,19 +18,7 @@ export function IntervieweeInfo({
   }
 
   const Heading = headingLevel;
-
-  // 役割ラベルとrole_titleを中黒で結合（例：「専門家・物流業者」）
-  const getRoleLabel = () => {
-    const baseLabel = role
-      ? roleLabels[role as keyof typeof roleLabels] || role
-      : null;
-    if (baseLabel && roleTitle) {
-      return `${baseLabel}・${roleTitle}`;
-    }
-    return roleTitle || baseLabel;
-  };
-
-  const roleLabel = getRoleLabel();
+  const roleLabel = formatRoleLabel(role, roleTitle);
 
   return (
     <div className="flex flex-col gap-4">

@@ -28,3 +28,20 @@ export const roleLabels: Record<InterviewReportRole, string> = {
   daily_life_affected: "暮らしに影響",
   general_citizen: "一市民として関心",
 };
+
+/**
+ * 役割ラベルとrole_titleを中黒で結合して表示用文字列を生成
+ * 例：「専門家・物流業者」
+ */
+export function formatRoleLabel(
+  role?: string | null,
+  roleTitle?: string | null
+): string | null {
+  const baseLabel = role
+    ? roleLabels[role as InterviewReportRole] || role
+    : null;
+  if (baseLabel && roleTitle) {
+    return `${baseLabel}・${roleTitle}`;
+  }
+  return roleTitle || baseLabel;
+}
