@@ -16,6 +16,7 @@ import {
 import type { InterviewChatRequestParams } from "@/features/interview-session/shared/types";
 import { AI_MODELS } from "@/lib/ai/models";
 import { logger } from "@/lib/logger";
+import { injectJsonFields } from "@/lib/stream/inject-json-fields";
 import { GLOBAL_INTERVIEW_MODE } from "../../shared/constants";
 import {
   buildInterviewSystemPrompt,
@@ -277,7 +278,9 @@ async function generateStreamingResponse({
     }
 
     // ストリームにnext_stageを注入
-    const transformedStream = createStreamWithNextStage(textStream, nextStage);
+    const transformedStream = injectJsonFields(textStream, {
+      next_stage: nextStage,
+    });
 
     return new Response(transformedStream, {
       headers: { "Content-Type": "text/plain; charset=utf-8" },
@@ -286,48 +289,4 @@ async function generateStreamingResponse({
     handleError(error);
     throw error;
   }
-}
-
-/**
- * ストリームにnext_stageフィールドを注入するTransformStream
- *
- * LLMが生成するJSONオブジェクトの最後の閉じ括弧の前に
- * ,"next_stage":"<value>" を挿入する
- */
-function createStreamWithNextStage(
-  textStream: ReadableStream<string>,
-  nextStage: InterviewStage
-): ReadableStream<Uint8Array> {
-  const encoder = new TextEncoder();
-  // 末尾の数文字をバッファリングして、最後の閉じ括弧を検出
-  let tail = "";
-  const TAIL_SIZE = 10;
-
-  const transformer = new TransformStream<string, Uint8Array>({
-    transform(chunk, controller) {
-      const combined = tail + chunk;
-      if (combined.length > TAIL_SIZE) {
-        const toOutput = combined.slice(0, -TAIL_SIZE);
-        tail = combined.slice(-TAIL_SIZE);
-        controller.enqueue(encoder.encode(toOutput));
-      } else {
-        tail = combined;
-      }
-    },
-
-    flush(controller) {
-      // 末尾の閉じ括弧を探してnext_stageを注入
-      const lastBrace = tail.lastIndexOf("}");
-      if (lastBrace !== -1) {
-        const before = tail.slice(0, lastBrace);
-        const after = tail.slice(lastBrace + 1);
-        const injection = `,"next_stage":"${nextStage}"}`;
-        controller.enqueue(encoder.encode(before + injection + after));
-      } else {
-        controller.enqueue(encoder.encode(tail));
-      }
-    },
-  });
-
-  return textStream.pipeThrough(transformer);
 }
