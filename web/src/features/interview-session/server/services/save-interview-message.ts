@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createAdminClient } from "@mirai-gikai/supabase";
+import { logger } from "@/lib/logger";
 
 interface SaveInterviewMessageParams {
   sessionId: string;
@@ -20,7 +21,7 @@ export async function saveInterviewMessage({
 }: SaveInterviewMessageParams): Promise<void> {
   // リトライ時はユーザーメッセージの保存をスキップ（既に保存済み）
   if (isRetry && role === "user") {
-    console.log("[Message Save] Skipping user message (retry)");
+    logger.debug("[Message Save] Skipping user message (retry)");
     return;
   }
 

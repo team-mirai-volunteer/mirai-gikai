@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import type { InterviewChatRequestParams } from "@/features/interview-session/shared/types";
+import { logger } from "@/lib/logger";
 
 const MAX_AUTO_RETRIES = 1;
 
@@ -26,14 +27,14 @@ export function useInterviewRetry() {
     submit: (params: InterviewChatRequestParams) => void
   ): boolean => {
     console.error("chat error", error);
-    console.log(retryCount.current, lastFailedRequestParams.current);
+    logger.debug(retryCount.current, lastFailedRequestParams.current);
 
     // 自動リトライ判定（1回まで）
     if (
       retryCount.current < MAX_AUTO_RETRIES &&
       lastFailedRequestParams.current
     ) {
-      console.log(
+      logger.debug(
         `[Auto Retry] Attempt ${retryCount.current + 1}/${MAX_AUTO_RETRIES}`
       );
       retryCount.current += 1;
