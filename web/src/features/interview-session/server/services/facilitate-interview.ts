@@ -6,6 +6,7 @@ import { getBillByIdAdmin } from "@/features/bills/server/loaders/get-bill-by-id
 import { getInterviewConfigAdmin } from "@/features/interview-config/server/loaders/get-interview-config-admin";
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 import { AI_MODELS } from "@/lib/ai/models";
+import { logger } from "@/lib/logger";
 import { GLOBAL_INTERVIEW_MODE } from "../../shared/constants";
 import type { SimpleMessage } from "../../shared/types";
 import { getInterviewMessages } from "../loaders/get-interview-messages";
@@ -100,9 +101,7 @@ export async function facilitateInterview({
     .map((m) => `${m.role === "assistant" ? "AI" : "User"}: ${m.content}`)
     .join("\n");
 
-  if (process.env.NODE_ENV === "development") {
-    console.log(facilitatorPrompt);
-  }
+  logger.debug(facilitatorPrompt);
   const result = await generateText({
     model: AI_MODELS.gpt4o_mini,
     prompt: `${facilitatorPrompt}\n\n# 会話履歴\n${conversationText}`,

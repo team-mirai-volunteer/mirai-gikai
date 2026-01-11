@@ -13,6 +13,7 @@ import {
 } from "@/features/interview-session/shared/schemas";
 import type { InterviewChatRequestParams } from "@/features/interview-session/shared/types";
 import { AI_MODELS } from "@/lib/ai/models";
+import { logger } from "@/lib/logger";
 import { GLOBAL_INTERVIEW_MODE } from "../../shared/constants";
 import {
   buildInterviewSystemPrompt,
@@ -94,9 +95,7 @@ export async function handleInterviewChatRequest({
         nextQuestionId: effectiveNextQuestionId,
       });
 
-  if (process.env.NODE_ENV === "development") {
-    console.log("System Prompt:", systemPrompt);
-  }
+  logger.debug("System Prompt:", systemPrompt);
 
   // ストリーミングレスポンスを生成
   return generateStreamingResponse({
