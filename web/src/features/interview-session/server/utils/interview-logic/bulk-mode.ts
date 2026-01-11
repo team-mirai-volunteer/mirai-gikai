@@ -8,6 +8,7 @@ import type {
   InterviewModeLogic,
   InterviewPromptParams,
   NextQuestionParams,
+  ShouldFacilitateParams,
 } from "./types";
 
 /**
@@ -257,5 +258,10 @@ ${remainingQuestionsList}
 - JSON以外のテキストを出力しないでください。
 - 基本的なステージ遷移は chat → summary → summary_complete の順ですが、summaryフェーズでユーザーがインタビュー再開を希望した場合は chat に戻ることができます。
 `;
+  },
+
+  shouldFacilitate(params: ShouldFacilitateParams): boolean {
+    // summary_complete の場合はファシリテーション不要
+    return params.currentStage !== "summary_complete";
   },
 };

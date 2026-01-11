@@ -1,13 +1,19 @@
+import type { InterviewStage } from "@/features/interview-session/shared/schemas";
 import type { SimpleMessage } from "./message-utils";
 
-export type InterviewStage = "chat" | "summary" | "summary_complete";
+/**
+ * @deprecated InterviewStage は schemas.ts から直接インポートしてください。
+ */
+export type { InterviewStage } from "@/features/interview-session/shared/schemas";
 
+/** @deprecated */
 interface FacilitateInterviewParams {
   messages: SimpleMessage[];
   billId: string;
   currentStage: InterviewStage;
 }
 
+/** @deprecated */
 interface FacilitateInterviewResult {
   nextStage: InterviewStage;
   source: "algorithm" | "llm";
@@ -15,7 +21,10 @@ interface FacilitateInterviewResult {
 }
 
 /**
- * ファシリテーターAPIを呼び出して、インタビューの進行状況を判定
+ * @deprecated この関数は非推奨です。
+ * ファシリテーション判定は /api/interview/chat のバックエンドで統合されました。
+ * レスポンスの next_stage フィールドを使用してステージ遷移を判定してください。
+ * この関数は後方互換性のために残されていますが、将来のバージョンで削除される予定です。
  */
 export async function callFacilitateApi(
   params: FacilitateInterviewParams
