@@ -57,6 +57,7 @@ export async function createInterviewConfig(
         bill_id: billId,
         name: validatedData.name,
         status: validatedData.status,
+        mode: validatedData.mode,
         themes: validatedData.themes || null,
         knowledge_source: validatedData.knowledge_source || null,
       })
@@ -126,6 +127,7 @@ export async function updateInterviewConfig(
       .update({
         name: validatedData.name,
         status: validatedData.status,
+        mode: validatedData.mode,
         themes: validatedData.themes || null,
         knowledge_source: validatedData.knowledge_source || null,
         updated_at: new Date().toISOString(),

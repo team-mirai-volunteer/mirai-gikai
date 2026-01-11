@@ -58,6 +58,7 @@ export function InterviewConfigForm({
     defaultValues: {
       name: config?.name || "",
       status: config?.status || "closed",
+      mode: config?.mode || "loop",
       themes: config?.themes || [],
       knowledge_source: config?.knowledge_source || "",
     },
@@ -198,6 +199,32 @@ export function InterviewConfigForm({
                     </Select>
                     <FormDescription>
                       インタビュー機能の有効/無効を設定します。公開設定は法案ごとに1つのみ可能です。
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="mode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>インタビューモード</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="モードを選択" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="loop">逐次深掘り（loop）</SelectItem>
+                        <SelectItem value="bulk">一括深掘り（bulk）</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      loop: 質問ごとに深掘り / bulk:
+                      事前定義質問を先にすべて消化してから深掘り
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

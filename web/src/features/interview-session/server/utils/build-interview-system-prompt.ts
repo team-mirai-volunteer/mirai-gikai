@@ -3,7 +3,6 @@ import "server-only";
 import type { BillWithContent } from "@/features/bills/shared/types";
 import type { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import type { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
-import { GLOBAL_INTERVIEW_MODE } from "../../shared/constants";
 import { bulkModeLogic } from "./interview-logic/bulk-mode";
 import { loopModeLogic } from "./interview-logic/loop-mode";
 
@@ -28,7 +27,8 @@ export function buildInterviewSystemPrompt({
   questions: Awaited<ReturnType<typeof getInterviewQuestions>>;
   nextQuestionId?: string;
 }): string {
-  const mode = GLOBAL_INTERVIEW_MODE;
+  // DBの設定からモードを取得
+  const mode = interviewConfig?.mode ?? "loop";
   const logic = modeLogicMap[mode] ?? bulkModeLogic;
 
   return logic.buildSystemPrompt({
