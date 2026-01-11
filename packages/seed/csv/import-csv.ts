@@ -17,7 +17,33 @@ const CSV_IMPORTS: CsvImportConfig[] = [
   { table: "bills", file: "bills_rows.csv" },
   { table: "bill_contents", file: "bill_contents_rows.csv" },
   { table: "bills_tags", file: "bills_tags_rows.csv" },
+  { table: "interview_configs", file: "interview_configs_rows.csv" },
+  { table: "interview_questions", file: "interview_questions_rows.csv" },
 ];
+
+/**
+ * JSON配列文字列をPostgreSQL配列形式に変換する
+ * 例: '["a","b","c"]' -> '{a,b,c}'
+ */
+function convertJsonArrayToPostgresArray(value: string): string {
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      const escaped = parsed.map((item) => {
+        const str = String(item);
+        // カンマ、ダブルクォート、バックスラッシュ、中括弧、空白を含む場合はクォート
+        if (/[,"\\\{\}\s]/.test(str)) {
+          return `"${str.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+        }
+        return str;
+      });
+      return `{${escaped.join(",")}}`;
+    }
+  } catch {
+    // JSON解析に失敗した場合は元の値を返す
+  }
+  return value;
+}
 
 function readCsv<T>(filePath: string): T[] {
   const content = fs.readFileSync(filePath, "utf-8");
@@ -26,6 +52,10 @@ function readCsv<T>(filePath: string): T[] {
     skip_empty_lines: true,
     cast: (value) => {
       if (value === "") return null;
+      // JSON配列形式の場合はPostgreSQL配列形式に変換
+      if (value.startsWith("[") && value.endsWith("]")) {
+        return convertJsonArrayToPostgresArray(value);
+      }
       return value;
     },
   });
