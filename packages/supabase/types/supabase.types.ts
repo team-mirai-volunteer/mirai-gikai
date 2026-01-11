@@ -292,6 +292,7 @@ export type Database = {
           created_at: string
           id: string
           knowledge_source: string | null
+          name: string
           status: Database["public"]["Enums"]["interview_config_status_enum"]
           themes: string[] | null
           updated_at: string
@@ -301,6 +302,7 @@ export type Database = {
           created_at?: string
           id?: string
           knowledge_source?: string | null
+          name: string
           status?: Database["public"]["Enums"]["interview_config_status_enum"]
           themes?: string[] | null
           updated_at?: string
@@ -310,6 +312,7 @@ export type Database = {
           created_at?: string
           id?: string
           knowledge_source?: string | null
+          name?: string
           status?: Database["public"]["Enums"]["interview_config_status_enum"]
           themes?: string[] | null
           updated_at?: string
@@ -318,7 +321,7 @@ export type Database = {
           {
             foreignKeyName: "interview_configs_bill_id_fkey"
             columns: ["bill_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "bills"
             referencedColumns: ["id"]
           },
