@@ -31,7 +31,7 @@ export interface InterviewChatRequestParams {
 }
 
 /** ファシリテーターAPI用のシンプルなメッセージ型 */
-export type FacilitatorMessage = {
+export type SimpleMessage = {
   role: "assistant" | "user";
   content: string;
 };

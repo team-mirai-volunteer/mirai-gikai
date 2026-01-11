@@ -3,7 +3,7 @@ import "server-only";
 import type { BillWithContent } from "@/features/bills/shared/types";
 import type { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import type { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
-import type { FacilitatorMessage } from "../../../shared/types";
+import type { SimpleMessage } from "../../../shared/types";
 
 /**
  * システムプロンプト構築用パラメータ
@@ -37,7 +37,7 @@ export interface DbMessage {
  * ファシリテーター用パラメータ
  */
 export interface FacilitatorParams {
-  messages: FacilitatorMessage[];
+  messages: SimpleMessage[];
   currentStage: "chat" | "summary" | "summary_complete";
   questions: InterviewQuestion[];
   askedQuestionIds: Set<string>;

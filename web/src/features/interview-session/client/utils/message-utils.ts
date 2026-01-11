@@ -1,5 +1,5 @@
 import type { InterviewReportViewData } from "../../shared/schemas";
-import type { FacilitatorMessage } from "../../shared/types";
+import type { SimpleMessage } from "../../shared/types";
 import { isValidReport, parseMessageContent } from "../../shared/message-utils";
 
 // Re-export from shared for backwards compatibility
@@ -85,7 +85,7 @@ export function buildMessagesForApi(
 }
 
 // Re-export from shared for backwards compatibility
-export type { FacilitatorMessage };
+export type { SimpleMessage };
 
 /**
  * メッセージ配列をファシリテーターAPI用の形式に変換
@@ -94,7 +94,7 @@ export function buildMessagesForFacilitator(
   initialMessages: Array<{ role: "assistant" | "user"; content: string }>,
   conversationMessages: Array<{ role: "assistant" | "user"; content: string }>,
   newUserMessage: { content: string }
-): FacilitatorMessage[] {
+): SimpleMessage[] {
   return [
     ...initialMessages.map((m) => ({ role: m.role, content: m.content })),
     ...conversationMessages.map((m) => ({ role: m.role, content: m.content })),

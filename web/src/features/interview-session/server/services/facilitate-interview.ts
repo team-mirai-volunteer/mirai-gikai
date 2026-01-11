@@ -7,7 +7,7 @@ import { getInterviewConfigAdmin } from "@/features/interview-config/server/load
 import { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 import { AI_MODELS } from "@/lib/ai/models";
 import { GLOBAL_INTERVIEW_MODE } from "../../shared/constants";
-import type { FacilitatorMessage } from "../../shared/types";
+import type { SimpleMessage } from "../../shared/types";
 import { getInterviewMessages } from "../loaders/get-interview-messages";
 import { getInterviewSession } from "../loaders/get-interview-session";
 import { collectAskedQuestionIds } from "../utils/interview-logic";
@@ -27,7 +27,7 @@ const modeLogicMap = {
 } as const;
 
 type Params = {
-  messages: FacilitatorMessage[];
+  messages: SimpleMessage[];
   billId: string;
   currentStage?: "chat" | "summary" | "summary_complete";
 };

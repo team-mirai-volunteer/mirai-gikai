@@ -1,9 +1,9 @@
-import type { FacilitatorMessage } from "./message-utils";
+import type { SimpleMessage } from "./message-utils";
 
 export type InterviewStage = "chat" | "summary" | "summary_complete";
 
 interface FacilitateInterviewParams {
-  messages: FacilitatorMessage[];
+  messages: SimpleMessage[];
   billId: string;
   currentStage: InterviewStage;
 }
