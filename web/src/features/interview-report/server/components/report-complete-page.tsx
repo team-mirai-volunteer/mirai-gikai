@@ -138,7 +138,6 @@ export async function ReportCompletePage({
 
             {/* インタビューを受けた人 */}
             <IntervieweeInfo
-              role={report.role}
               roleDescription={report.role_description}
               headingLevel="h3"
             />

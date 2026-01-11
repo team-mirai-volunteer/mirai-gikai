@@ -24,6 +24,7 @@ export function isValidReport(
     report.stance ||
     report.role ||
     report.role_description ||
+    report.role_title ||
     report.opinions.length > 0
   );
 }
@@ -59,6 +60,7 @@ export function parseMessageContent(content: string): {
           stance: rawReport.stance ?? null,
           role: rawReport.role ?? null,
           role_description: rawReport.role_description ?? null,
+          role_title: rawReport.role_title ?? null,
           opinions: rawReport.opinions ?? [],
         };
         return {
@@ -96,6 +98,7 @@ export function convertPartialReport(
           | "general_citizen"
           | null;
         role_description?: string | null;
+        role_title?: string | null;
         opinions?: Array<
           { title?: string; content?: string } | undefined
         > | null;
@@ -120,6 +123,7 @@ export function convertPartialReport(
     stance: partialReport.stance ?? null,
     role: partialReport.role ?? null,
     role_description: partialReport.role_description ?? null,
+    role_title: partialReport.role_title ?? null,
     opinions,
   };
 

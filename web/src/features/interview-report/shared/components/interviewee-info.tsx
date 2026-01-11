@@ -1,17 +1,13 @@
-import { roleLabels } from "../constants";
-
 interface IntervieweeInfoProps {
-  role?: string | null;
   roleDescription?: string | null;
   headingLevel?: "h2" | "h3";
 }
 
 export function IntervieweeInfo({
-  role,
   roleDescription,
   headingLevel = "h2",
 }: IntervieweeInfoProps) {
-  if (!role && !roleDescription) {
+  if (!roleDescription) {
     return null;
   }
 
@@ -25,18 +21,14 @@ export function IntervieweeInfo({
       <div className="bg-white rounded-2xl p-6">
         <div className="text-sm text-gray-800 whitespace-pre-wrap font-medium">
           {roleDescription
-            ? roleDescription
-                .split("\n")
-                .map((line) => line.trim())
-                .filter((line) => line.length > 0)
-                .map((line, index) => (
-                  <p key={`${index}-${line.slice(0, 20)}`}>
-                    {line.startsWith("・") ? line : `・${line}`}
-                  </p>
-                ))
-            : role && (
-                <p>・{roleLabels[role as keyof typeof roleLabels] || role}</p>
-              )}
+            .split("\n")
+            .map((line) => line.trim())
+            .filter((line) => line.length > 0)
+            .map((line, index) => (
+              <p key={`${index}-${line.slice(0, 20)}`}>
+                {line.startsWith("・") ? line : `・${line}`}
+              </p>
+            ))}
         </div>
       </div>
     </div>
