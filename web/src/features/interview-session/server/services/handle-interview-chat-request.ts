@@ -85,6 +85,10 @@ export async function handleInterviewChatRequest({
         nextQuestionId: effectiveNextQuestionId,
       });
 
+  if (process.env.NODE_ENV === "development") {
+    console.log("System Prompt:", systemPrompt);
+  }
+
   // ストリーミングレスポンスを生成
   return generateStreamingResponse({
     systemPrompt,

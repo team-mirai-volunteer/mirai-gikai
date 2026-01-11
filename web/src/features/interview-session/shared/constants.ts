@@ -5,4 +5,4 @@ export type InterviewMode = "loop" | "bulk";
  * - loop: 逐次深掘りモード（通常）
  * - bulk: 一括深掘りモード（事前定義質問を先にすべて消化）
  */
-export const GLOBAL_INTERVIEW_MODE: InterviewMode = "bulk";
+export const GLOBAL_INTERVIEW_MODE: InterviewMode = "loop";

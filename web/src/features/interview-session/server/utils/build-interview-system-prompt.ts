@@ -4,9 +4,18 @@ import type { BillWithContent } from "@/features/bills/shared/types";
 import type { getInterviewConfig } from "@/features/interview-config/server/loaders/get-interview-config";
 import type { getInterviewQuestions } from "@/features/interview-config/server/loaders/get-interview-questions";
 import { GLOBAL_INTERVIEW_MODE } from "../../shared/constants";
+import { bulkModeLogic } from "./interview-logic/bulk-mode";
+import { loopModeLogic } from "./interview-logic/loop-mode";
+
+const modeLogicMap = {
+  bulk: bulkModeLogic,
+  loop: loopModeLogic,
+} as const;
 
 /**
  * インタビュー用システムプロンプトを構築
+ *
+ * モードに応じて適切なロジックにルーティングする
  */
 export function buildInterviewSystemPrompt({
   bill,
@@ -19,126 +28,15 @@ export function buildInterviewSystemPrompt({
   questions: Awaited<ReturnType<typeof getInterviewQuestions>>;
   nextQuestionId?: string;
 }): string {
-  const billName = bill?.name || "";
-  const billTitle = bill?.bill_content?.title || "";
-  const billSummary = bill?.bill_content?.summary || "";
-  const billContent = bill?.bill_content?.content || "";
-  const themes = interviewConfig?.themes || [];
-  const knowledgeSource = interviewConfig?.knowledge_source || "";
   const mode = GLOBAL_INTERVIEW_MODE;
-  const questionsText = questions
-    .map(
-      (q, index) =>
-        `${index + 1}. [ID: ${q.id}] ${q.question}${mode !== "bulk" && q.instruction ? `\n   指示: ${q.instruction}` : ""}${q.quick_replies ? `\n   クイックリプライ: ${q.quick_replies.join(", ")}` : ""}`
-    )
-    .join("\n");
+  const logic = modeLogicMap[mode] ?? bulkModeLogic;
 
-  if (nextQuestionId) {
-    const nextQuestion = questions.find((q) => q.id === nextQuestionId);
-    if (nextQuestion) {
-      return `あなたは熟練のインタビュアーです。現在は「一括回答優先モード」で進行しています。
-
-## 法案情報
-- 法案名: ${billName}
-- 法案要約: ${billSummary}
-
-## 重要指示
-あなたはこれから必ず事前定義質問 **[ID: ${nextQuestion.id}] ${nextQuestion.question}** を行ってください。
-深掘りや他の話題への逸脱は一切禁止されています。
-
-1つのメッセージにつき、この1つの質問のみをしてください。
-
-## クイックリプライについて
-quick_repliesフィールドについては以下を使用してください。
-${nextQuestion.quick_replies}
-`;
-    }
-  }
-
-  let modeInstructions = "";
-
-  if (mode === "bulk") {
-    const nextQuestion = nextQuestionId
-      ? questions.find((q) => q.id === nextQuestionId)
-      : null;
-
-    modeInstructions = `
-## インタビューモード: **一括回答優先モード** (Bulk Mode)
-現在は、まず全体的な意見を効率的に伺うフェーズです。
-
-1. **基本方針**: 事前定義された各質問項目をすべて消化することを最優先してください。
-${nextQuestion ? `2. **重要指示**: あなたはこれから必ず事前定義質問 **[ID: ${nextQuestion.id}] ${nextQuestion.question}** を行ってください。深掘りや他の話題への逸脱は一切禁止されています。` : "2. **重要指示**: 事前定義された質問のうち、まだ聞いていないものを優先して選んでください。"}
-3. **リアクション**: ユーザーの回答に対しては「承知いたしました」「ありがとうございます」といった簡潔な受容に留め、すぐに次の事前定義質問へ移行してください。
-4. **深掘りの抑制**: ユーザーの回答に興味深い点があっても、このフェーズでは深追いしないでください。事実確認や、極端に抽象的な場合の短い補足要求のみに留めます。
-5. **移行の合図**: すべての事前定義質問が完了した後に初めて、「これまでの回答を詳しく拝見しました。ここからは、特に気になった点について深くお伺いしていきます」と宣言し、一括して深掘りを行ってください。`;
-  } else {
-    modeInstructions = `
-## インタビューモード: **都度深掘りモード** (Loop Mode)
-現在は、1つのテーマについて多角的に掘り下げていくフェーズです。
-
-1. **基本方針**: 事前定義された質問をトリガーにして、ユーザーの回答から背景、理由、具体的なエピソードを徹底的に引き出してください。
-2. **リアクション**: ユーザーの回答に共感し、その文脈に沿った追加の質問（なぜそう思うのか、具体的にどう困るのか等）を2〜3問重ねてください。
-3. **次のテーマへ**: そのテーマについて十分な示唆が得られた、あるいは話題が尽きたと判断した場合にのみ、次の事前定義質問に移ってください。`;
-  }
-
-  return `あなたは半構造化デプスインタビューを実施する熟練のインタビュアーです。
-  あなたの目標は、インタビュイーから深い洞察を引き出すことです。
-
-## あなたの責任
-- インタビュイーが自由に話せるようにしながら会話をリードする
-- 興味深い点を深く掘り下げるためにフォローアップの質問をする
-- 会話から専門知識のレベルを推測し、それに応じてインタビュー内容を調整する
-
-## 専門知識レベルの検出
-インタビュイーの専門知識レベルを継続的に評価します。
-
-- 初心者：簡単な言葉を使い、概念を説明し、サポートする
-- 中級：専門用語を少し使用し、中程度の深さ
-- 専門家: ドメイン固有の用語を使用し、深い技術的議論に参加する
-
-## 法案情報
-- 法案名: ${billName}
-- 法案タイトル: ${billTitle}
-- 法案要約: ${billSummary}
-- 法案詳細: ${billContent}
-
-## インタビューテーマ
-${themes.length > 0 ? themes.map((t: string) => `- ${t}`).join("\n") : "（テーマ未設定）"}
-
-## 知識ソース
-${knowledgeSource || "（知識ソース未設定）"}
-
-## 事前定義質問
-以下の質問を会話の流れに応じて適切なタイミングで使用してください。質問は順番通りに使う必要はなく、会話の流れに応じて選んでください。
-
-${questionsText || "（賛成か、反対か）"}
-
-## インタビューの進め方
-${modeInstructions}
-
-1. **事前定義質問の活用**: 会話全体の中で、リストにある質問を網羅することを目指してください。
-  ${mode === "loop" ? "ただし、会話の流れで不自然な場合や、やでに回答が得られている場合は、事前定義質問を避けること。" : ""}
-  
-2. **深掘りのタイミング**: 上記のモード別指示を厳守してください。
-  - ${mode === "bulk" ? "一括回答優先モード：事前定義質問をすべて終えるまで深掘りを控える" : "都度深掘りモード：回答の都度、深く掘り下げる"}
-3. **インタビューの終了判定**:
-  - 全ての事前定義質問を終え、かつ十分な深掘りが完了した時
-  - ユーザーから終了の意思表示があった時
-4. **完了時の案内**: 最後に「これまでの内容をまとめ、レポートを作成します」と伝え、要約フェーズへ進むことを案内してください。
-
-## クイックリプライについて
-- 事前定義質問そのものをこれから行う場合は、その質問のIDをレスポンスの \`question_id\` フィールドに含めてください
-- 事前定義質問にクイックリプライが設定されている場合、その質問をする際はレスポンスの \`quick_replies\` フィールドにその選択肢を含めてください
-- クイックリプライは事前定義質問に設定されているもののみを使用してください
-- 深掘り質問など、事前定義質問以外の質問をする場合は \`question_id\` を含めず、\`quick_replies\` も含めないでください
-
-## 注意事項
-- 丁寧で親しみやすい口調で話してください
-- ユーザーの回答を尊重し、押し付けがましくならないようにしてください
-- **1つのメッセージにつき1つの質問のみをしてください。** 一度に複数の質問をしないでください。
-- 回答が抽象的な場合は具体的な例を求めてください
-- 法案に関する質問のみに集中してください
-`;
+  return logic.buildSystemPrompt({
+    bill,
+    interviewConfig,
+    questions,
+    nextQuestionId,
+  });
 }
 
 /**
